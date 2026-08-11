@@ -1,9 +1,79 @@
 ---
-layout: default
+layout: null
 ---
 
-{% include mathjax.html %}
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#f2f1eb">
 
-{% include theme_fix.html %}
+  <title>{% if page.title %}{{ page.title }} · {% endif %}{{ site.title }}</title>
 
-{{ content }}
+  <link rel="stylesheet" href="{{ "/assets/css/site.css" | absolute_url }}">
+
+  {% include mathjax.html %}
+
+  <script>
+    (function () {
+      try {
+        const saved = localStorage.getItem("eezcp-library-theme");
+        if (saved === "dark" || saved === "light") {
+          document.documentElement.dataset.theme = saved;
+          return;
+        }
+      } catch (_) {}
+
+      document.documentElement.dataset.theme =
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
+    })();
+  </script>
+</head>
+
+<body>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+
+  <header class="site-topbar">
+    <div class="site-topbar-inner">
+      <a class="site-brand" href="{{ "/" | absolute_url }}" aria-label="{{ site.title }} ホーム">
+        <span class="site-brand-mark" aria-hidden="true">E</span>
+        <span class="site-brand-copy">
+          <span class="site-brand-name">{{ site.title }}</span>
+          <span class="site-brand-subtitle">Competitive Programming Library</span>
+        </span>
+      </a>
+
+      <nav class="site-actions" aria-label="サイト操作">
+        <a class="site-action" href="{{ site.github.repository_url }}/actions">
+          <span class="verify-dot" aria-hidden="true"></span>
+          <span class="site-action-label">Verify</span>
+        </a>
+
+        <a class="site-action" href="{{ site.github.repository_url }}" target="_blank" rel="noreferrer" aria-label="GitHubリポジトリを開く">
+          <span aria-hidden="true">↗</span>
+          <span class="site-action-label">GitHub</span>
+        </a>
+
+        <button class="site-icon-button" id="theme-toggle" type="button" aria-label="テーマを切り替える" title="テーマを切り替える">◐</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="site-main" id="main-content">
+    {{ content }}
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <span>Documentation generated from the <code>main</code> branch.</span>
+      <a href="{{ site.github.repository_url }}">{{ site.github.owner_name }}/{{ site.github.repository_name }}</a>
+    </div>
+  </footer>
+
+  <script defer src="{{ "/assets/js/site.js" | absolute_url }}"></script>
+</body>
+</html>
