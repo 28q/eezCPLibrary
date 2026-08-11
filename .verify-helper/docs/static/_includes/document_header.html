@@ -1,15 +1,19 @@
 {% assign document_status = "unknown" %}
 {% assign document_status_label = page.data.verificationStatus | replace: "_", " " %}
+{% assign document_status_mark = "?" %}
 
 {% if page.data._isVerificationFailed %}
   {% assign document_status = "failed" %}
   {% assign document_status_label = "Verification failed" %}
+  {% assign document_status_mark = "×" %}
 {% elsif page.data._verificationStatusIcon contains "heavy_check_mark" %}
   {% assign document_status = "verified" %}
   {% assign document_status_label = "Verified" %}
+  {% assign document_status_mark = "✓" %}
 {% elsif page.data.verificationStatus == "LIBRARY_NO_TESTS" or page.data._verificationStatusIcon contains "warning" %}
   {% assign document_status = "untested" %}
   {% assign document_status_label = "No tests" %}
+  {% assign document_status_mark = "!" %}
 {% endif %}
 
 {% assign path_parts = page.data.path | split: "/" %}
@@ -31,7 +35,7 @@
       <div class="document-title-line">
         <h1 class="document-title">{{ page.title }}</h1>
         <span class="document-status is-{{ document_status }}">
-          <span aria-hidden="true">{{ page.data._verificationStatusIcon }}</span>
+          <span class="document-status-mark" aria-hidden="true">{{ document_status_mark }}</span>
           {{ document_status_label }}
         </span>
       </div>
