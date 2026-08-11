@@ -481,7 +481,7 @@
 .document-code-footer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 16px;
   border-top: 1px solid var(--line);
   padding: 14px 18px;
@@ -509,17 +509,22 @@
 
 .document-code-panel.is-expanded {
   position: fixed;
-  inset: 12px;
+  inset: 0;
   z-index: 120;
-  display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr) auto;
-  border-color: var(--line-strong);
+  display: block;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  border: 0;
+  border-radius: 0;
   box-shadow: 0 30px 100px rgba(0, 0, 0, 0.45);
 }
 
 .document-code-panel.is-expanded .code-view {
   min-height: 0;
   max-height: none;
+  overflow: visible;
+  overscroll-behavior: auto;
 }
 
 body.code-expanded {
