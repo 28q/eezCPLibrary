@@ -56,15 +56,19 @@
           {% for item in category.pages %}
             {% assign item_status = "unknown" %}
             {% assign item_status_label = "Unknown" %}
+            {% assign item_status_mark = "?" %}
             {% if item.icon contains "heavy_check_mark" %}
               {% assign item_status = "verified" %}
               {% assign item_status_label = "Verified" %}
+              {% assign item_status_mark = "✓" %}
             {% elsif item.icon contains "warning" %}
               {% assign item_status = "untested" %}
               {% assign item_status_label = "No tests" %}
+              {% assign item_status_mark = "!" %}
             {% else %}
               {% assign item_status = "failed" %}
               {% assign item_status_label = "Failed" %}
+              {% assign item_status_mark = "×" %}
             {% endif %}
 
             <a
@@ -76,7 +80,7 @@
               data-category="{{ category.name | downcase | escape }}"
               data-search="{{ item.title | append: ' ' | append: item.path | append: ' ' | append: category.name | downcase | escape }}"
             >
-              <span class="library-card-icon library-card-icon-{{ item_status }}" aria-hidden="true">{{ item.icon }}</span>
+              <span class="library-card-icon library-card-icon-{{ item_status }}" aria-hidden="true">{{ item_status_mark }}</span>
 
               <span class="library-card-copy">
                 <span class="library-card-title">{{ item.title }}</span>
@@ -108,15 +112,19 @@
           {% for item in category.pages %}
             {% assign item_status = "unknown" %}
             {% assign item_status_label = "Unknown" %}
+            {% assign item_status_mark = "?" %}
             {% if item.icon contains "heavy_check_mark" %}
               {% assign item_status = "verified" %}
               {% assign item_status_label = "Verified" %}
+              {% assign item_status_mark = "✓" %}
             {% elsif item.icon contains "warning" %}
               {% assign item_status = "untested" %}
               {% assign item_status_label = "No tests" %}
+              {% assign item_status_mark = "!" %}
             {% else %}
               {% assign item_status = "failed" %}
               {% assign item_status_label = "Failed" %}
+              {% assign item_status_mark = "×" %}
             {% endif %}
 
             <a
@@ -128,7 +136,7 @@
               data-category="verification"
               data-search="{{ item.title | append: ' ' | append: item.path | append: ' verification test' | downcase | escape }}"
             >
-              <span class="library-card-icon library-card-icon-{{ item_status }}" aria-hidden="true">{{ item.icon }}</span>
+              <span class="library-card-icon library-card-icon-{{ item_status }}" aria-hidden="true">{{ item_status_mark }}</span>
 
               <span class="library-card-copy">
                 <span class="library-card-title">{{ item.title }}</span>

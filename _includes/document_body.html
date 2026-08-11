@@ -15,7 +15,7 @@
       {% for item in page.data._extendedDependsOn %}
       <li>
         <a href="{{ item.path | absolute_url }}">
-          <span aria-hidden="true">{{ item.icon }}</span>
+          <span class="relation-list-mark" aria-hidden="true">›</span>
           <span>{{ item.title }}</span>
           {% if item.title != item.path %}<small>{{ item.path }}</small>{% endif %}
         </a>
@@ -38,7 +38,7 @@
       {% for item in page.data._extendedRequiredBy %}
       <li>
         <a href="{{ item.path | absolute_url }}">
-          <span aria-hidden="true">{{ item.icon }}</span>
+          <span class="relation-list-mark" aria-hidden="true">›</span>
           <span>{{ item.title }}</span>
           {% if item.title != item.path %}<small>{{ item.path }}</small>{% endif %}
         </a>
@@ -61,7 +61,7 @@
       {% for item in page.data._extendedVerifiedWith %}
       <li>
         <a href="{{ item.path | absolute_url }}">
-          <span aria-hidden="true">{{ item.icon }}</span>
+          <span class="relation-list-mark" aria-hidden="true">›</span>
           <span>{{ item.title }}</span>
           {% if item.title != item.path %}<small>{{ item.path }}</small>{% endif %}
         </a>
