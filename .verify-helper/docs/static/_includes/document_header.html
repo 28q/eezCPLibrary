@@ -4,10 +4,10 @@
 {% if page.data._isVerificationFailed %}
   {% assign document_status = "failed" %}
   {% assign document_status_label = "Verification failed" %}
-{% elsif page.data.verificationStatus == "TEST_ACCEPTED" %}
+{% elsif page.data._verificationStatusIcon contains "heavy_check_mark" %}
   {% assign document_status = "verified" %}
   {% assign document_status_label = "Verified" %}
-{% elsif page.data.verificationStatus == "LIBRARY_NO_TESTS" %}
+{% elsif page.data.verificationStatus == "LIBRARY_NO_TESTS" or page.data._verificationStatusIcon contains "warning" %}
   {% assign document_status = "untested" %}
   {% assign document_status_label = "No tests" %}
 {% endif %}
