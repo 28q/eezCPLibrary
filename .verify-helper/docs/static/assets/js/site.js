@@ -83,25 +83,6 @@
       return String(value || "").trim().toLocaleLowerCase();
     }
 
-    function setText(id, value) {
-      const element = document.getElementById(id);
-      if (element) {
-        element.textContent = String(value);
-      }
-    }
-
-    function updateStats() {
-      const libraryCards = cards.filter((card) => card.dataset.kind === "library");
-      const testCards = cards.filter((card) => card.dataset.kind === "verification");
-      const verifiedCards = cards.filter((card) => card.dataset.status === "verified");
-      const reviewCards = cards.filter((card) => card.dataset.status !== "verified");
-
-      setText("stat-library-count", libraryCards.length);
-      setText("stat-verified-count", verifiedCards.length);
-      setText("stat-test-count", testCards.length);
-      setText("stat-review-count", reviewCards.length);
-    }
-
     function syncFilterButtons() {
       filterButtons.forEach((button) => {
         const group = button.dataset.filterGroup;
@@ -205,7 +186,6 @@
       }
     });
 
-    updateStats();
     syncFilterButtons();
     applyFilters();
   }
