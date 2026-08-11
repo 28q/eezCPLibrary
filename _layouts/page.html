@@ -48,9 +48,16 @@ layout: null
       </a>
 
       <nav class="site-actions" aria-label="サイト操作">
-        <a class="site-action" href="{{ site.github.repository_url }}/actions">
-          <span class="verify-dot" aria-hidden="true"></span>
-          <span class="site-action-label">Verify</span>
+        <a
+          class="site-action site-verify-action"
+          href="{{ site.github.repository_url }}/actions/workflows/verify.yml"
+          aria-label="Verify workflowの実行状況を開く"
+        >
+          <img
+            class="site-verify-badge"
+            src="{{ site.github.repository_url }}/actions/workflows/verify.yml/badge.svg?branch=main"
+            alt="verify workflow status"
+          >
         </a>
 
         <a class="site-action" href="{{ site.github.repository_url }}" target="_blank" rel="noreferrer" aria-label="GitHubリポジトリを開く">
@@ -69,7 +76,6 @@ layout: null
 
   <footer class="site-footer">
     <div class="site-footer-inner">
-      <span>Documentation generated from the <code>main</code> branch.</span>
       <a href="{{ site.github.repository_url }}">{{ site.github.owner_name }}/{{ site.github.repository_name }}</a>
     </div>
   </footer>

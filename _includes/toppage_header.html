@@ -7,19 +7,6 @@
       一覧は <code>main</code> ブランチから自動生成されます。
     </p>
 
-    <div class="dashboard-links">
-      <a class="dashboard-link" href="{{ site.github.repository_url }}/actions/workflows/verify.yml">
-        <img
-          class="workflow-badge"
-          src="{{ site.github.repository_url }}/actions/workflows/verify.yml/badge.svg?branch=main"
-          alt="verify workflow status"
-        >
-      </a>
-
-      <a class="dashboard-link dashboard-link-text" href="{{ site.github.repository_url }}">
-        Browse source <span aria-hidden="true">↗</span>
-      </a>
-    </div>
   </div>
 
   <div class="dashboard-search-panel panel">
@@ -41,30 +28,4 @@
       <span class="dashboard-result-hint">を表示中</span>
     </p>
   </div>
-</section>
-
-<section class="stats-grid" aria-label="ライブラリ集計">
-  <article class="stat-card panel">
-    <span class="stat-label">Library files</span>
-    <strong class="stat-value" id="stat-library-count">0</strong>
-    <span class="stat-note">再利用するコード</span>
-  </article>
-
-  <article class="stat-card panel">
-    <span class="stat-label">Verified</span>
-    <strong class="stat-value stat-value-success" id="stat-verified-count">0</strong>
-    <span class="stat-note">検証成功</span>
-  </article>
-
-  <article class="stat-card panel">
-    <span class="stat-label">Verification files</span>
-    <strong class="stat-value" id="stat-test-count">0</strong>
-    <span class="stat-note">テストコード</span>
-  </article>
-
-  <article class="stat-card panel">
-    <span class="stat-label">Needs review</span>
-    <strong class="stat-value stat-value-warning" id="stat-review-count">0</strong>
-    <span class="stat-note">未検証または失敗</span>
-  </article>
 </section>
