@@ -13,6 +13,7 @@
     const downloadButton = document.getElementById("download-code");
     const wrapButton = document.getElementById("toggle-wrap");
     const expandButton = document.getElementById("toggle-expand");
+    const rawLink = document.getElementById("open-bundle-raw");
     const fileLabel = document.getElementById("active-code-file");
     const lineLabel = document.getElementById("active-code-lines");
     const toast = document.getElementById("site-toast");
@@ -20,6 +21,7 @@
 
     let activeKind = "source";
     let toastTimer = 0;
+    let bundleRawUrl = "";
 
     function showToast(message) {
       if (!toast) {
@@ -66,6 +68,33 @@
       return codeElement.textContent
         .replace(/^\n/, "")
         .replace(/\n$/, "");
+    }
+
+    function setupBundleRawLink() {
+      if (!rawLink) {
+        return;
+      }
+
+      const bundleView = views.find((view) => view.dataset.codeView === "bundle");
+      const bundleCode = codeFromView(bundleView);
+
+      if (!bundleCode) {
+        rawLink.title = "Bundleがないため元ファイルをRaw表示";
+        rawLink.setAttribute("aria-label", rawLink.title);
+        return;
+      }
+
+      bundleRawUrl = URL.createObjectURL(
+        new Blob([bundleCode + "\n"], { type: "text/plain;charset=utf-8" })
+      );
+      rawLink.href = bundleRawUrl;
+
+      window.addEventListener("pagehide", function () {
+        if (bundleRawUrl) {
+          URL.revokeObjectURL(bundleRawUrl);
+          bundleRawUrl = "";
+        }
+      });
     }
 
     function bundledFileName(sourceName) {
@@ -226,6 +255,7 @@
       }
     });
 
+    setupBundleRawLink();
     selectCode("source");
   }
 
