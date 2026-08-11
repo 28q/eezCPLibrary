@@ -52,6 +52,62 @@
     });
   }
 
+  function setupVerifyStatus() {
+    const link = document.getElementById("verify-status-link");
+    const dot = document.getElementById("verify-status-dot");
+
+    if (!link || !dot || !link.dataset.apiUrl) {
+      return;
+    }
+
+    function showStatus(status, label) {
+      dot.dataset.status = status;
+      link.setAttribute(
+        "aria-label",
+        `Verify：${label}。ワークフローの実行状況を開く`
+      );
+      link.title = `Verify：${label}`;
+    }
+
+    fetch(link.dataset.apiUrl, {
+      headers: { Accept: "application/vnd.github+json" }
+    })
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error(`GitHub API returned ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(function (data) {
+        const run = data.workflow_runs && data.workflow_runs[0];
+
+        if (!run) {
+          showStatus("unknown", "実行履歴なし");
+          return;
+        }
+
+        if (run.status !== "completed") {
+          showStatus("running", "実行中");
+          return;
+        }
+
+        if (run.conclusion === "success") {
+          showStatus("success", "成功");
+          return;
+        }
+
+        if (["failure", "timed_out", "startup_failure", "action_required"].includes(run.conclusion)) {
+          showStatus("failure", "失敗");
+          return;
+        }
+
+        showStatus("unknown", run.conclusion === "cancelled" ? "キャンセル" : "状態不明");
+      })
+      .catch(function () {
+        showStatus("unknown", "状態を取得できませんでした");
+      });
+  }
+
   function setupDashboard() {
     const searchInput = document.getElementById("library-search");
     const cards = Array.from(document.querySelectorAll("[data-library-card]"));
@@ -190,9 +246,14 @@
     applyFilters();
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", setupDashboard);
-  } else {
+  function initialize() {
+    setupVerifyStatus();
     setupDashboard();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initialize);
+  } else {
+    initialize();
   }
 })();
