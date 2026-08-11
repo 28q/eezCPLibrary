@@ -1,6 +1,11 @@
 ---
 data:
   libraryCategories:
+  - name: IO
+    pages:
+    - icon: ':warning:'
+      path: IO/fastio_unsafe.hpp
+      title: fastio_unsafe
   - name: data-structure
     pages:
     - icon: ':heavy_check_mark:'
