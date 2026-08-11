@@ -1,25 +1,156 @@
-<h2>Library Files</h2>
+<div class="dashboard-layout">
+  <aside class="filter-panel panel" aria-label="一覧の絞り込み">
+    <div class="filter-panel-header">
+      <p class="dashboard-eyebrow">Filters</p>
+      <button class="filter-reset" id="filter-reset" type="button">Reset</button>
+    </div>
 
-{% for category in page.data.libraryCategories %}
-    <h3>{{ category.name }}</h3>
-    <ul>
-        {% for item in category.pages %}
-        <li><a href="{{ item.path | absolute_url }}">{{ item.icon }} {{ item.title }}
-            {% if item.title != item.path %}<small>({{ item.path }})</small>{% endif %}
-        </a></li>
+    <div class="filter-group">
+      <h2 class="filter-title">Type</h2>
+      <div class="filter-options">
+        <button class="filter-button" type="button" data-filter-group="kind" data-filter-value="all" aria-pressed="true">All</button>
+        <button class="filter-button" type="button" data-filter-group="kind" data-filter-value="library" aria-pressed="false">Libraries</button>
+        <button class="filter-button" type="button" data-filter-group="kind" data-filter-value="verification" aria-pressed="false">Tests</button>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <h2 class="filter-title">Status</h2>
+      <div class="filter-options">
+        <button class="filter-button" type="button" data-filter-group="status" data-filter-value="all" aria-pressed="true">All</button>
+        <button class="filter-button" type="button" data-filter-group="status" data-filter-value="verified" aria-pressed="false">Verified</button>
+        <button class="filter-button" type="button" data-filter-group="status" data-filter-value="untested" aria-pressed="false">No tests</button>
+        <button class="filter-button" type="button" data-filter-group="status" data-filter-value="failed" aria-pressed="false">Failed</button>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <h2 class="filter-title">Category</h2>
+      <div class="filter-options filter-options-categories">
+        <button class="filter-button" type="button" data-filter-group="category" data-filter-value="all" aria-pressed="true">All categories</button>
+        {% for category in page.data.libraryCategories %}
+        <button
+          class="filter-button"
+          type="button"
+          data-filter-group="category"
+          data-filter-value="{{ category.name | downcase | escape }}"
+          aria-pressed="false"
+        >{{ category.name }}</button>
         {% endfor %}
-    </ul>
-{% endfor %}
+      </div>
+    </div>
+  </aside>
 
-<h2>Verification Files</h2>
+  <div class="dashboard-results">
+    <section class="result-section panel" data-result-section="library">
+      <header class="result-section-header">
+        <div>
+          <p class="dashboard-eyebrow">Reusable code</p>
+          <h2>Library Files</h2>
+        </div>
+        <span class="section-count"><strong data-visible-count="library">0</strong> files</span>
+      </header>
 
-{% for category in page.data.verificationCategories %}
-    <h3>{{ category.name }}</h3>
-    <ul>
-        {% for item in category.pages %}
-        <li><a href="{{ item.path | absolute_url }}">{{ item.icon }} {{ item.title }}
-            {% if item.title != item.path %}<small>({{ item.path }})</small>{% endif %}
-        </a></li>
+      <div class="library-grid">
+        {% for category in page.data.libraryCategories %}
+          {% for item in category.pages %}
+            {% assign item_status = "unknown" %}
+            {% assign item_status_label = "Unknown" %}
+            {% if item.icon contains "heavy_check_mark" %}
+              {% assign item_status = "verified" %}
+              {% assign item_status_label = "Verified" %}
+            {% elsif item.icon contains "warning" %}
+              {% assign item_status = "untested" %}
+              {% assign item_status_label = "No tests" %}
+            {% else %}
+              {% assign item_status = "failed" %}
+              {% assign item_status_label = "Failed" %}
+            {% endif %}
+
+            <a
+              class="library-card"
+              href="{{ item.path | absolute_url }}"
+              data-library-card
+              data-kind="library"
+              data-status="{{ item_status }}"
+              data-category="{{ category.name | downcase | escape }}"
+              data-search="{{ item.title | append: ' ' | append: item.path | append: ' ' | append: category.name | downcase | escape }}"
+            >
+              <span class="library-card-icon library-card-icon-{{ item_status }}" aria-hidden="true">{{ item.icon }}</span>
+
+              <span class="library-card-copy">
+                <span class="library-card-title">{{ item.title }}</span>
+                <span class="library-card-path">{{ item.path }}</span>
+                <span class="library-card-meta">
+                  <span class="library-category">{{ category.name }}</span>
+                  <span class="status-badge is-{{ item_status }}">{{ item_status_label }}</span>
+                </span>
+              </span>
+
+              <span class="library-card-arrow" aria-hidden="true">›</span>
+            </a>
+          {% endfor %}
         {% endfor %}
-    </ul>
-{% endfor %}
+      </div>
+    </section>
+
+    <section class="result-section panel" data-result-section="verification">
+      <header class="result-section-header">
+        <div>
+          <p class="dashboard-eyebrow">Verification</p>
+          <h2>Verification Files</h2>
+        </div>
+        <span class="section-count"><strong data-visible-count="verification">0</strong> files</span>
+      </header>
+
+      <div class="library-grid">
+        {% for category in page.data.verificationCategories %}
+          {% for item in category.pages %}
+            {% assign item_status = "unknown" %}
+            {% assign item_status_label = "Unknown" %}
+            {% if item.icon contains "heavy_check_mark" %}
+              {% assign item_status = "verified" %}
+              {% assign item_status_label = "Verified" %}
+            {% elsif item.icon contains "warning" %}
+              {% assign item_status = "untested" %}
+              {% assign item_status_label = "No tests" %}
+            {% else %}
+              {% assign item_status = "failed" %}
+              {% assign item_status_label = "Failed" %}
+            {% endif %}
+
+            <a
+              class="library-card"
+              href="{{ item.path | absolute_url }}"
+              data-library-card
+              data-kind="verification"
+              data-status="{{ item_status }}"
+              data-category="verification"
+              data-search="{{ item.title | append: ' ' | append: item.path | append: ' verification test' | downcase | escape }}"
+            >
+              <span class="library-card-icon library-card-icon-{{ item_status }}" aria-hidden="true">{{ item.icon }}</span>
+
+              <span class="library-card-copy">
+                <span class="library-card-title">{{ item.title }}</span>
+                <span class="library-card-path">{{ item.path }}</span>
+                <span class="library-card-meta">
+                  <span class="library-category">Test</span>
+                  <span class="status-badge is-{{ item_status }}">{{ item_status_label }}</span>
+                </span>
+              </span>
+
+              <span class="library-card-arrow" aria-hidden="true">›</span>
+            </a>
+          {% endfor %}
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="dashboard-empty panel" id="dashboard-empty" hidden>
+      <span class="dashboard-empty-icon" aria-hidden="true">⌕</span>
+      <h2>一致するファイルがありません</h2>
+      <p>検索語または絞り込み条件を変更してください。</p>
+      <button class="dashboard-empty-reset" type="button" data-reset-filters>すべて表示</button>
+    </section>
+  </div>
+</div>

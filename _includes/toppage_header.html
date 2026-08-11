@@ -1,3 +1,70 @@
-<h1>{{ site.title }}</h1>
-<a href="{{ site.github.repository_url }}/actions"><img src="{{ site.github.repository_url }}/workflows/verify/badge.svg" /></a>
-<a href="{{ site.github.repository_url }}"><img src="https://img.shields.io/github/last-commit/{{ site.github.owner_name }}/{{ site.github.repository_name }}" /></a>
+<section class="dashboard-hero" aria-labelledby="dashboard-title">
+  <div class="dashboard-hero-copy">
+    <p class="dashboard-eyebrow">Competitive Programming Library</p>
+    <h1 class="dashboard-title" id="dashboard-title">{{ site.title }}</h1>
+    <p class="dashboard-description">
+      検証状態を確認しながら、ライブラリとテストコードを素早く検索できます。
+      一覧は <code>main</code> ブランチから自動生成されます。
+    </p>
+
+    <div class="dashboard-links">
+      <a class="dashboard-link" href="{{ site.github.repository_url }}/actions/workflows/verify.yml">
+        <img
+          class="workflow-badge"
+          src="{{ site.github.repository_url }}/actions/workflows/verify.yml/badge.svg?branch=main"
+          alt="verify workflow status"
+        >
+      </a>
+
+      <a class="dashboard-link dashboard-link-text" href="{{ site.github.repository_url }}">
+        Browse source <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="dashboard-search-panel panel">
+    <label class="dashboard-search" for="library-search">
+      <span class="dashboard-search-icon" aria-hidden="true"></span>
+      <input
+        id="library-search"
+        type="search"
+        autocomplete="off"
+        placeholder="名前、パス、カテゴリで検索…"
+        aria-label="ライブラリと検証ファイルを検索"
+      >
+      <kbd aria-hidden="true">/</kbd>
+    </label>
+
+    <p class="dashboard-result-summary" aria-live="polite">
+      <strong id="result-count">0</strong>
+      <span id="result-label">items</span>
+      <span class="dashboard-result-hint">を表示中</span>
+    </p>
+  </div>
+</section>
+
+<section class="stats-grid" aria-label="ライブラリ集計">
+  <article class="stat-card panel">
+    <span class="stat-label">Library files</span>
+    <strong class="stat-value" id="stat-library-count">0</strong>
+    <span class="stat-note">再利用するコード</span>
+  </article>
+
+  <article class="stat-card panel">
+    <span class="stat-label">Verified</span>
+    <strong class="stat-value stat-value-success" id="stat-verified-count">0</strong>
+    <span class="stat-note">検証成功</span>
+  </article>
+
+  <article class="stat-card panel">
+    <span class="stat-label">Verification files</span>
+    <strong class="stat-value" id="stat-test-count">0</strong>
+    <span class="stat-note">テストコード</span>
+  </article>
+
+  <article class="stat-card panel">
+    <span class="stat-label">Needs review</span>
+    <strong class="stat-value stat-value-warning" id="stat-review-count">0</strong>
+    <span class="stat-note">未検証または失敗</span>
+  </article>
+</section>
