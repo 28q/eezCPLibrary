@@ -1,48 +1,164 @@
-{% if page.data.dependsOn.size != 0 %}
-    <h2>Depends on</h2>
-    <ul>
-    {% for item in page.data._extendedDependsOn %}
-        <li><a href="{{ item.path | absolute_url }}">{{ item.icon }} {{ item.title }}
-            {% if item.title != item.path %}<small>({{ item.path }})</small>{% endif %}
-        </a></li>
-    {% endfor %}
-    </ul>
-{% endif %}
-
-
-{% if page.data.requiredBy.size != 0 %}
-    <h2>Required by</h2>
-    <ul>
-    {% for item in page.data._extendedRequiredBy %}
-        <li><a href="{{ item.path | absolute_url }}">{{ item.icon }} {{ item.title }}
-            {% if item.title != item.path %}<small>({{ item.path }})</small>{% endif %}
-        </a></li>
-    {% endfor %}
-    </ul>
-{% endif %}
-
-
-{% if page.data.verifiedWith.size != 0 %}
-    <h2>Verified with</h2>
-    <ul>
-    {% for item in page.data._extendedVerifiedWith %}
-        <li><a href="{{ item.path | absolute_url }}">{{ item.icon }} {{ item.title }}
-            {% if item.title != item.path %}<small>({{ item.path }})</small>{% endif %}
-        </a></li>
-    {% endfor %}
-    </ul>
-{% endif %}
-
-
-<h2>Code</h2>
-
-<script defer type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/jquery-balloon-js@1.1.2/jquery.balloon.min.js" integrity="sha256-ZEYs9VrgAeNuPvs15E39OsyOJaIkXEEt10fzxJ20+2I=" crossorigin="anonymous"></script>
-<script defer type="text/javascript" src="{{ "/assets/js/copy-button.js" | absolute_url }}"></script>
 <link rel="stylesheet" href="{{ "/assets/css/copy-button.css" | absolute_url }}">
 
-<span><a id="unbundled"></a></span>
-{% include highlight.html extension=page.data._pathExtension content=page.data.code %}
+{% if page.data.dependsOn.size != 0 or page.data.requiredBy.size != 0 or page.data.verifiedWith.size != 0 %}
+<section class="document-relations" aria-label="関連ファイル">
+  {% if page.data.dependsOn.size != 0 %}
+  <article class="relation-card panel">
+    <header class="relation-card-header">
+      <span class="relation-card-icon" aria-hidden="true">←</span>
+      <div>
+        <p class="relation-card-eyebrow">Dependencies</p>
+        <h2>Depends on</h2>
+      </div>
+    </header>
+    <ul class="relation-list">
+      {% for item in page.data._extendedDependsOn %}
+      <li>
+        <a href="{{ item.path | absolute_url }}">
+          <span aria-hidden="true">{{ item.icon }}</span>
+          <span>{{ item.title }}</span>
+          {% if item.title != item.path %}<small>{{ item.path }}</small>{% endif %}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </article>
+  {% endif %}
 
-<span><a id="bundled"></a></span>
-{% include highlight.html extension=page.data._pathExtension content=page.data.bundledCode %}
+  {% if page.data.requiredBy.size != 0 %}
+  <article class="relation-card panel">
+    <header class="relation-card-header">
+      <span class="relation-card-icon" aria-hidden="true">→</span>
+      <div>
+        <p class="relation-card-eyebrow">Consumers</p>
+        <h2>Required by</h2>
+      </div>
+    </header>
+    <ul class="relation-list">
+      {% for item in page.data._extendedRequiredBy %}
+      <li>
+        <a href="{{ item.path | absolute_url }}">
+          <span aria-hidden="true">{{ item.icon }}</span>
+          <span>{{ item.title }}</span>
+          {% if item.title != item.path %}<small>{{ item.path }}</small>{% endif %}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </article>
+  {% endif %}
+
+  {% if page.data.verifiedWith.size != 0 %}
+  <article class="relation-card panel">
+    <header class="relation-card-header">
+      <span class="relation-card-icon relation-card-icon-success" aria-hidden="true">✓</span>
+      <div>
+        <p class="relation-card-eyebrow">Verification</p>
+        <h2>Verified with</h2>
+      </div>
+    </header>
+    <ul class="relation-list">
+      {% for item in page.data._extendedVerifiedWith %}
+      <li>
+        <a href="{{ item.path | absolute_url }}">
+          <span aria-hidden="true">{{ item.icon }}</span>
+          <span>{{ item.title }}</span>
+          {% if item.title != item.path %}<small>{{ item.path }}</small>{% endif %}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </article>
+  {% endif %}
+</section>
+{% endif %}
+
+{% assign source_file_name = page.data.path | split: "/" | last %}
+
+<section
+  class="document-code-panel panel"
+  id="document-code-panel"
+  data-source-name="{{ source_file_name | escape }}"
+>
+  <header class="document-code-header">
+    <div>
+      <p class="document-code-eyebrow">Source viewer</p>
+      <h2>Code</h2>
+    </div>
+
+    <div class="document-code-controls">
+      <div class="code-tabs" role="tablist" aria-label="コード種別">
+        <button
+          class="code-tab is-active"
+          id="source-tab"
+          type="button"
+          role="tab"
+          aria-selected="true"
+          aria-controls="source-code-view"
+          data-code-tab="source"
+        >Source</button>
+
+        <button
+          class="code-tab"
+          id="bundle-tab"
+          type="button"
+          role="tab"
+          aria-selected="false"
+          aria-controls="bundle-code-view"
+          data-code-tab="bundle"
+          {% if page.data.bundledCode == empty %}disabled{% endif %}
+        >Bundle</button>
+      </div>
+
+      <div class="code-actions" aria-label="コード操作">
+        <button class="code-action code-action-primary" id="copy-code" type="button">Copy</button>
+        <button class="code-action" id="download-code" type="button">Download</button>
+        <button class="code-action" id="toggle-wrap" type="button" aria-pressed="false">Wrap</button>
+        <button class="code-action" id="toggle-expand" type="button" aria-pressed="false">Expand</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="document-code-meta">
+    <span class="document-code-file" id="active-code-file">{{ source_file_name }}</span>
+    <span class="document-code-state">
+      <span class="document-code-dot" aria-hidden="true"></span>
+      <span id="active-code-lines">0 lines</span>
+    </span>
+  </div>
+
+  <div
+    class="code-view is-active"
+    id="source-code-view"
+    role="tabpanel"
+    aria-labelledby="source-tab"
+    data-code-view="source"
+  >
+    {% include highlight.html extension=page.data._pathExtension content=page.data.code %}
+  </div>
+
+  <div
+    class="code-view"
+    id="bundle-code-view"
+    role="tabpanel"
+    aria-labelledby="bundle-tab"
+    data-code-view="bundle"
+    hidden
+  >
+    {% include highlight.html extension=page.data._pathExtension content=page.data.bundledCode %}
+  </div>
+
+  <footer class="document-code-footer">
+    <span>Bundleはverification-helperが生成したコードです。</span>
+    <span class="document-code-shortcuts">
+      <span><kbd>B</kbd> Source / Bundle</span>
+      <span><kbd>C</kbd> Copy</span>
+      <span><kbd>W</kbd> Wrap</span>
+      <span><kbd>Esc</kbd> Close</span>
+    </span>
+  </footer>
+</section>
+
+<div class="site-toast" id="site-toast" role="status" aria-live="polite"></div>
+
+<script defer src="{{ "/assets/js/copy-button.js" | absolute_url }}"></script>

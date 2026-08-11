@@ -1,1 +1,11 @@
-<a href="{{ "/" | absolute_url }}">Back to top page</a>
+<nav class="document-footer panel" aria-label="詳細ページのナビゲーション">
+  <a class="document-footer-back" href="{{ "/" | absolute_url }}">
+    <span aria-hidden="true">←</span>
+    Library indexへ戻る
+  </a>
+
+  <div class="document-footer-links">
+    <a href="{{ site.github.repository_url }}/actions">Actions</a>
+    <a href="{{ site.github.repository_url }}/blob/main/{{ page.data.path }}">View on GitHub ↗</a>
+  </div>
+</nav>

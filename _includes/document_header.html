@@ -1,39 +1,120 @@
-<h1>{{ page.data._verificationStatusIcon }} {{ page.title }}
-    {% if page.title != page.data.path %}<br><small>({{ page.data.path }})</small>{% endif %}
-</h1>
+{% assign document_status = "unknown" %}
+{% assign document_status_label = page.data.verificationStatus | replace: "_", " " %}
 
-<ul>
-    <li><a href="{{ site.github.repository_url }}/blob/master/{{ page.data.path }}">View this file on GitHub</a></li>
-    <li>Last update: {{ page.data.timestamp }}</li>
-    {% if page.data.attributes.PROBLEM %}
-    <li>Problem: <a href="{{ page.data.attributes.PROBLEM }}">{{ page.data.attributes.PROBLEM }}</a></li>
-    {% endif %}
-    {% if page.data._pathExtension == "hpp" %}<li><a id="include-directive-anchor">Include: <code id="include-directive-code">#include "{{ page.data.path }}"</code></a></li>{% endif %}
-    {% if page.data._isVerificationFailed %}<li>Link: <a href="{{ site.github.repository_url }}/actions">{{ page.data._verificationStatusIcon }} View error logs on GitHub Actions</a></li>{% endif %}
-    {% for link in page.data.attributes.links %}
-    {% if link != page.data.attributes.PROBLEM %}
-    <li>Link: <a href="{{ link }}">{{ link }}</a></li>
-    {% endif %}
-    {% endfor %}
-</ul>
-
-{% if page.data._pathExtension == "hpp" %}
-<script defer type="text/javascript">
-    // make the include directive clickable
-    (function() {
-        const anchor = document.getElementById('include-directive-anchor');
-        const code = document.getElementById('include-directive-code');
-        anchor.addEventListener('click', function() {
-            window.getSelection().selectAllChildren(code);
-            document.execCommand("copy");
-            window.getSelection().removeAllRanges();
-
-            const textContent = code.textContent;
-            code.textContent = "Copied!";
-            setTimeout(function() {
-                code.textContent = textContent;
-            }, 300);
-        });
-    })();
-</script>
+{% if page.data._isVerificationFailed %}
+  {% assign document_status = "failed" %}
+  {% assign document_status_label = "Verification failed" %}
+{% elsif page.data.verificationStatus == "TEST_ACCEPTED" %}
+  {% assign document_status = "verified" %}
+  {% assign document_status_label = "Verified" %}
+{% elsif page.data.verificationStatus == "LIBRARY_NO_TESTS" %}
+  {% assign document_status = "untested" %}
+  {% assign document_status_label = "No tests" %}
 {% endif %}
+
+{% assign path_parts = page.data.path | split: "/" %}
+{% assign document_category = path_parts | first %}
+
+<header class="document-hero panel">
+  <nav class="document-breadcrumb" aria-label="現在のファイル">
+    <a href="{{ "/" | absolute_url }}">{{ site.title }}</a>
+    <span aria-hidden="true">/</span>
+    {% if path_parts.size > 1 %}
+    <span>{{ document_category }}</span>
+    <span aria-hidden="true">/</span>
+    {% endif %}
+    <span>{{ path_parts | last }}</span>
+  </nav>
+
+  <div class="document-title-row">
+    <div class="document-title-copy">
+      <div class="document-title-line">
+        <h1 class="document-title">{{ page.title }}</h1>
+        <span class="document-status is-{{ document_status }}">
+          <span aria-hidden="true">{{ page.data._verificationStatusIcon }}</span>
+          {{ document_status_label }}
+        </span>
+      </div>
+
+      {% if page.title != page.data.path %}
+      <p class="document-path">{{ page.data.path }}</p>
+      {% endif %}
+    </div>
+
+    <div class="document-actions" aria-label="ファイル操作">
+      {% if page.data._pathExtension == "hpp" %}
+      <button
+        class="document-action document-action-primary"
+        type="button"
+        data-copy-text='#include "{{ page.data.path }}"'
+      >Copy include</button>
+      {% endif %}
+
+      {% if page.data.attributes.PROBLEM %}
+      <a class="document-action" href="{{ page.data.attributes.PROBLEM }}" target="_blank" rel="noreferrer">Problem ↗</a>
+      {% endif %}
+
+      <a
+        class="document-action"
+        href="{{ site.github.repository_url }}/raw/refs/heads/main/{{ page.data.path }}"
+        target="_blank"
+        rel="noreferrer"
+      >Raw</a>
+
+      <a
+        class="document-action"
+        href="{{ site.github.repository_url }}/blob/main/{{ page.data.path }}"
+        target="_blank"
+        rel="noreferrer"
+      >GitHub ↗</a>
+
+      {% if page.data._isVerificationFailed %}
+      <a class="document-action document-action-danger" href="{{ site.github.repository_url }}/actions">Error logs</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="document-meta-grid">
+    <div class="document-meta-cell">
+      <span class="document-meta-label">Status</span>
+      <span class="document-meta-value">{{ page.data.verificationStatus }}</span>
+    </div>
+
+    <div class="document-meta-cell">
+      <span class="document-meta-label">Updated</span>
+      <span class="document-meta-value">{{ page.data.timestamp }}</span>
+    </div>
+
+    <div class="document-meta-cell">
+      <span class="document-meta-label">Type</span>
+      <span class="document-meta-value">
+        {% if page.data.isVerificationFile %}Verification file{% else %}Library{% endif %}
+      </span>
+    </div>
+
+    <div class="document-meta-cell">
+      <span class="document-meta-label">Extension</span>
+      <span class="document-meta-value">.{{ page.data._pathExtension }}</span>
+    </div>
+  </div>
+
+  {% assign extra_links_count = 0 %}
+  {% for link in page.data.attributes.links %}
+    {% if link != page.data.attributes.PROBLEM %}
+      {% assign extra_links_count = extra_links_count | plus: 1 %}
+    {% endif %}
+  {% endfor %}
+
+  {% if extra_links_count > 0 %}
+  <div class="document-extra-links">
+    <span class="document-extra-links-label">Related links</span>
+    <div class="document-extra-links-list">
+      {% for link in page.data.attributes.links %}
+        {% if link != page.data.attributes.PROBLEM %}
+        <a href="{{ link }}" target="_blank" rel="noreferrer">{{ link }} ↗</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</header>
