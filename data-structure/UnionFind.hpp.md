@@ -36,8 +36,9 @@ data:
   - verify/verify-yosupo-ds/yosupo-unionfind.test.cpp
 documentation_of: data-structure/UnionFind.hpp
 layout: document
-redirect_from:
-- /library/data-structure/UnionFind.hpp
-- /library/data-structure/UnionFind.hpp.html
-title: data-structure/UnionFind.hpp
+title: UnionFind
 ---
+
+## 使い方
+
+## 計算量
