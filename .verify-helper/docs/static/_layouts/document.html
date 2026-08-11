@@ -2,10 +2,16 @@
 layout: page
 ---
 
-{% include document_header.html %}
+<div class="document-page">
+  {% include document_header.html %}
 
-{{ content }}
+  {% assign document_content = content | strip %}
+  {% unless document_content == empty %}
+  <section class="document-notes panel">
+    {{ content }}
+  </section>
+  {% endunless %}
 
-{% include document_body.html %}
-
-{% include document_footer.html %}
+  {% include document_body.html %}
+  {% include document_footer.html %}
+</div>
