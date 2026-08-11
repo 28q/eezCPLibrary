@@ -349,10 +349,10 @@
 }
 
 .code-tabs {
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: 10px;
-  background: var(--surface-muted);
-  padding: 3px;
+  background: color-mix(in srgb, var(--ink) 9%, var(--surface-muted));
+  padding: 4px;
 }
 
 .code-tab,
@@ -368,18 +368,25 @@
 
 .code-tab {
   background: transparent;
-  color: var(--muted);
+  color: color-mix(in srgb, var(--ink) 62%, var(--muted));
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.code-tab:not(.is-active):not(:disabled):hover {
+  border-color: color-mix(in srgb, var(--line-strong) 75%, transparent);
+  background: color-mix(in srgb, var(--surface-raised) 68%, transparent);
+  color: var(--ink);
 }
 
 .code-tab.is-active {
-  border-color: var(--line);
-  background: var(--surface-raised);
-  color: var(--ink);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 28%, transparent);
 }
 
 .code-tab:disabled {
-  opacity: 0.45;
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
