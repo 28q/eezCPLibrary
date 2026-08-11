@@ -2,10 +2,13 @@
 data:
   _extendedDependsOn: []
   _extendedRequiredBy: []
-  _extendedVerifiedWith: []
+  _extendedVerifiedWith:
+  - icon: ':heavy_check_mark:'
+    path: verify/verify-yosupo-ds/yosupo-unionfind.test.cpp
+    title: verify/verify-yosupo-ds/yosupo-unionfind.test.cpp
   _isVerificationFailed: false
   _pathExtension: hpp
-  _verificationStatusIcon: ':warning:'
+  _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
     links: []
   bundledCode: "#line 2 \"data-structure/UnionFind.hpp\"\n\nstruct UnionFind{\n\t\
@@ -28,8 +31,9 @@ data:
   path: data-structure/UnionFind.hpp
   requiredBy: []
   timestamp: '2026-08-12 01:04:02+09:00'
-  verificationStatus: LIBRARY_NO_TESTS
-  verifiedWith: []
+  verificationStatus: LIBRARY_ALL_AC
+  verifiedWith:
+  - verify/verify-yosupo-ds/yosupo-unionfind.test.cpp
 documentation_of: data-structure/UnionFind.hpp
 layout: document
 redirect_from:
