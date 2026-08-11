@@ -12,6 +12,7 @@ data:
     \ <array>\n#include <cerrno>\n#include <cstdint>\n#include <cstdio>\n#include\
     \ <cstdlib>\n#include <cstring>\n#include <immintrin.h>\n\n#ifdef __linux__\n\
     #include <sys/mman.h>\n#include <sys/stat.h>\n#include <unistd.h>\n#endif\n\n\
+    #ifndef FASTIO_UNSAFE_BLOCK_LOG\n#define FASTIO_UNSAFE_BLOCK_LOG 14\n#endif\n\n\
     namespace fastio_unsafe_impl {\n\nusing i32 = std::int32_t;\nusing u32 = std::uint32_t;\n\
     using i64 = std::int64_t;\nusing u64 = std::uint64_t;\nusing i128 = __int128_t;\n\
     using u128 = __uint128_t;\n\nconstexpr auto make_right_align_masks() {\n    std::array<std::array<char,\
@@ -259,7 +260,8 @@ data:
   code: "#pragma once\n\n#include <algorithm>\n#include <array>\n#include <cerrno>\n\
     #include <cstdint>\n#include <cstdio>\n#include <cstdlib>\n#include <cstring>\n\
     #include <immintrin.h>\n\n#ifdef __linux__\n#include <sys/mman.h>\n#include <sys/stat.h>\n\
-    #include <unistd.h>\n#endif\n\nnamespace fastio_unsafe_impl {\n\nusing i32 = std::int32_t;\n\
+    #include <unistd.h>\n#endif\n\n#ifndef FASTIO_UNSAFE_BLOCK_LOG\n#define FASTIO_UNSAFE_BLOCK_LOG\
+    \ 14\n#endif\n\nnamespace fastio_unsafe_impl {\n\nusing i32 = std::int32_t;\n\
     using u32 = std::uint32_t;\nusing i64 = std::int64_t;\nusing u64 = std::uint64_t;\n\
     using i128 = __int128_t;\nusing u128 = __uint128_t;\n\nconstexpr auto make_right_align_masks()\
     \ {\n    std::array<std::array<char, 16>, 16> masks{};\n    for (int digits =\
@@ -508,7 +510,7 @@ data:
   isVerificationFile: false
   path: IO/fastio_unsafe.hpp
   requiredBy: []
-  timestamp: '2026-08-12 04:56:50+09:00'
+  timestamp: '2026-08-12 05:06:25+09:00'
   verificationStatus: LIBRARY_NO_TESTS
   verifiedWith: []
 documentation_of: IO/fastio_unsafe.hpp
@@ -519,6 +521,16 @@ title: fastio_unsafe
 ## 用途
 
 速度優先・入力検査なしの、32/64/128-bit整数入出力です。
+
+## ブロック設定
+
+`FASTIO_UNSAFE_BLOCK_LOG`の既定値は`14`です。必要に応じて`13`～`15`の整数へ変更できます。
+変更する場合は、ヘッダーを読み込む前に定義します。
+
+```cpp
+#define FASTIO_UNSAFE_BLOCK_LOG 13
+#include "IO/fastio_unsafe.hpp"
+```
 
 ## 基本的な使い方
 
