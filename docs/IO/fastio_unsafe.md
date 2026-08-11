@@ -7,6 +7,16 @@ documentation_of: ../../IO/fastio_unsafe.hpp
 
 速度優先・入力検査なしの、32/64/128-bit整数入出力です。
 
+## ブロック設定
+
+`FASTIO_UNSAFE_BLOCK_LOG`の既定値は`14`です。必要に応じて`13`～`15`の整数へ変更できます。
+変更する場合は、ヘッダーを読み込む前に定義します。
+
+```cpp
+#define FASTIO_UNSAFE_BLOCK_LOG 13
+#include "IO/fastio_unsafe.hpp"
+```
+
 ## 基本的な使い方
 
 ```cpp

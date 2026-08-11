@@ -15,6 +15,10 @@
 #include <unistd.h>
 #endif
 
+#ifndef FASTIO_UNSAFE_BLOCK_LOG
+#define FASTIO_UNSAFE_BLOCK_LOG 14
+#endif
+
 namespace fastio_unsafe_impl {
 
 using i32 = std::int32_t;
