@@ -27,7 +27,7 @@ int main() {
         fastio_unsafe_impl::read_u64(input_cursor);
 
     constexpr fastio_unsafe_impl::u64 block_size =
-        1u << FASTIO_UNSAFE_BLOCK_LOG;
+        1ULL << FASTIO_UNSAFE_BLOCK_LOG;
 
     alignas(64) __int128_t sums[block_size];
 

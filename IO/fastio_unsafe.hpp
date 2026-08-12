@@ -245,22 +245,6 @@ constexpr u32 pack4(char a, char b, char c, char d) noexcept {
            (static_cast<u32>(static_cast<unsigned char>(d)) << 24);
 }
 
-constexpr auto make_leading_groups() {
-    std::array<u32, 10000> table{};
-    for (int value = 0; value < 10000; ++value) {
-        char a = static_cast<char>('0' + value / 1000);
-        char b = static_cast<char>('0' + value / 100 % 10);
-        char c = static_cast<char>('0' + value / 10 % 10);
-        char d = static_cast<char>('0' + value % 10);
-        if (value < 1000) a = ' ';
-        if (value < 100) b = ' ';
-        if (value < 10) c = ' ';
-        if (value == 0) d = ' ';
-        table[static_cast<std::size_t>(value)] = pack4(a, b, c, d);
-    }
-    return table;
-}
-
 constexpr auto make_padded_groups() {
     std::array<u32, 10000> table{};
     for (int value = 0; value < 10000; ++value) {
@@ -273,7 +257,6 @@ constexpr auto make_padded_groups() {
     return table;
 }
 
-inline constexpr auto leading_groups = make_leading_groups();
 inline constexpr auto padded_groups = make_padded_groups();
 
 struct output {
@@ -287,6 +270,12 @@ struct output {
     __attribute__((noinline)) char* flush(char* cursor) noexcept {
         std::size_t remaining = static_cast<std::size_t>(cursor - buffer_.data());
         const char* data = buffer_.data();
+
+        if (first_flush_ && remaining != 0) {
+            ++data;
+            --remaining;
+            first_flush_ = false;
+        }
 #ifdef __linux__
         while (remaining != 0) {
             const ssize_t count = ::write(1, data, remaining);
@@ -311,11 +300,12 @@ struct output {
     }
 
     void finish(char* cursor) noexcept {
-        if (cursor != buffer_.data()) *cursor++ = '\n';
+        if (cursor != buffer_.data() || !first_flush_) *cursor++ = '\n';
         (void)flush(cursor);
     }
 
     alignas(64) std::array<char, 1u << 19> buffer_;
+    bool first_flush_ = true;
 };
 
 __attribute__((always_inline)) inline void store_group(
@@ -326,7 +316,15 @@ __attribute__((always_inline)) inline void store_group(
 
 __attribute__((always_inline)) inline void emit_leading(
     char*& cursor, u64 value) noexcept {
-    store_group(cursor, leading_groups[static_cast<std::size_t>(value)]);
+    const unsigned skip =
+        3u
+        - static_cast<unsigned>(value >= 10)
+        - static_cast<unsigned>(value >= 100)
+        - static_cast<unsigned>(value >= 1000);
+    const u32 group =
+        padded_groups[static_cast<std::size_t>(value)] >> (skip * 8);
+    std::memcpy(cursor, &group, sizeof(group));
+    cursor += 4 - skip;
 }
 
 __attribute__((always_inline)) inline void emit_padded(
@@ -344,53 +342,37 @@ __attribute__((always_inline)) inline void emit_padded_16(
 
 __attribute__((always_inline)) inline void emit_u32_unchecked(
     char*& cursor, u32 value) noexcept {
-    if (value >= 10000000U) {
+    if (value >= 100000000U) {
         emit_leading(cursor, value / 100000000U);
         emit_padded(cursor, value / 10000U % 10000);
         emit_padded(cursor, value % 10000);
-    } else if (value >= 1000U) {
+    } else if (value >= 10000U) {
         emit_leading(cursor, value / 10000U);
         emit_padded(cursor, value % 10000);
-    } else if (value != 0) {
-        emit_leading(cursor, value);
     } else {
-        store_group(cursor, pack4(' ', ' ', ' ', '0'));
+        emit_leading(cursor, value);
     }
 }
 
 __attribute__((always_inline)) inline void emit_u64_unchecked(
     char*& cursor, u64 value) noexcept {
-    if (value >= 10000000000000000000ULL) *cursor++ = ' ';
-
-    if (value >= 1000000000000000ULL) {
-        const u64 low8 = value % 100000000ULL;
-        const u64 high = value / 100000000ULL;
-        const u64 high_low4 = high % 10000;
-        const u64 high_high = high / 10000;
-        emit_leading(cursor, high_high / 10000);
-        emit_padded(cursor, high_high % 10000);
-        emit_padded(cursor, high_low4);
-        emit_padded(cursor, low8 / 10000);
-        emit_padded(cursor, low8 % 10000);
-    } else if (value >= 100000000000ULL) {
-        const u64 low8 = value % 100000000ULL;
-        const u64 high = value / 100000000ULL;
-        emit_leading(cursor, high / 10000);
-        emit_padded(cursor, high % 10000);
-        emit_padded(cursor, low8 / 10000);
-        emit_padded(cursor, low8 % 10000);
-    } else if (value >= 10000000ULL) {
-        const u64 low8 = value % 100000000ULL;
+    if (value >= 10000000000000000ULL) {
+        emit_leading(cursor, value / 10000000000000000ULL);
+        emit_padded_16(cursor, value % 10000000000000000ULL);
+    } else if (value >= 1000000000000ULL) {
+        emit_leading(cursor, value / 1000000000000ULL);
+        emit_padded(cursor, value / 100000000ULL % 10000);
+        emit_padded(cursor, value / 10000ULL % 10000);
+        emit_padded(cursor, value % 10000);
+    } else if (value >= 100000000ULL) {
         emit_leading(cursor, value / 100000000ULL);
-        emit_padded(cursor, low8 / 10000);
-        emit_padded(cursor, low8 % 10000);
-    } else if (value >= 1000ULL) {
+        emit_padded(cursor, value / 10000ULL % 10000);
+        emit_padded(cursor, value % 10000);
+    } else if (value >= 10000ULL) {
         emit_leading(cursor, value / 10000);
         emit_padded(cursor, value % 10000);
-    } else if (value != 0) {
-        emit_leading(cursor, value);
     } else {
-        store_group(cursor, pack4(' ', ' ', ' ', '0'));
+        emit_leading(cursor, value);
     }
 }
 
@@ -419,29 +401,10 @@ __attribute__((always_inline)) inline void emit_u128_unchecked(
     emit_padded_16(cursor, low);
 }
 
-__attribute__((always_inline)) inline void insert_minus(
-    char* start, char*& cursor) noexcept {
-    char* digit = start;
-    while (digit != cursor && *digit == ' ') ++digit;
-    const std::size_t leading = static_cast<std::size_t>(digit - start);
-
-    if (leading >= 2) {
-        digit[-1] = '-';
-    } else if (leading == 1) {
-        std::memmove(digit + 1, digit, static_cast<std::size_t>(cursor - digit));
-        *digit = '-';
-        ++cursor;
-    } else {
-        std::memmove(start + 2, start, static_cast<std::size_t>(cursor - start));
-        start[0] = ' ';
-        start[1] = '-';
-        cursor += 2;
-    }
-}
-
 __attribute__((always_inline)) inline void write_u32(
     output& sink, char*& cursor, char* end, u32 value) noexcept {
     if (__builtin_expect(end - cursor < 16, 0)) cursor = sink.flush(cursor);
+    *cursor++ = ' ';
     emit_u32_unchecked(cursor, value);
 }
 
@@ -451,14 +414,15 @@ __attribute__((always_inline)) inline void write_i32(
     const bool negative = value < 0;
     const u32 bits = static_cast<u32>(value);
     const u32 magnitude = negative ? u32{0} - bits : bits;
-    char* const start = cursor;
+    *cursor++ = ' ';
+    if (negative) *cursor++ = '-';
     emit_u32_unchecked(cursor, magnitude);
-    if (negative) insert_minus(start, cursor);
 }
 
 __attribute__((always_inline)) inline void write_u64(
     output& sink, char*& cursor, char* end, u64 value) noexcept {
     if (__builtin_expect(end - cursor < 24, 0)) cursor = sink.flush(cursor);
+    *cursor++ = ' ';
     emit_u64_unchecked(cursor, value);
 }
 
@@ -468,14 +432,15 @@ __attribute__((always_inline)) inline void write_i64(
     const bool negative = value < 0;
     const u64 bits = static_cast<u64>(value);
     const u64 magnitude = negative ? u64{0} - bits : bits;
-    char* const start = cursor;
+    *cursor++ = ' ';
+    if (negative) *cursor++ = '-';
     emit_u64_unchecked(cursor, magnitude);
-    if (negative) insert_minus(start, cursor);
 }
 
 __attribute__((always_inline)) inline void write_u128(
     output& sink, char*& cursor, char* end, u128 value) noexcept {
     if (__builtin_expect(end - cursor < 48, 0)) cursor = sink.flush(cursor);
+    *cursor++ = ' ';
     emit_u128_unchecked(cursor, value);
 }
 
@@ -485,9 +450,9 @@ __attribute__((always_inline)) inline void write_i128(
     const bool negative = value < 0;
     const u128 bits = static_cast<u128>(value);
     const u128 magnitude = negative ? u128{0} - bits : bits;
-    char* const start = cursor;
+    *cursor++ = ' ';
+    if (negative) *cursor++ = '-';
     emit_u128_unchecked(cursor, magnitude);
-    if (negative) insert_minus(start, cursor);
 }
 
 }

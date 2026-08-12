@@ -26,7 +26,7 @@ int main() {
     const fastio_unsafe_impl::u64 test_count =
         fastio_unsafe_impl::read_u64(input_cursor);
     constexpr fastio_unsafe_impl::u64 block_size =
-        1u << FASTIO_UNSAFE_BLOCK_LOG;
+        1ULL << FASTIO_UNSAFE_BLOCK_LOG;
     alignas(64) fastio_unsafe_impl::u64 sums[block_size];
 
     for (fastio_unsafe_impl::u64 base = 0;
