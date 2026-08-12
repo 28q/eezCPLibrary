@@ -4,6 +4,11 @@
     (defined(__x86_64__) || defined(__i386__))
 #pragma GCC optimize("O3,unroll-loops")
 #pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+#elif defined(__clang__) && \
+    (defined(__x86_64__) || defined(__i386__))
+#pragma clang attribute push( \
+    __attribute__((target("avx2,bmi,bmi2,lzcnt,popcnt,ssse3"))), \
+    apply_to = function)
 #endif
 
 #ifndef FASTIO_UNSAFE_BLOCK_LOG
@@ -46,3 +51,8 @@ int main() {
     }
     io.out.finish(output_cursor);
 }
+
+#if defined(__clang__) && \
+    (defined(__x86_64__) || defined(__i386__))
+#pragma clang attribute pop
+#endif
