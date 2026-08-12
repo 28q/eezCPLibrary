@@ -12,25 +12,40 @@ data:
   attributes:
     links: []
   bundledCode: "#line 2 \"data-structure/UnionFind.hpp\"\n\nstruct UnionFind{\n\t\
-    private:\n\tint N;\n\tvector<int> par;\n\tint root(int x){\n\t\tint x0=x;\n\t\t\
-    while(par[x]>=0){\n\t\t\tx=par[x];\n\t\t}\n\t\twhile(par[x0]>=0){\n\t\t\tint x1=par[x0];\n\
-    \t\t\tpar[x0]=x;\n\t\t\tswap(x0,x1);\n\t\t}\n\t\treturn x;\n\t}\n\tpublic:\n\t\
-    UnionFind(int siz) : N(siz),par(siz,-1){}\n\tvoid merge(int a,int b){\n\t\ta=root(a),b=root(b);\n\
-    \t\tif(a==b) return;\n\t\tif(-par[a]<-par[b]) swap(a,b);\n\t\tpar[a]+=par[b];\n\
-    \t\tpar[b]=a;\n\t}\n\tbool same(int a,int b){\n\t\treturn root(a)==root(b);\n\t\
-    }\n};\n"
-  code: "#pragma once\n\nstruct UnionFind{\n\tprivate:\n\tint N;\n\tvector<int> par;\n\
-    \tint root(int x){\n\t\tint x0=x;\n\t\twhile(par[x]>=0){\n\t\t\tx=par[x];\n\t\t\
-    }\n\t\twhile(par[x0]>=0){\n\t\t\tint x1=par[x0];\n\t\t\tpar[x0]=x;\n\t\t\tswap(x0,x1);\n\
-    \t\t}\n\t\treturn x;\n\t}\n\tpublic:\n\tUnionFind(int siz) : N(siz),par(siz,-1){}\n\
-    \tvoid merge(int a,int b){\n\t\ta=root(a),b=root(b);\n\t\tif(a==b) return;\n\t\
-    \tif(-par[a]<-par[b]) swap(a,b);\n\t\tpar[a]+=par[b];\n\t\tpar[b]=a;\n\t}\n\t\
-    bool same(int a,int b){\n\t\treturn root(a)==root(b);\n\t}\n};\n"
+    private:\n\tvector<int32_t> p;\n\tpublic:\n\texplicit UnionFind(int siz) : p(siz){\n\
+    \t\tint32_t i=0;\n\t\tfor (;i+1<siz;i+=2){\n\t\t\tconst uint64_t v= uint64_t(uint32_t(i))|(uint64_t(uint32_t(i+1))<<32);\n\
+    \t\t\t*reinterpret_cast<uint64_t*>(p.data()+i)=v;\n\t\t}\n\t\tif(i<siz) p[i]=i;\n\
+    \t}\n\t[[gnu::always_inline]]\n\tinline void merge(int32_t x,int32_t y) noexcept{\n\
+    \t\tint32_t* const __restrict__ pp=p.data();\n\t\tint32_t px=pp[x];\n\t\tint32_t\
+    \ py=pp[y];\n\t\twhile(px!=py)[[likely]]{\n\t\t\tif(px<py)[[likely]]{\n\t\t\t\t\
+    if(x==px){\n\t\t\t\t\tpp[x]=py;\n\t\t\t\t\treturn;\n\t\t\t\t}\n\t\t\t\tpp[x]=py;\n\
+    \t\t\t\tx=px;\n\t\t\t\tpx=pp[x];\n\t\t\t}\n\t\t\telse{\n\t\t\t\tif (y == py){\n\
+    \t\t\t\t\tpp[y]=px;\n\t\t\t\t\treturn;\n\t\t\t\t}\n\t\t\t\tpp[y] = px;\n\t\t\t\
+    \ty=py;\n\t\t\t\tpy=pp[y];\n\t\t\t}\n\t\t}\n\t\treturn;\n\t}\n\t[[gnu::always_inline]]\n\
+    \tinline bool same(int32_t x,int32_t y) noexcept{\n\t\tint32_t* const __restrict__\
+    \ pp=p.data();\n\t\twhile(pp[x]!=x){\n\t\t\tpp[x]=pp[pp[x]];\n\t\t\tx=pp[x];\n\
+    \t\t}\n\t\twhile(pp[y]!=y){\n\t\t\tpp[y]=pp[pp[y]];\n\t\t\ty=pp[y];\n\t\t}\n\t\
+    \treturn x==y;\n\t}\n};\n"
+  code: "#pragma once\n\nstruct UnionFind{\n\tprivate:\n\tvector<int32_t> p;\n\tpublic:\n\
+    \texplicit UnionFind(int siz) : p(siz){\n\t\tint32_t i=0;\n\t\tfor (;i+1<siz;i+=2){\n\
+    \t\t\tconst uint64_t v= uint64_t(uint32_t(i))|(uint64_t(uint32_t(i+1))<<32);\n\
+    \t\t\t*reinterpret_cast<uint64_t*>(p.data()+i)=v;\n\t\t}\n\t\tif(i<siz) p[i]=i;\n\
+    \t}\n\t[[gnu::always_inline]]\n\tinline void merge(int32_t x,int32_t y) noexcept{\n\
+    \t\tint32_t* const __restrict__ pp=p.data();\n\t\tint32_t px=pp[x];\n\t\tint32_t\
+    \ py=pp[y];\n\t\twhile(px!=py)[[likely]]{\n\t\t\tif(px<py)[[likely]]{\n\t\t\t\t\
+    if(x==px){\n\t\t\t\t\tpp[x]=py;\n\t\t\t\t\treturn;\n\t\t\t\t}\n\t\t\t\tpp[x]=py;\n\
+    \t\t\t\tx=px;\n\t\t\t\tpx=pp[x];\n\t\t\t}\n\t\t\telse{\n\t\t\t\tif (y == py){\n\
+    \t\t\t\t\tpp[y]=px;\n\t\t\t\t\treturn;\n\t\t\t\t}\n\t\t\t\tpp[y] = px;\n\t\t\t\
+    \ty=py;\n\t\t\t\tpy=pp[y];\n\t\t\t}\n\t\t}\n\t\treturn;\n\t}\n\t[[gnu::always_inline]]\n\
+    \tinline bool same(int32_t x,int32_t y) noexcept{\n\t\tint32_t* const __restrict__\
+    \ pp=p.data();\n\t\twhile(pp[x]!=x){\n\t\t\tpp[x]=pp[pp[x]];\n\t\t\tx=pp[x];\n\
+    \t\t}\n\t\twhile(pp[y]!=y){\n\t\t\tpp[y]=pp[pp[y]];\n\t\t\ty=pp[y];\n\t\t}\n\t\
+    \treturn x==y;\n\t}\n};\n"
   dependsOn: []
   isVerificationFile: false
   path: data-structure/UnionFind.hpp
   requiredBy: []
-  timestamp: '2026-08-12 01:04:02+09:00'
+  timestamp: '2026-08-12 18:26:02+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - verify/verify-yosupo-ds/yosupo-unionfind.test.cpp
