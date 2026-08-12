@@ -5,5 +5,6 @@
 "verify/verify-yosupo-io/yosupo-many-aplusb-128bit-fastio-safe.test.cpp": "2026-08-12 21:41:52 +0900",
 "verify/verify-yosupo-io/yosupo-many-aplusb-128bit.test.cpp": "2026-08-12 21:10:53 +0900",
 "verify/verify-yosupo-io/yosupo-many-aplusb-fastio-safe.test.cpp": "2026-08-12 21:41:52 +0900",
-"verify/verify-yosupo-io/yosupo-many-aplusb.test.cpp": "2026-08-12 21:10:53 +0900"
+"verify/verify-yosupo-io/yosupo-many-aplusb.test.cpp": "2026-08-12 21:10:53 +0900",
+"verify/verify-yosupo-math/yosupo-aplusb-modint998.test.cpp": "2026-08-13 02:34:10 +0900"
 }
