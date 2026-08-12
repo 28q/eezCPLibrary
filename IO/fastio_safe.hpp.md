@@ -706,9 +706,9 @@ data:
   timestamp: '2026-08-12 21:41:52+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
-  - verify/verify-yosupo-io/yosupo-many-aplusb-128bit-fastio-safe.test.cpp
   - verify/verify-yosupo-io/yosupo-aplusb-fastio-safe.test.cpp
   - verify/verify-yosupo-io/yosupo-many-aplusb-fastio-safe.test.cpp
+  - verify/verify-yosupo-io/yosupo-many-aplusb-128bit-fastio-safe.test.cpp
 documentation_of: IO/fastio_safe.hpp
 layout: document
 title: fastio_safe

@@ -18,7 +18,7 @@ data:
     pages:
     - icon: ':warning:'
       path: math/modint998.hpp
-      title: math/modint998.hpp
+      title: modint998
   verificationCategories:
   - name: .
     pages:
