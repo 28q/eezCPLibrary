@@ -1,55 +1,70 @@
 #pragma once
 
-struct UnionFind{
+struct UnionFind {
 	private:
 	vector<int32_t> p;
 	public:
-	explicit UnionFind(int siz) : p(siz){
-		int32_t i=0;
-		for (;i+1<siz;i+=2){
-			const uint64_t v= uint64_t(uint32_t(i))|(uint64_t(uint32_t(i+1))<<32);
-			*reinterpret_cast<uint64_t*>(p.data()+i)=v;
-		}
-		if(i<siz) p[i]=i;
-	}
-	[[gnu::always_inline]]
-	inline void merge(int32_t x,int32_t y) noexcept{
-		int32_t* const __restrict__ pp=p.data();
-		int32_t px=pp[x];
-		int32_t py=pp[y];
-		while(px!=py)[[likely]]{
-			if(px<py)[[likely]]{
-				if(x==px){
-					pp[x]=py;
-					return;
-				}
-				pp[x]=py;
-				x=px;
-				px=pp[x];
-			}
-			else{
-				if (y == py){
-					pp[y]=px;
-					return;
-				}
-				pp[y] = px;
-				y=py;
-				py=pp[y];
-			}
-		}
-		return;
-	}
+	explicit UnionFind(int n) : p(n,-1){}
 	[[gnu::always_inline]]
 	inline bool same(int32_t x,int32_t y) noexcept{
-		int32_t* const __restrict__ pp=p.data();
-		while(pp[x]!=x){
-			pp[x]=pp[pp[x]];
-			x=pp[x];
+	int32_t* const __restrict__ p=this->p.data();
+		for(;;){
+			const int32_t px=p[x];
+			if(px<0) break;
+			const int32_t ppx=p[px];
+			if(ppx<0){
+				x=px;
+				break;
+			}
+			p[x]=ppx;
+			x=ppx;
 		}
-		while(pp[y]!=y){
-			pp[y]=pp[pp[y]];
-			y=pp[y];
+		for(;;){
+			const int32_t py=p[y];
+			if(py<0) break;
+			const int32_t ppy=p[py];
+			if(ppy<0){
+				y=py;
+				break;
+			}
+			p[y]=ppy;
+			y=ppy;
 		}
 		return x==y;
+	}
+	[[gnu::always_inline]]
+	inline bool merge(int32_t x,int32_t y)noexcept {
+		int32_t* const __restrict__ p=this->p.data();
+		for(;;){
+			const int32_t px=p[x];
+			if(px<0) break;
+			const int32_t ppx=p[px];
+			if(ppx<0){
+				x=px;
+				break;
+			}
+			p[x]=ppx;
+			x=ppx;
+		}
+		for(;;){
+			const int32_t py=p[y];
+			if(py<0) break;
+			const int32_t ppy=p[py];
+			if(ppy<0){
+				y=py;
+				break;
+			}
+			p[y]=ppy;
+			y=ppy;
+		}
+		if(x==y) return false;
+		if(p[x]>p[y]){
+			const int32_t t=x;
+			x=y;
+			y=t;
+		}
+		p[x]+=p[y];
+		p[y]=x;
+		return true;
 	}
 };
