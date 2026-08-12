@@ -6,6 +6,9 @@ data:
   - icon: ':x:'
     path: verify/verify-yosupo-io/yosupo-many-aplusb-128bit.test.cpp
     title: verify/verify-yosupo-io/yosupo-many-aplusb-128bit.test.cpp
+  - icon: ':x:'
+    path: verify/verify-yosupo-io/yosupo-many-aplusb.test.cpp
+    title: verify/verify-yosupo-io/yosupo-many-aplusb.test.cpp
   _isVerificationFailed: true
   _pathExtension: hpp
   _verificationStatusIcon: ':x:'
@@ -510,6 +513,7 @@ data:
   timestamp: '2026-08-12 11:39:37+09:00'
   verificationStatus: LIBRARY_ALL_WA
   verifiedWith:
+  - verify/verify-yosupo-io/yosupo-many-aplusb.test.cpp
   - verify/verify-yosupo-io/yosupo-many-aplusb-128bit.test.cpp
 documentation_of: IO/fastio_unsafe.hpp
 layout: document

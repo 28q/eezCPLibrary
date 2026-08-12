@@ -27,5 +27,8 @@ data:
     - icon: ':x:'
       path: verify/verify-yosupo-io/yosupo-many-aplusb-128bit.test.cpp
       title: verify/verify-yosupo-io/yosupo-many-aplusb-128bit.test.cpp
+    - icon: ':x:'
+      path: verify/verify-yosupo-io/yosupo-many-aplusb.test.cpp
+      title: verify/verify-yosupo-io/yosupo-many-aplusb.test.cpp
 layout: toppage
 ---
