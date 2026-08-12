@@ -16,7 +16,7 @@ data:
       title: UnionFind
   - name: math
     pages:
-    - icon: ':warning:'
+    - icon: ':heavy_check_mark:'
       path: math/modint998.hpp
       title: modint998
   verificationCategories:
@@ -47,5 +47,10 @@ data:
     - icon: ':heavy_check_mark:'
       path: verify/verify-yosupo-io/yosupo-many-aplusb.test.cpp
       title: verify/verify-yosupo-io/yosupo-many-aplusb.test.cpp
+  - name: verify/verify-yosupo-math
+    pages:
+    - icon: ':heavy_check_mark:'
+      path: verify/verify-yosupo-math/yosupo-aplusb-modint998.test.cpp
+      title: verify/verify-yosupo-math/yosupo-aplusb-modint998.test.cpp
 layout: toppage
 ---

@@ -2,10 +2,13 @@
 data:
   _extendedDependsOn: []
   _extendedRequiredBy: []
-  _extendedVerifiedWith: []
+  _extendedVerifiedWith:
+  - icon: ':heavy_check_mark:'
+    path: verify/verify-yosupo-math/yosupo-aplusb-modint998.test.cpp
+    title: verify/verify-yosupo-math/yosupo-aplusb-modint998.test.cpp
   _isVerificationFailed: false
   _pathExtension: hpp
-  _verificationStatusIcon: ':warning:'
+  _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
     links: []
   bundledCode: "#line 1 \"math/modint998.hpp\"\n\n\n\n#include <cassert>\n#include\
@@ -171,8 +174,9 @@ data:
   path: math/modint998.hpp
   requiredBy: []
   timestamp: '2026-08-13 02:29:52+09:00'
-  verificationStatus: LIBRARY_NO_TESTS
-  verifiedWith: []
+  verificationStatus: LIBRARY_ALL_AC
+  verifiedWith:
+  - verify/verify-yosupo-math/yosupo-aplusb-modint998.test.cpp
 documentation_of: math/modint998.hpp
 layout: document
 title: modint998
