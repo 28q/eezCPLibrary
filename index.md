@@ -3,7 +3,7 @@ data:
   libraryCategories:
   - name: IO
     pages:
-    - icon: ':warning:'
+    - icon: ':x:'
       path: IO/fastio_unsafe.hpp
       title: fastio_unsafe
   - name: data-structure
@@ -22,5 +22,10 @@ data:
     - icon: ':heavy_check_mark:'
       path: verify/verify-yosupo-ds/yosupo-unionfind.test.cpp
       title: verify/verify-yosupo-ds/yosupo-unionfind.test.cpp
+  - name: verify/verify-yosupo-io
+    pages:
+    - icon: ':x:'
+      path: verify/verify-yosupo-io/yosupo-many-aplusb-128bit.test.cpp
+      title: verify/verify-yosupo-io/yosupo-many-aplusb-128bit.test.cpp
 layout: toppage
 ---

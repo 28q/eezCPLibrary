@@ -2,10 +2,13 @@
 data:
   _extendedDependsOn: []
   _extendedRequiredBy: []
-  _extendedVerifiedWith: []
-  _isVerificationFailed: false
+  _extendedVerifiedWith:
+  - icon: ':x:'
+    path: verify/verify-yosupo-io/yosupo-many-aplusb-128bit.test.cpp
+    title: verify/verify-yosupo-io/yosupo-many-aplusb-128bit.test.cpp
+  _isVerificationFailed: true
   _pathExtension: hpp
-  _verificationStatusIcon: ':warning:'
+  _verificationStatusIcon: ':x:'
   attributes:
     links: []
   bundledCode: "#line 2 \"IO/fastio_unsafe.hpp\"\n\n#include <algorithm>\n#include\
@@ -72,11 +75,10 @@ data:
     \ digits, u32 mask, int& length) noexcept {\n    length = __builtin_ctz(mask);\n\
     \    digits = _mm_shuffle_epi8(\n        digits,\n        _mm_load_si128(reinterpret_cast<const\
     \ __m128i*>(\n            right_align_masks[static_cast<std::size_t>(length)].data())));\n\
-    \    return parse_16_digits(digits);\n}\n\n// Valid u32 input always has its delimiter\
-    \ inside the first 16-byte load.\n__attribute__((always_inline)) inline u32 read_u32(char*&\
-    \ cursor) noexcept {\n    const __m128i digits = load_digits(cursor);\n    const\
-    \ u32 mask = static_cast<u32>(_mm_movemask_epi8(digits));\n    int length;\n \
-    \   const u32 value = static_cast<u32>(parse_short_digits(digits, mask, length));\n\
+    \    return parse_16_digits(digits);\n}\n\n__attribute__((always_inline)) inline\
+    \ u32 read_u32(char*& cursor) noexcept {\n    const __m128i digits = load_digits(cursor);\n\
+    \    const u32 mask = static_cast<u32>(_mm_movemask_epi8(digits));\n    int length;\n\
+    \    const u32 value = static_cast<u32>(parse_short_digits(digits, mask, length));\n\
     \    cursor += length + 1;\n    return value;\n}\n\n__attribute__((always_inline))\
     \ inline i32 read_i32(char*& cursor) noexcept {\n    const bool negative = *cursor\
     \ == '-';\n    cursor += static_cast<unsigned>(negative);\n    const u32 magnitude\
@@ -162,9 +164,8 @@ data:
     \   emit_padded(cursor, value % 10000);\n    } else if (value != 0) {\n      \
     \  emit_leading(cursor, value);\n    } else {\n        store_group(cursor, pack4('\
     \ ', ' ', ' ', '0'));\n    }\n}\n\n__attribute__((always_inline)) inline void\
-    \ emit_u64_unchecked(\n    char*& cursor, u64 value) noexcept {\n    // The 20-digit\
-    \ u64 range fills all five groups, so add its separator here.\n    if (value >=\
-    \ 10000000000000000000ULL) *cursor++ = ' ';\n\n    if (value >= 1000000000000000ULL)\
+    \ emit_u64_unchecked(\n    char*& cursor, u64 value) noexcept {\n    if (value\
+    \ >= 10000000000000000000ULL) *cursor++ = ' ';\n\n    if (value >= 1000000000000000ULL)\
     \ {\n        const u64 low8 = value % 100000000ULL;\n        const u64 high =\
     \ value / 100000000ULL;\n        const u64 high_low4 = high % 10000;\n       \
     \ const u64 high_high = high / 10000;\n        emit_leading(cursor, high_high\
@@ -224,16 +225,15 @@ data:
     \ - cursor < 48, 0)) cursor = sink.flush(cursor);\n    const bool negative = value\
     \ < 0;\n    const u128 bits = static_cast<u128>(value);\n    const u128 magnitude\
     \ = negative ? u128{0} - bits : bits;\n    char* const start = cursor;\n    emit_u128_unchecked(cursor,\
-    \ magnitude);\n    if (negative) insert_minus(start, cursor);\n}\n\n} // namespace\
-    \ fastio_unsafe_impl\n\nstruct fastio_unsafe {\n    using i32 = fastio_unsafe_impl::i32;\n\
-    \    using u32 = fastio_unsafe_impl::u32;\n    using i64 = fastio_unsafe_impl::i64;\n\
-    \    using u64 = fastio_unsafe_impl::u64;\n    using i128 = fastio_unsafe_impl::i128;\n\
-    \    using u128 = fastio_unsafe_impl::u128;\n\n    fastio_unsafe() = default;\n\
-    \    fastio_unsafe(const fastio_unsafe&) = delete;\n    fastio_unsafe& operator=(const\
-    \ fastio_unsafe&) = delete;\n\n    char* input_cursor() const noexcept { return\
-    \ in.cursor(); }\n    char* output_cursor() noexcept { return out.begin(); }\n\
-    \    char* output_end() noexcept { return out.end(); }\n    void finish(char*\
-    \ cursor) noexcept { out.finish(cursor); }\n\n    __attribute__((always_inline))\
+    \ magnitude);\n    if (negative) insert_minus(start, cursor);\n}\n\n}\n\nstruct\
+    \ fastio_unsafe {\n    using i32 = fastio_unsafe_impl::i32;\n    using u32 = fastio_unsafe_impl::u32;\n\
+    \    using i64 = fastio_unsafe_impl::i64;\n    using u64 = fastio_unsafe_impl::u64;\n\
+    \    using i128 = fastio_unsafe_impl::i128;\n    using u128 = fastio_unsafe_impl::u128;\n\
+    \n    fastio_unsafe() = default;\n    fastio_unsafe(const fastio_unsafe&) = delete;\n\
+    \    fastio_unsafe& operator=(const fastio_unsafe&) = delete;\n\n    char* input_cursor()\
+    \ const noexcept { return in.cursor(); }\n    char* output_cursor() noexcept {\
+    \ return out.begin(); }\n    char* output_end() noexcept { return out.end(); }\n\
+    \    void finish(char* cursor) noexcept { out.finish(cursor); }\n\n    __attribute__((always_inline))\
     \ u32 read_u32(char*& cursor) noexcept {\n        return fastio_unsafe_impl::read_u32(cursor);\n\
     \    }\n    __attribute__((always_inline)) i32 read_i32(char*& cursor) noexcept\
     \ {\n        return fastio_unsafe_impl::read_i32(cursor);\n    }\n    __attribute__((always_inline))\
@@ -321,11 +321,10 @@ data:
     \ digits, u32 mask, int& length) noexcept {\n    length = __builtin_ctz(mask);\n\
     \    digits = _mm_shuffle_epi8(\n        digits,\n        _mm_load_si128(reinterpret_cast<const\
     \ __m128i*>(\n            right_align_masks[static_cast<std::size_t>(length)].data())));\n\
-    \    return parse_16_digits(digits);\n}\n\n// Valid u32 input always has its delimiter\
-    \ inside the first 16-byte load.\n__attribute__((always_inline)) inline u32 read_u32(char*&\
-    \ cursor) noexcept {\n    const __m128i digits = load_digits(cursor);\n    const\
-    \ u32 mask = static_cast<u32>(_mm_movemask_epi8(digits));\n    int length;\n \
-    \   const u32 value = static_cast<u32>(parse_short_digits(digits, mask, length));\n\
+    \    return parse_16_digits(digits);\n}\n\n__attribute__((always_inline)) inline\
+    \ u32 read_u32(char*& cursor) noexcept {\n    const __m128i digits = load_digits(cursor);\n\
+    \    const u32 mask = static_cast<u32>(_mm_movemask_epi8(digits));\n    int length;\n\
+    \    const u32 value = static_cast<u32>(parse_short_digits(digits, mask, length));\n\
     \    cursor += length + 1;\n    return value;\n}\n\n__attribute__((always_inline))\
     \ inline i32 read_i32(char*& cursor) noexcept {\n    const bool negative = *cursor\
     \ == '-';\n    cursor += static_cast<unsigned>(negative);\n    const u32 magnitude\
@@ -411,9 +410,8 @@ data:
     \   emit_padded(cursor, value % 10000);\n    } else if (value != 0) {\n      \
     \  emit_leading(cursor, value);\n    } else {\n        store_group(cursor, pack4('\
     \ ', ' ', ' ', '0'));\n    }\n}\n\n__attribute__((always_inline)) inline void\
-    \ emit_u64_unchecked(\n    char*& cursor, u64 value) noexcept {\n    // The 20-digit\
-    \ u64 range fills all five groups, so add its separator here.\n    if (value >=\
-    \ 10000000000000000000ULL) *cursor++ = ' ';\n\n    if (value >= 1000000000000000ULL)\
+    \ emit_u64_unchecked(\n    char*& cursor, u64 value) noexcept {\n    if (value\
+    \ >= 10000000000000000000ULL) *cursor++ = ' ';\n\n    if (value >= 1000000000000000ULL)\
     \ {\n        const u64 low8 = value % 100000000ULL;\n        const u64 high =\
     \ value / 100000000ULL;\n        const u64 high_low4 = high % 10000;\n       \
     \ const u64 high_high = high / 10000;\n        emit_leading(cursor, high_high\
@@ -473,16 +471,15 @@ data:
     \ - cursor < 48, 0)) cursor = sink.flush(cursor);\n    const bool negative = value\
     \ < 0;\n    const u128 bits = static_cast<u128>(value);\n    const u128 magnitude\
     \ = negative ? u128{0} - bits : bits;\n    char* const start = cursor;\n    emit_u128_unchecked(cursor,\
-    \ magnitude);\n    if (negative) insert_minus(start, cursor);\n}\n\n} // namespace\
-    \ fastio_unsafe_impl\n\nstruct fastio_unsafe {\n    using i32 = fastio_unsafe_impl::i32;\n\
-    \    using u32 = fastio_unsafe_impl::u32;\n    using i64 = fastio_unsafe_impl::i64;\n\
-    \    using u64 = fastio_unsafe_impl::u64;\n    using i128 = fastio_unsafe_impl::i128;\n\
-    \    using u128 = fastio_unsafe_impl::u128;\n\n    fastio_unsafe() = default;\n\
-    \    fastio_unsafe(const fastio_unsafe&) = delete;\n    fastio_unsafe& operator=(const\
-    \ fastio_unsafe&) = delete;\n\n    char* input_cursor() const noexcept { return\
-    \ in.cursor(); }\n    char* output_cursor() noexcept { return out.begin(); }\n\
-    \    char* output_end() noexcept { return out.end(); }\n    void finish(char*\
-    \ cursor) noexcept { out.finish(cursor); }\n\n    __attribute__((always_inline))\
+    \ magnitude);\n    if (negative) insert_minus(start, cursor);\n}\n\n}\n\nstruct\
+    \ fastio_unsafe {\n    using i32 = fastio_unsafe_impl::i32;\n    using u32 = fastio_unsafe_impl::u32;\n\
+    \    using i64 = fastio_unsafe_impl::i64;\n    using u64 = fastio_unsafe_impl::u64;\n\
+    \    using i128 = fastio_unsafe_impl::i128;\n    using u128 = fastio_unsafe_impl::u128;\n\
+    \n    fastio_unsafe() = default;\n    fastio_unsafe(const fastio_unsafe&) = delete;\n\
+    \    fastio_unsafe& operator=(const fastio_unsafe&) = delete;\n\n    char* input_cursor()\
+    \ const noexcept { return in.cursor(); }\n    char* output_cursor() noexcept {\
+    \ return out.begin(); }\n    char* output_end() noexcept { return out.end(); }\n\
+    \    void finish(char* cursor) noexcept { out.finish(cursor); }\n\n    __attribute__((always_inline))\
     \ u32 read_u32(char*& cursor) noexcept {\n        return fastio_unsafe_impl::read_u32(cursor);\n\
     \    }\n    __attribute__((always_inline)) i32 read_i32(char*& cursor) noexcept\
     \ {\n        return fastio_unsafe_impl::read_i32(cursor);\n    }\n    __attribute__((always_inline))\
@@ -510,9 +507,10 @@ data:
   isVerificationFile: false
   path: IO/fastio_unsafe.hpp
   requiredBy: []
-  timestamp: '2026-08-12 05:06:25+09:00'
-  verificationStatus: LIBRARY_NO_TESTS
-  verifiedWith: []
+  timestamp: '2026-08-12 11:39:37+09:00'
+  verificationStatus: LIBRARY_ALL_WA
+  verifiedWith:
+  - verify/verify-yosupo-io/yosupo-many-aplusb-128bit.test.cpp
 documentation_of: IO/fastio_unsafe.hpp
 layout: document
 title: fastio_unsafe
