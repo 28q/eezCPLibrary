@@ -149,7 +149,6 @@ __attribute__((always_inline)) inline u64 parse_short_digits(
     return parse_16_digits(digits);
 }
 
-// Valid u32 input always has its delimiter inside the first 16-byte load.
 __attribute__((always_inline)) inline u32 read_u32(char*& cursor) noexcept {
     const __m128i digits = load_digits(cursor);
     const u32 mask = static_cast<u32>(_mm_movemask_epi8(digits));
@@ -361,7 +360,6 @@ __attribute__((always_inline)) inline void emit_u32_unchecked(
 
 __attribute__((always_inline)) inline void emit_u64_unchecked(
     char*& cursor, u64 value) noexcept {
-    // The 20-digit u64 range fills all five groups, so add its separator here.
     if (value >= 10000000000000000000ULL) *cursor++ = ' ';
 
     if (value >= 1000000000000000ULL) {
@@ -492,7 +490,7 @@ __attribute__((always_inline)) inline void write_i128(
     if (negative) insert_minus(start, cursor);
 }
 
-} // namespace fastio_unsafe_impl
+}
 
 struct fastio_unsafe {
     using i32 = fastio_unsafe_impl::i32;
