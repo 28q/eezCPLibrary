@@ -1,14 +1,14 @@
 ---
 data:
   _extendedDependsOn:
-  - icon: ':x:'
+  - icon: ':heavy_check_mark:'
     path: IO/fastio_unsafe.hpp
     title: fastio_unsafe
   _extendedRequiredBy: []
   _extendedVerifiedWith: []
-  _isVerificationFailed: true
+  _isVerificationFailed: false
   _pathExtension: cpp
-  _verificationStatusIcon: ':x:'
+  _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
     '*NOT_SPECIAL_COMMENTS*': ''
     PROBLEM: https://judge.yosupo.jp/problem/many_aplusb
@@ -18,42 +18,45 @@ data:
     #define PROBLEM \"https://judge.yosupo.jp/problem/many_aplusb\"\n\n#if defined(__GNUC__)\
     \ && !defined(__clang__) && \\\n    (defined(__x86_64__) || defined(__i386__))\n\
     #pragma GCC optimize(\"O3,unroll-loops\")\n#pragma GCC target(\"avx2,bmi,bmi2,lzcnt,popcnt\"\
-    )\n#endif\n\n#ifndef FASTIO_UNSAFE_BLOCK_LOG\n#define FASTIO_UNSAFE_BLOCK_LOG\
-    \ 12\n#endif\n\n#line 2 \"IO/fastio_unsafe.hpp\"\n\n#include <algorithm>\n#include\
-    \ <array>\n#include <cerrno>\n#include <cstdint>\n#include <cstdio>\n#include\
-    \ <cstdlib>\n#include <cstring>\n#include <immintrin.h>\n\n#ifdef __linux__\n\
-    #include <sys/mman.h>\n#include <sys/stat.h>\n#include <unistd.h>\n#endif\n\n\
-    #ifndef FASTIO_UNSAFE_BLOCK_LOG\n#define FASTIO_UNSAFE_BLOCK_LOG 14\n#endif\n\n\
-    namespace fastio_unsafe_impl {\n\nusing i32 = std::int32_t;\nusing u32 = std::uint32_t;\n\
-    using i64 = std::int64_t;\nusing u64 = std::uint64_t;\nusing i128 = __int128_t;\n\
-    using u128 = __uint128_t;\n\nconstexpr auto make_right_align_masks() {\n    std::array<std::array<char,\
-    \ 16>, 16> masks{};\n    for (int digits = 0; digits < 16; ++digits) {\n     \
-    \   for (int i = 0; i < 16; ++i) {\n            masks[digits][i] = i < 16 - digits\n\
-    \                ? static_cast<char>(0x80)\n                : static_cast<char>(i\
-    \ - (16 - digits));\n        }\n    }\n    return masks;\n}\n\nconstexpr auto\
-    \ make_powers_10() {\n    std::array<u64, 17> powers{};\n    powers[0] = 1;\n\
-    \    for (std::size_t i = 1; i < powers.size(); ++i) {\n        powers[i] = powers[i\
-    \ - 1] * 10;\n    }\n    return powers;\n}\n\nalignas(16) inline constexpr auto\
-    \ right_align_masks = make_right_align_masks();\ninline constexpr auto powers_10\
-    \ = make_powers_10();\n\nstruct input {\n    input() {\n#ifdef __linux__\n   \
-    \     struct stat info {};\n        if (::fstat(0, &info) == 0 && S_ISREG(info.st_mode)\
-    \ && info.st_size > 0) {\n            const off_t current = ::lseek(0, 0, SEEK_CUR);\n\
-    \            const std::size_t file_size = static_cast<std::size_t>(info.st_size);\n\
-    \            const std::size_t page_size = static_cast<std::size_t>(::sysconf(_SC_PAGESIZE));\n\
-    \            const std::size_t rounded_size =\n                (file_size + page_size\
-    \ - 1) / page_size * page_size;\n            const std::size_t reserved_size =\
-    \ rounded_size + page_size;\n\n            char* region = static_cast<char*>(::mmap(\n\
-    \                nullptr, reserved_size, PROT_NONE,\n                MAP_PRIVATE\
-    \ | MAP_ANONYMOUS, -1, 0));\n            if (region != MAP_FAILED) {\n       \
-    \         void* file_mapping = ::mmap(\n                    region, rounded_size,\
-    \ PROT_READ,\n                    MAP_PRIVATE | MAP_FIXED, 0, 0);\n          \
-    \      void* zero_page = file_mapping == MAP_FAILED ? MAP_FAILED : ::mmap(\n \
-    \                   region + rounded_size, page_size, PROT_READ,\n           \
-    \         MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, -1, 0);\n                if\
-    \ (file_mapping != MAP_FAILED && zero_page != MAP_FAILED) {\n                \
-    \    const std::size_t offset = current > 0\n                        ? std::min(static_cast<std::size_t>(current),\
-    \ file_size)\n                        : 0;\n                    cursor_ = region\
-    \ + offset;\n                    return;\n                }\n                ::munmap(region,\
+    )\n#elif defined(__clang__) && \\\n    (defined(__x86_64__) || defined(__i386__))\n\
+    #pragma clang attribute push( \\\n    __attribute__((target(\"avx2,bmi,bmi2,lzcnt,popcnt,ssse3\"\
+    ))), \\\n    apply_to = function)\n#endif\n\n#ifndef FASTIO_UNSAFE_BLOCK_LOG\n\
+    #define FASTIO_UNSAFE_BLOCK_LOG 12\n#endif\n\n#line 2 \"IO/fastio_unsafe.hpp\"\
+    \n\n#include <algorithm>\n#include <array>\n#include <cerrno>\n#include <cstdint>\n\
+    #include <cstdio>\n#include <cstdlib>\n#include <cstring>\n#include <immintrin.h>\n\
+    \n#ifdef __linux__\n#include <sys/mman.h>\n#include <sys/stat.h>\n#include <unistd.h>\n\
+    #endif\n\n#ifndef FASTIO_UNSAFE_BLOCK_LOG\n#define FASTIO_UNSAFE_BLOCK_LOG 14\n\
+    #endif\n\nnamespace fastio_unsafe_impl {\n\nusing i32 = std::int32_t;\nusing u32\
+    \ = std::uint32_t;\nusing i64 = std::int64_t;\nusing u64 = std::uint64_t;\nusing\
+    \ i128 = __int128_t;\nusing u128 = __uint128_t;\n\nconstexpr auto make_right_align_masks()\
+    \ {\n    std::array<std::array<char, 16>, 16> masks{};\n    for (int digits =\
+    \ 0; digits < 16; ++digits) {\n        for (int i = 0; i < 16; ++i) {\n      \
+    \      masks[digits][i] = i < 16 - digits\n                ? static_cast<char>(0x80)\n\
+    \                : static_cast<char>(i - (16 - digits));\n        }\n    }\n \
+    \   return masks;\n}\n\nconstexpr auto make_powers_10() {\n    std::array<u64,\
+    \ 17> powers{};\n    powers[0] = 1;\n    for (std::size_t i = 1; i < powers.size();\
+    \ ++i) {\n        powers[i] = powers[i - 1] * 10;\n    }\n    return powers;\n\
+    }\n\nalignas(16) inline constexpr auto right_align_masks = make_right_align_masks();\n\
+    inline constexpr auto powers_10 = make_powers_10();\n\nstruct input {\n    input()\
+    \ {\n#ifdef __linux__\n        struct stat info {};\n        if (::fstat(0, &info)\
+    \ == 0 && S_ISREG(info.st_mode) && info.st_size > 0) {\n            const off_t\
+    \ current = ::lseek(0, 0, SEEK_CUR);\n            const std::size_t file_size\
+    \ = static_cast<std::size_t>(info.st_size);\n            const std::size_t page_size\
+    \ = static_cast<std::size_t>(::sysconf(_SC_PAGESIZE));\n            const std::size_t\
+    \ rounded_size =\n                (file_size + page_size - 1) / page_size * page_size;\n\
+    \            const std::size_t reserved_size = rounded_size + page_size;\n\n \
+    \           char* region = static_cast<char*>(::mmap(\n                nullptr,\
+    \ reserved_size, PROT_NONE,\n                MAP_PRIVATE | MAP_ANONYMOUS, -1,\
+    \ 0));\n            if (region != MAP_FAILED) {\n                void* file_mapping\
+    \ = ::mmap(\n                    region, rounded_size, PROT_READ,\n          \
+    \          MAP_PRIVATE | MAP_FIXED, 0, 0);\n                void* zero_page =\
+    \ file_mapping == MAP_FAILED ? MAP_FAILED : ::mmap(\n                    region\
+    \ + rounded_size, page_size, PROT_READ,\n                    MAP_PRIVATE | MAP_ANONYMOUS\
+    \ | MAP_FIXED, -1, 0);\n                if (file_mapping != MAP_FAILED && zero_page\
+    \ != MAP_FAILED) {\n                    const std::size_t offset = current > 0\n\
+    \                        ? std::min(static_cast<std::size_t>(current), file_size)\n\
+    \                        : 0;\n                    cursor_ = region + offset;\n\
+    \                    return;\n                }\n                ::munmap(region,\
     \ reserved_size);\n            }\n        }\n#endif\n        read_all_fallback();\n\
     \    }\n\n    input(const input&) = delete;\n    input& operator=(const input&)\
     \ = delete;\n\n    char* cursor() const noexcept { return cursor_; }\n\nprivate:\n\
@@ -264,7 +267,7 @@ data:
     \ __attribute__((always_inline)) void write_i128(\n        char*& cursor, char*\
     \ end, i128 value) noexcept {\n        fastio_unsafe_impl::write_i128(out, cursor,\
     \ end, value);\n    }\n\n    fastio_unsafe_impl::input in;\n    fastio_unsafe_impl::output\
-    \ out;\n};\n#line 14 \"verify/verify-yosupo-io/yosupo-many-aplusb.test.cpp\"\n\
+    \ out;\n};\n#line 19 \"verify/verify-yosupo-io/yosupo-many-aplusb.test.cpp\"\n\
     \nint main() {\n    fastio_unsafe io;\n    char* input_cursor = io.in.cursor();\n\
     \    char* output_cursor = io.out.begin();\n    char* const output_end = io.out.end();\n\
     \n    const fastio_unsafe_impl::u64 test_count =\n        fastio_unsafe_impl::read_u64(input_cursor);\n\
@@ -278,16 +281,19 @@ data:
     \            sums[i] = a + b;\n        }\n        for (fastio_unsafe_impl::u64\
     \ i = 0; i < count; ++i) {\n            fastio_unsafe_impl::write_u64(\n     \
     \           io.out, output_cursor, output_end, sums[i]);\n        }\n    }\n \
-    \   io.out.finish(output_cursor);\n}\n"
+    \   io.out.finish(output_cursor);\n}\n\n#if defined(__clang__) && \\\n    (defined(__x86_64__)\
+    \ || defined(__i386__))\n#pragma clang attribute pop\n#endif\n"
   code: "#define PROBLEM \"https://judge.yosupo.jp/problem/many_aplusb\"\n\n#if defined(__GNUC__)\
     \ && !defined(__clang__) && \\\n    (defined(__x86_64__) || defined(__i386__))\n\
     #pragma GCC optimize(\"O3,unroll-loops\")\n#pragma GCC target(\"avx2,bmi,bmi2,lzcnt,popcnt\"\
-    )\n#endif\n\n#ifndef FASTIO_UNSAFE_BLOCK_LOG\n#define FASTIO_UNSAFE_BLOCK_LOG\
-    \ 12\n#endif\n\n#include \"../../IO/fastio_unsafe.hpp\"\n\nint main() {\n    fastio_unsafe\
-    \ io;\n    char* input_cursor = io.in.cursor();\n    char* output_cursor = io.out.begin();\n\
-    \    char* const output_end = io.out.end();\n\n    const fastio_unsafe_impl::u64\
-    \ test_count =\n        fastio_unsafe_impl::read_u64(input_cursor);\n    constexpr\
-    \ fastio_unsafe_impl::u64 block_size =\n        1u << FASTIO_UNSAFE_BLOCK_LOG;\n\
+    )\n#elif defined(__clang__) && \\\n    (defined(__x86_64__) || defined(__i386__))\n\
+    #pragma clang attribute push( \\\n    __attribute__((target(\"avx2,bmi,bmi2,lzcnt,popcnt,ssse3\"\
+    ))), \\\n    apply_to = function)\n#endif\n\n#ifndef FASTIO_UNSAFE_BLOCK_LOG\n\
+    #define FASTIO_UNSAFE_BLOCK_LOG 12\n#endif\n\n#include \"../../IO/fastio_unsafe.hpp\"\
+    \n\nint main() {\n    fastio_unsafe io;\n    char* input_cursor = io.in.cursor();\n\
+    \    char* output_cursor = io.out.begin();\n    char* const output_end = io.out.end();\n\
+    \n    const fastio_unsafe_impl::u64 test_count =\n        fastio_unsafe_impl::read_u64(input_cursor);\n\
+    \    constexpr fastio_unsafe_impl::u64 block_size =\n        1u << FASTIO_UNSAFE_BLOCK_LOG;\n\
     \    alignas(64) fastio_unsafe_impl::u64 sums[block_size];\n\n    for (fastio_unsafe_impl::u64\
     \ base = 0;\n         base < test_count; base += block_size) {\n        const\
     \ fastio_unsafe_impl::u64 count =\n            std::min(block_size, test_count\
@@ -297,14 +303,15 @@ data:
     \            sums[i] = a + b;\n        }\n        for (fastio_unsafe_impl::u64\
     \ i = 0; i < count; ++i) {\n            fastio_unsafe_impl::write_u64(\n     \
     \           io.out, output_cursor, output_end, sums[i]);\n        }\n    }\n \
-    \   io.out.finish(output_cursor);\n}\n"
+    \   io.out.finish(output_cursor);\n}\n\n#if defined(__clang__) && \\\n    (defined(__x86_64__)\
+    \ || defined(__i386__))\n#pragma clang attribute pop\n#endif\n"
   dependsOn:
   - IO/fastio_unsafe.hpp
   isVerificationFile: true
   path: verify/verify-yosupo-io/yosupo-many-aplusb.test.cpp
   requiredBy: []
-  timestamp: '2026-08-12 11:48:51+09:00'
-  verificationStatus: TEST_WRONG_ANSWER
+  timestamp: '2026-08-12 12:17:36+09:00'
+  verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: verify/verify-yosupo-io/yosupo-many-aplusb.test.cpp
 layout: document
