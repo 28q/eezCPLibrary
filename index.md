@@ -14,6 +14,11 @@ data:
     - icon: ':heavy_check_mark:'
       path: data-structure/UnionFind.hpp
       title: UnionFind
+  - name: math
+    pages:
+    - icon: ':warning:'
+      path: math/modint998.hpp
+      title: math/modint998.hpp
   verificationCategories:
   - name: .
     pages:
