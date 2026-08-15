@@ -4,6 +4,9 @@ data:
   _extendedRequiredBy: []
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
+    path: verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp
+    title: verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp
+  - icon: ':heavy_check_mark:'
     path: verify/verify-yosupo-convolution/yosupo-convolution-mod-ntt998.test.cpp
     title: verify/verify-yosupo-convolution/yosupo-convolution-mod-ntt998.test.cpp
   - icon: ':heavy_check_mark:'
@@ -479,6 +482,7 @@ data:
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - verify/verify-yosupo-convolution/yosupo-convolution-mod-ntt998.test.cpp
+  - verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp
   - verify/verify-yosupo-io/yosupo-many-aplusb-128bit.test.cpp
   - verify/verify-yosupo-io/yosupo-many-aplusb.test.cpp
 documentation_of: IO/fastio_unsafe.hpp
