@@ -161,47 +161,48 @@ public:
         assert(val() != 0);
 
         const modint998 x = *this;
-        modint998 a2 = x * x;
-        modint998 a4 = a2 * a2;
-        modint998 a8 = a4 * a4;
-        modint998 a16 = a8 * a8;
-        modint998 a32 = a16 * a16;
-        modint998 a33 = a32 * x;
-        modint998 a49 = a33 * a16;
-        modint998 a82 = a49 * a33;
-        modint998 a164 = a82 * a82;
-        modint998 a328 = a164 * a164;
-        modint998 r = a328 * a49;
+        const modint998 a2 = x * x;
+        const modint998 a4 = a2 * a2;
+        const modint998 a5 = a4 * x;
+        const modint998 a9 = a5 * a4;
+        const modint998 a18 = a9 * a9;
+        const modint998 a36 = a18 * a18;
+        const modint998 a72 = a36 * a36;
+        const modint998 a144 = a72 * a72;
+        const modint998 a288 = a144 * a144;
+        const modint998 a293 = a288 * a5;
+        const modint998 a586 = a293 * a293;
+        const modint998 a879 = a586 * a293;
+        const modint998 a1023 = a879 * a144;
 
-        a2 = r * r;
-        a4 = a2 * a2;
-        a8 = a4 * a4;
-        modint998 a9 = a8 * r;
-        modint998 a18 = a9 * a9;
-        r = a18 * a9;
+        modint998 r = a1023 * a879;  // x^1902
 
-        a2 = r * r;
-        a4 = a2 * a2;
-        a8 = a4 * a4;
-        a16 = a8 * a8;
-        modint998 a17 = a16 * r;
-        a33 = a17 * a16;
-        modint998 a66 = a33 * a33;
-        modint998 a132 = a66 * a66;
-        modint998 a264 = a132 * a132;
-        r = a264 * a17;
+        // x^(1902 * 2^9) = x^973824
+        r *= r;
+        r *= r;
+        r *= r;
+        r *= r;
+        r *= r;
+        r *= r;
+        r *= r;
+        r *= r;
+        r *= r;
 
-        a2 = r * r;
-        a4 = a2 * a2;
-        a8 = a4 * a4;
-        a16 = a8 * a8;
-        a32 = a16 * a16;
-        modint998 a64 = a32 * a32;
-        modint998 a65 = a64 * r;
-        modint998 a73 = a65 * a8;
-        modint998 a138 = a73 * a65;
-        modint998 a276 = a138 * a138;
-        return a276 * a73;
+        r *= a1023;  // x^974847
+
+        // x^(974847 * 2^10) = x^998243328
+        r *= r;
+        r *= r;
+        r *= r;
+        r *= r;
+        r *= r;
+        r *= r;
+        r *= r;
+        r *= r;
+        r *= r;
+        r *= r;
+
+        return r * a1023;  // x^(MOD - 2)
     }
 
     constexpr modint998 inverse() const { return inv(); }
