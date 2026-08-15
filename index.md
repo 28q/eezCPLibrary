@@ -11,7 +11,7 @@ data:
       title: fastio_unsafe
   - name: convolution
     pages:
-    - icon: ':warning:'
+    - icon: ':heavy_check_mark:'
       path: convolution/ntt998.hpp
       title: ntt998
   - name: data-structure
@@ -30,6 +30,11 @@ data:
     - icon: ':heavy_check_mark:'
       path: example.test.cpp
       title: example.test.cpp
+  - name: verify/verify-yosupo-convolution
+    pages:
+    - icon: ':heavy_check_mark:'
+      path: verify/verify-yosupo-convolution/yosupo-convolution-mod-ntt998.test.cpp
+      title: verify/verify-yosupo-convolution/yosupo-convolution-mod-ntt998.test.cpp
   - name: verify/verify-yosupo-ds
     pages:
     - icon: ':heavy_check_mark:'
