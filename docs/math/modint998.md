@@ -1,4 +1,4 @@
-35---
+---
 title: modint998
 documentation_of: ../../math/modint998.hpp
 ---
@@ -105,6 +105,6 @@ modint998 y = modint998::montgomery_raw(word);
 ## 計算量
 
 - 加減乗算、比較、値の取得：$O(1)$
-- 除算、逆元：$O(1)$（固定38回のMontgomery乗算）
+- 除算、逆元：$O(1)$（固定35回のMontgomery乗算）
 - `pow(exponent)`：$O(\log exponent)$
 - 使用メモリ：1要素あたり4 byte
