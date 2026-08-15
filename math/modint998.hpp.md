@@ -3,12 +3,12 @@ data:
   _extendedDependsOn: []
   _extendedRequiredBy: []
   _extendedVerifiedWith:
-  - icon: ':heavy_check_mark:'
+  - icon: ':x:'
     path: verify/verify-yosupo-math/yosupo-aplusb-modint998.test.cpp
     title: verify/verify-yosupo-math/yosupo-aplusb-modint998.test.cpp
-  _isVerificationFailed: false
+  _isVerificationFailed: true
   _pathExtension: hpp
-  _verificationStatusIcon: ':heavy_check_mark:'
+  _verificationStatusIcon: ':x:'
   attributes:
     links: []
   bundledCode: "#line 1 \"math/modint998.hpp\"\n\n\n\r\n#include <cassert>\r\n#include\
@@ -66,31 +66,49 @@ data:
     \n    }\r\n\r\n    constexpr modint998& operator--() {\r\n        return *this\
     \ -= raw(1);\r\n    }\r\n\r\n    constexpr modint998 operator--(int) {\r\n   \
     \     modint998 old = *this;\r\n        --*this;\r\n        return old;\r\n  \
-    \  }\r\n\r\n    constexpr modint998 pow(u64 exponent) const {\r\n        modint998\
-    \ result = raw(1);\r\n        modint998 base = *this;\r\n        while (exponent\
-    \ != 0) {\r\n            if (exponent & 1) result *= base;\r\n            base\
-    \ *= base;\r\n            exponent >>= 1;\r\n        }\r\n        return result;\r\
-    \n    }\r\n\r\n    constexpr modint998 inv() const {\r\n        assert(val() !=\
-    \ 0);\r\n\r\n        const modint998 x = *this;\r\n        const modint998 a2\
-    \ = x * x;\r\n        const modint998 a4 = a2 * a2;\r\n        const modint998\
-    \ a5 = a4 * x;\r\n        const modint998 a9 = a5 * a4;\r\n        const modint998\
-    \ a18 = a9 * a9;\r\n        const modint998 a36 = a18 * a18;\r\n        const\
-    \ modint998 a72 = a36 * a36;\r\n        const modint998 a144 = a72 * a72;\r\n\
-    \        const modint998 a288 = a144 * a144;\r\n        const modint998 a293 =\
-    \ a288 * a5;\r\n        const modint998 a586 = a293 * a293;\r\n        const modint998\
-    \ a879 = a586 * a293;\r\n        const modint998 a1023 = a879 * a144;\r\n\r\n\
-    \        modint998 r = a1023 * a879;  // x^1902\r\n\r\n        // x^(1902 * 2^9)\
-    \ = x^973824\r\n        r *= r;\r\n        r *= r;\r\n        r *= r;\r\n    \
-    \    r *= r;\r\n        r *= r;\r\n        r *= r;\r\n        r *= r;\r\n    \
-    \    r *= r;\r\n        r *= r;\r\n\r\n        r *= a1023;  // x^974847\r\n\r\n\
-    \        // x^(974847 * 2^10) = x^998243328\r\n        r *= r;\r\n        r *=\
+    \  }\r\n\r\n    constexpr modint998 pow(u64 e) const {\r\n        if (e == 0)\
+    \ return raw(1);\r\n        if (a == 0) return raw(0);\r\n    \r\n        if (e\
+    \ >= MOD - 1) e %= MOD - 1;\r\n        if (e == 0) return raw(1);\r\n    \r\n\
+    \        const u32 n = static_cast<u32>(e);\r\n    \r\n        if (n == 1) return\
+    \ *this;\r\n    \r\n        const modint998 x = *this;\r\n        const modint998\
+    \ p2 = x * x;\r\n    \r\n        if (n == 2) return p2;\r\n    \r\n        const\
+    \ modint998 p3 = p2 * x;\r\n    \r\n        if (n == 3) return p3;\r\n    \r\n\
+    \        const modint998 p4 = p2 * p2;\r\n        const modint998 p5 = p4 * x;\r\
+    \n        const modint998 p6 = p3 * p3;\r\n        const modint998 p7 = p4 * p3;\r\
+    \n    \r\n        const modint998 t[8] = {\r\n            raw(1), x, p2, p3, p4,\
+    \ p5, p6, p7\r\n        };\r\n    \r\n        const unsigned s = ((std::bit_width(n)\
+    \ - 1) / 3) * 3;\r\n        modint998 r = t[(n >> s) & 7];\r\n    \r\n       \
+    \ auto step = [&](unsigned k) constexpr {\r\n            r *= r;\r\n         \
+    \   r *= r;\r\n            r *= r;\r\n            const u32 d = (n >> k) & 7;\r\
+    \n            if (d) r *= t[d];\r\n        };\r\n        switch (s) {\r\n    \
+    \        case 27: step(24); [[fallthrough]];\r\n            case 24: step(21);\
+    \ [[fallthrough]];\r\n            case 21: step(18); [[fallthrough]];\r\n    \
+    \        case 18: step(15); [[fallthrough]];\r\n            case 15: step(12);\
+    \ [[fallthrough]];\r\n            case 12: step(9);  [[fallthrough]];\r\n    \
+    \        case 9:  step(6);  [[fallthrough]];\r\n            case 6:  step(3);\
+    \  [[fallthrough]];\r\n            case 3:  step(0);  [[fallthrough]];\r\n   \
+    \         default: break;\r\n        }\r\n        return r;\r\n    }\r\n\r\n \
+    \   constexpr modint998 inv() const {\r\n        assert(val() != 0);\r\n\r\n \
+    \       const modint998 x = *this;\r\n        const modint998 a2 = x * x;\r\n\
+    \        const modint998 a4 = a2 * a2;\r\n        const modint998 a5 = a4 * x;\r\
+    \n        const modint998 a9 = a5 * a4;\r\n        const modint998 a18 = a9 *\
+    \ a9;\r\n        const modint998 a36 = a18 * a18;\r\n        const modint998 a72\
+    \ = a36 * a36;\r\n        const modint998 a144 = a72 * a72;\r\n        const modint998\
+    \ a288 = a144 * a144;\r\n        const modint998 a293 = a288 * a5;\r\n       \
+    \ const modint998 a586 = a293 * a293;\r\n        const modint998 a879 = a586 *\
+    \ a293;\r\n        const modint998 a1023 = a879 * a144;\r\n\r\n        modint998\
+    \ r = a1023 * a879;  // x^1902\r\n\r\n        // x^(1902 * 2^9) = x^973824\r\n\
+    \        r *= r;\r\n        r *= r;\r\n        r *= r;\r\n        r *= r;\r\n\
+    \        r *= r;\r\n        r *= r;\r\n        r *= r;\r\n        r *= r;\r\n\
+    \        r *= r;\r\n\r\n        r *= a1023;  // x^974847\r\n\r\n        // x^(974847\
+    \ * 2^10) = x^998243328\r\n        r *= r;\r\n        r *= r;\r\n        r *=\
     \ r;\r\n        r *= r;\r\n        r *= r;\r\n        r *= r;\r\n        r *=\
-    \ r;\r\n        r *= r;\r\n        r *= r;\r\n        r *= r;\r\n        r *=\
-    \ r;\r\n\r\n        return r * a1023;  // x^(MOD - 2)\r\n    }\r\n\r\n    constexpr\
-    \ modint998 inverse() const { return inv(); }\r\n\r\n    friend std::ostream&\
-    \ operator<<(std::ostream& os, const modint998& x) {\r\n        return os << x.val();\r\
-    \n    }\r\n\r\n    friend std::istream& operator>>(std::istream& is, modint998&\
-    \ x) {\r\n        std::int64_t value;\r\n        is >> value;\r\n        x = modint998(value);\r\
+    \ r;\r\n        r *= r;\r\n        r *= r;\r\n        r *= r;\r\n\r\n        return\
+    \ r * a1023;  // x^(MOD - 2)\r\n    }\r\n\r\n    constexpr modint998 inverse()\
+    \ const { return inv(); }\r\n\r\n    friend std::ostream& operator<<(std::ostream&\
+    \ os, const modint998& x) {\r\n        return os << x.val();\r\n    }\r\n\r\n\
+    \    friend std::istream& operator>>(std::istream& is, modint998& x) {\r\n   \
+    \     std::int64_t value;\r\n        is >> value;\r\n        x = modint998(value);\r\
     \n        return is;\r\n    }\r\n};\r\n\r\nstatic_assert(sizeof(modint998) ==\
     \ 4);\r\nstatic_assert(std::is_trivially_copyable_v<modint998>);\r\n\r\nusing\
     \ mint998 = modint998;\r\n\r\n\n"
@@ -150,31 +168,49 @@ data:
     \n    }\r\n\r\n    constexpr modint998& operator--() {\r\n        return *this\
     \ -= raw(1);\r\n    }\r\n\r\n    constexpr modint998 operator--(int) {\r\n   \
     \     modint998 old = *this;\r\n        --*this;\r\n        return old;\r\n  \
-    \  }\r\n\r\n    constexpr modint998 pow(u64 exponent) const {\r\n        modint998\
-    \ result = raw(1);\r\n        modint998 base = *this;\r\n        while (exponent\
-    \ != 0) {\r\n            if (exponent & 1) result *= base;\r\n            base\
-    \ *= base;\r\n            exponent >>= 1;\r\n        }\r\n        return result;\r\
-    \n    }\r\n\r\n    constexpr modint998 inv() const {\r\n        assert(val() !=\
-    \ 0);\r\n\r\n        const modint998 x = *this;\r\n        const modint998 a2\
-    \ = x * x;\r\n        const modint998 a4 = a2 * a2;\r\n        const modint998\
-    \ a5 = a4 * x;\r\n        const modint998 a9 = a5 * a4;\r\n        const modint998\
-    \ a18 = a9 * a9;\r\n        const modint998 a36 = a18 * a18;\r\n        const\
-    \ modint998 a72 = a36 * a36;\r\n        const modint998 a144 = a72 * a72;\r\n\
-    \        const modint998 a288 = a144 * a144;\r\n        const modint998 a293 =\
-    \ a288 * a5;\r\n        const modint998 a586 = a293 * a293;\r\n        const modint998\
-    \ a879 = a586 * a293;\r\n        const modint998 a1023 = a879 * a144;\r\n\r\n\
-    \        modint998 r = a1023 * a879;  // x^1902\r\n\r\n        // x^(1902 * 2^9)\
-    \ = x^973824\r\n        r *= r;\r\n        r *= r;\r\n        r *= r;\r\n    \
-    \    r *= r;\r\n        r *= r;\r\n        r *= r;\r\n        r *= r;\r\n    \
-    \    r *= r;\r\n        r *= r;\r\n\r\n        r *= a1023;  // x^974847\r\n\r\n\
-    \        // x^(974847 * 2^10) = x^998243328\r\n        r *= r;\r\n        r *=\
+    \  }\r\n\r\n    constexpr modint998 pow(u64 e) const {\r\n        if (e == 0)\
+    \ return raw(1);\r\n        if (a == 0) return raw(0);\r\n    \r\n        if (e\
+    \ >= MOD - 1) e %= MOD - 1;\r\n        if (e == 0) return raw(1);\r\n    \r\n\
+    \        const u32 n = static_cast<u32>(e);\r\n    \r\n        if (n == 1) return\
+    \ *this;\r\n    \r\n        const modint998 x = *this;\r\n        const modint998\
+    \ p2 = x * x;\r\n    \r\n        if (n == 2) return p2;\r\n    \r\n        const\
+    \ modint998 p3 = p2 * x;\r\n    \r\n        if (n == 3) return p3;\r\n    \r\n\
+    \        const modint998 p4 = p2 * p2;\r\n        const modint998 p5 = p4 * x;\r\
+    \n        const modint998 p6 = p3 * p3;\r\n        const modint998 p7 = p4 * p3;\r\
+    \n    \r\n        const modint998 t[8] = {\r\n            raw(1), x, p2, p3, p4,\
+    \ p5, p6, p7\r\n        };\r\n    \r\n        const unsigned s = ((std::bit_width(n)\
+    \ - 1) / 3) * 3;\r\n        modint998 r = t[(n >> s) & 7];\r\n    \r\n       \
+    \ auto step = [&](unsigned k) constexpr {\r\n            r *= r;\r\n         \
+    \   r *= r;\r\n            r *= r;\r\n            const u32 d = (n >> k) & 7;\r\
+    \n            if (d) r *= t[d];\r\n        };\r\n        switch (s) {\r\n    \
+    \        case 27: step(24); [[fallthrough]];\r\n            case 24: step(21);\
+    \ [[fallthrough]];\r\n            case 21: step(18); [[fallthrough]];\r\n    \
+    \        case 18: step(15); [[fallthrough]];\r\n            case 15: step(12);\
+    \ [[fallthrough]];\r\n            case 12: step(9);  [[fallthrough]];\r\n    \
+    \        case 9:  step(6);  [[fallthrough]];\r\n            case 6:  step(3);\
+    \  [[fallthrough]];\r\n            case 3:  step(0);  [[fallthrough]];\r\n   \
+    \         default: break;\r\n        }\r\n        return r;\r\n    }\r\n\r\n \
+    \   constexpr modint998 inv() const {\r\n        assert(val() != 0);\r\n\r\n \
+    \       const modint998 x = *this;\r\n        const modint998 a2 = x * x;\r\n\
+    \        const modint998 a4 = a2 * a2;\r\n        const modint998 a5 = a4 * x;\r\
+    \n        const modint998 a9 = a5 * a4;\r\n        const modint998 a18 = a9 *\
+    \ a9;\r\n        const modint998 a36 = a18 * a18;\r\n        const modint998 a72\
+    \ = a36 * a36;\r\n        const modint998 a144 = a72 * a72;\r\n        const modint998\
+    \ a288 = a144 * a144;\r\n        const modint998 a293 = a288 * a5;\r\n       \
+    \ const modint998 a586 = a293 * a293;\r\n        const modint998 a879 = a586 *\
+    \ a293;\r\n        const modint998 a1023 = a879 * a144;\r\n\r\n        modint998\
+    \ r = a1023 * a879;  // x^1902\r\n\r\n        // x^(1902 * 2^9) = x^973824\r\n\
+    \        r *= r;\r\n        r *= r;\r\n        r *= r;\r\n        r *= r;\r\n\
+    \        r *= r;\r\n        r *= r;\r\n        r *= r;\r\n        r *= r;\r\n\
+    \        r *= r;\r\n\r\n        r *= a1023;  // x^974847\r\n\r\n        // x^(974847\
+    \ * 2^10) = x^998243328\r\n        r *= r;\r\n        r *= r;\r\n        r *=\
     \ r;\r\n        r *= r;\r\n        r *= r;\r\n        r *= r;\r\n        r *=\
-    \ r;\r\n        r *= r;\r\n        r *= r;\r\n        r *= r;\r\n        r *=\
-    \ r;\r\n\r\n        return r * a1023;  // x^(MOD - 2)\r\n    }\r\n\r\n    constexpr\
-    \ modint998 inverse() const { return inv(); }\r\n\r\n    friend std::ostream&\
-    \ operator<<(std::ostream& os, const modint998& x) {\r\n        return os << x.val();\r\
-    \n    }\r\n\r\n    friend std::istream& operator>>(std::istream& is, modint998&\
-    \ x) {\r\n        std::int64_t value;\r\n        is >> value;\r\n        x = modint998(value);\r\
+    \ r;\r\n        r *= r;\r\n        r *= r;\r\n        r *= r;\r\n\r\n        return\
+    \ r * a1023;  // x^(MOD - 2)\r\n    }\r\n\r\n    constexpr modint998 inverse()\
+    \ const { return inv(); }\r\n\r\n    friend std::ostream& operator<<(std::ostream&\
+    \ os, const modint998& x) {\r\n        return os << x.val();\r\n    }\r\n\r\n\
+    \    friend std::istream& operator>>(std::istream& is, modint998& x) {\r\n   \
+    \     std::int64_t value;\r\n        is >> value;\r\n        x = modint998(value);\r\
     \n        return is;\r\n    }\r\n};\r\n\r\nstatic_assert(sizeof(modint998) ==\
     \ 4);\r\nstatic_assert(std::is_trivially_copyable_v<modint998>);\r\n\r\nusing\
     \ mint998 = modint998;\r\n\r\n#endif  // EEZCP_MATH_MODINT998_HPP\r\n"
@@ -182,8 +218,8 @@ data:
   isVerificationFile: false
   path: math/modint998.hpp
   requiredBy: []
-  timestamp: '2026-08-15 14:21:48+09:00'
-  verificationStatus: LIBRARY_ALL_AC
+  timestamp: '2026-08-15 14:35:57+09:00'
+  verificationStatus: LIBRARY_ALL_WA
   verifiedWith:
   - verify/verify-yosupo-math/yosupo-aplusb-modint998.test.cpp
 documentation_of: math/modint998.hpp
