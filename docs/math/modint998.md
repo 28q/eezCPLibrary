@@ -1,4 +1,4 @@
----
+35---
 title: modint998
 documentation_of: ../../math/modint998.hpp
 ---
@@ -77,7 +77,7 @@ modint998 w = a.inverse();
 
 - `pow(exponent)`：非負整数`exponent`乗
 - `inv()` / `inverse()`：乗法逆元。呼び出し時に値が$0$でないことが前提
-- `inv()`は固定された加算鎖により38回のMontgomery乗算で計算
+- `inv()`は固定された加算鎖により35回のMontgomery乗算で計算
 
 ## 定数
 
