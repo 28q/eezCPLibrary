@@ -54,7 +54,9 @@ using u32 = std::uint32_t;
 using usize = std::size_t;
 
 inline constexpr u32 mod = mint::MOD;
-inline constexpr usize max_size = usize(1) << 23;
+inline constexpr usize max_ntt_size = usize(1) << 23;
+inline constexpr usize max_convolution_size = usize(1) << 25;
+inline constexpr usize max_size = max_ntt_size;
 inline constexpr usize naive_cutoff = 60;
 
 inline void forward(std::span<mint> a) noexcept;
@@ -136,8 +138,19 @@ constexpr usize convolution_size(usize n, usize m) noexcept {
 
 constexpr usize transform_size(usize n, usize m) noexcept {
     if (!n || !m) return 0;
-    if (n > max_size || m > max_size) return 0;
-    if (n > max_size - m + 1) return 0;
+    if (n > max_ntt_size || m > max_ntt_size) return 0;
+    if (n > max_ntt_size - m + 1) return 0;
+
+    const usize z = n + m - 1;
+    usize x = 1;
+    while (x < z) x <<= 1;
+    return x;
+}
+
+constexpr usize convolution_transform_size(usize n, usize m) noexcept {
+    if (!n || !m) return 0;
+    if (n > max_convolution_size || m > max_convolution_size) return 0;
+    if (n > max_convolution_size - m + 1) return 0;
 
     const usize z = n + m - 1;
     usize x = 1;
@@ -146,7 +159,11 @@ constexpr usize transform_size(usize n, usize m) noexcept {
 }
 
 constexpr bool valid_ntt_size(usize n) noexcept {
-    return n != 0 && (n & (n - 1)) == 0 && n <= max_size;
+    return n != 0 && (n & (n - 1)) == 0 && n <= max_ntt_size;
+}
+
+constexpr bool valid_convolution_transform_size(usize n) noexcept {
+    return n >= 32 && (n & (n - 1)) == 0 && n <= max_convolution_size;
 }
 
 namespace detail{
@@ -1226,6 +1243,7 @@ public:
 
     mint* data() noexcept { return data_; }
     const mint* data() const noexcept { return data_; }
+    [[nodiscard]] usize size() const noexcept { return size_; }
     mint& operator[](usize i) noexcept { return data_[i]; }
     const mint& operator[](usize i) const noexcept { return data_[i]; }
 };
@@ -1943,9 +1961,9 @@ inline std::vector<mint> square_naive(std::span<const mint> a){
 }
 
 inline usize checked_transform_size(usize n, usize m){
-    const usize result = transform_size(n, m);
+    const usize result = convolution_transform_size(n, m);
     if (n && m && !result){
-        throw std::length_error("eez::ntt998: convolution exceeds the 2^23 transform limit");
+        throw std::length_error("eez::ntt998: convolution exceeds the 2^25 transform limit");
     }
     return result;
 }
@@ -1957,6 +1975,21 @@ inline void require_ntt_size(usize n){
 }
 
 }
+
+#if EEZ_NTT998_USE_AVX2
+
+using convolution_buffer = detail::aligned_buffer;
+
+inline void convolution_inplace(convolution_buffer& a, convolution_buffer& b){
+    if (a.size() != b.size() || !valid_convolution_transform_size(a.size())){
+        throw std::invalid_argument(
+            "eez::ntt998::convolution_inplace: buffer sizes must match and be a power of two in [32, 2^25]"
+        );
+    }
+    detail::convolution_adaptive_inplace(a.data(), b.data(), a.size());
+}
+
+#endif
 
 inline std::vector<mint> convolution(std::span<const mint> a, std::span<const mint> b){
     if (a.empty() || b.empty()) return {};
