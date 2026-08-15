@@ -49,8 +49,21 @@ constexpr auto make_powers_10() {
     return powers;
 }
 
+constexpr auto make_pair_digits() {
+    std::array<unsigned char, 1 << 14> table{};
+    table.fill(255);
+    for (unsigned a = 0; a < 10; ++a) {
+        for (unsigned b = 0; b < 10; ++b) {
+            table[('0' + a) | (('0' + b) << 8)] =
+                static_cast<unsigned char>(a * 10 + b);
+        }
+    }
+    return table;
+}
+
 alignas(16) inline constexpr auto right_align_masks = make_right_align_masks();
 inline constexpr auto powers_10 = make_powers_10();
+inline constexpr auto pair_digits = make_pair_digits();
 
 struct input {
     input() {
@@ -155,6 +168,44 @@ __attribute__((always_inline)) inline u32 read_u32(char*& cursor) noexcept {
     int length;
     const u32 value = static_cast<u32>(parse_short_digits(digits, mask, length));
     cursor += length + 1;
+    return value;
+}
+
+__attribute__((always_inline)) inline u32 read_u32_lt1e9(char*& cursor) noexcept {
+    const auto q0 =
+        pair_digits[*reinterpret_cast<const std::uint16_t*>(cursor + 1)];
+    const auto q1 =
+        pair_digits[*reinterpret_cast<const std::uint16_t*>(cursor + 3)];
+    const auto q2 =
+        pair_digits[*reinterpret_cast<const std::uint16_t*>(cursor + 5)];
+    const auto q3 =
+        pair_digits[*reinterpret_cast<const std::uint16_t*>(cursor + 7)];
+
+    if (__builtin_expect((q0 | q1 | q2 | q3) < 128, 1)) {
+        u32 value = static_cast<unsigned char>(cursor[0]) - '0';
+        value = value * 100 + q0;
+        value = value * 100 + q1;
+        value = value * 100 + q2;
+        value = value * 100 + q3;
+        cursor += 10;
+        return value;
+    }
+
+    u32 value = static_cast<unsigned char>(*cursor++) - '0';
+
+    for (unsigned i = 0; i < 4; ++i) {
+        const auto pair =
+            pair_digits[*reinterpret_cast<const std::uint16_t*>(cursor)];
+        if (pair > 99) break;
+        value = value * 100 + pair;
+        cursor += 2;
+    }
+
+    if (*cursor > ' ') {
+        value = value * 10 + static_cast<unsigned>(*cursor++ & 15);
+    }
+
+    ++cursor;
     return value;
 }
 
@@ -276,6 +327,7 @@ struct output {
             --remaining;
             first_flush_ = false;
         }
+
 #ifdef __linux__
         while (remaining != 0) {
             const ssize_t count = ::write(1, data, remaining);
@@ -296,6 +348,7 @@ struct output {
             remaining -= count;
         }
 #endif
+
         return buffer_.data();
     }
 
@@ -388,6 +441,7 @@ __attribute__((always_inline)) inline void emit_u128_unchecked(
 
     const u64 low = static_cast<u64>(value % base);
     const u128 upper = value / base;
+
     if (upper <= u64_max) {
         emit_u64_unchecked(cursor, static_cast<u64>(upper));
         emit_padded_16(cursor, low);
@@ -399,6 +453,23 @@ __attribute__((always_inline)) inline void emit_u128_unchecked(
     emit_u32_unchecked(cursor, high);
     emit_padded_16(cursor, middle);
     emit_padded_16(cursor, low);
+}
+
+__attribute__((always_inline)) inline void write_u32_lt1e9(
+    output& sink, char*& cursor, char* end, u32 value) noexcept {
+    if (__builtin_expect(end - cursor < 16, 0)) cursor = sink.flush(cursor);
+
+    *cursor++ = ' ';
+
+    if (value >= 100000000U) {
+        const u32 high = value / 100000000U;
+        *cursor++ = static_cast<char>('0' + high);
+        value -= high * 100000000U;
+        emit_padded(cursor, value / 10000U);
+        emit_padded(cursor, value % 10000U);
+    } else {
+        emit_u32_unchecked(cursor, value);
+    }
 }
 
 __attribute__((always_inline)) inline void write_u32(
@@ -477,18 +548,27 @@ struct fastio_unsafe {
     __attribute__((always_inline)) u32 read_u32(char*& cursor) noexcept {
         return fastio_unsafe_impl::read_u32(cursor);
     }
+
+    __attribute__((always_inline)) u32 read_u32_lt1e9(char*& cursor) noexcept {
+        return fastio_unsafe_impl::read_u32_lt1e9(cursor);
+    }
+
     __attribute__((always_inline)) i32 read_i32(char*& cursor) noexcept {
         return fastio_unsafe_impl::read_i32(cursor);
     }
+
     __attribute__((always_inline)) u64 read_u64(char*& cursor) noexcept {
         return fastio_unsafe_impl::read_u64(cursor);
     }
+
     __attribute__((always_inline)) i64 read_i64(char*& cursor) noexcept {
         return fastio_unsafe_impl::read_i64(cursor);
     }
+
     __attribute__((always_inline)) u128 read_u128(char*& cursor) noexcept {
         return fastio_unsafe_impl::read_u128(cursor);
     }
+
     __attribute__((always_inline)) i128 read_i128(char*& cursor) noexcept {
         return fastio_unsafe_impl::read_i128(cursor);
     }
@@ -497,22 +577,32 @@ struct fastio_unsafe {
         char*& cursor, char* end, u32 value) noexcept {
         fastio_unsafe_impl::write_u32(out, cursor, end, value);
     }
+
+    __attribute__((always_inline)) void write_u32_lt1e9(
+        char*& cursor, char* end, u32 value) noexcept {
+        fastio_unsafe_impl::write_u32_lt1e9(out, cursor, end, value);
+    }
+
     __attribute__((always_inline)) void write_i32(
         char*& cursor, char* end, i32 value) noexcept {
         fastio_unsafe_impl::write_i32(out, cursor, end, value);
     }
+
     __attribute__((always_inline)) void write_u64(
         char*& cursor, char* end, u64 value) noexcept {
         fastio_unsafe_impl::write_u64(out, cursor, end, value);
     }
+
     __attribute__((always_inline)) void write_i64(
         char*& cursor, char* end, i64 value) noexcept {
         fastio_unsafe_impl::write_i64(out, cursor, end, value);
     }
+
     __attribute__((always_inline)) void write_u128(
         char*& cursor, char* end, u128 value) noexcept {
         fastio_unsafe_impl::write_u128(out, cursor, end, value);
     }
+
     __attribute__((always_inline)) void write_i128(
         char*& cursor, char* end, i128 value) noexcept {
         fastio_unsafe_impl::write_i128(out, cursor, end, value);
