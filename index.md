@@ -13,7 +13,7 @@ data:
     pages:
     - icon: ':warning:'
       path: convolution/ntt998.hpp
-      title: convolution/ntt998.hpp
+      title: ntt998
   - name: data-structure
     pages:
     - icon: ':heavy_check_mark:'

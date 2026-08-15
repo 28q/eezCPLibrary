@@ -4,7 +4,7 @@ data:
   _extendedRequiredBy:
   - icon: ':warning:'
     path: convolution/ntt998.hpp
-    title: convolution/ntt998.hpp
+    title: ntt998
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
     path: verify/verify-yosupo-math/yosupo-aplusb-modint998.test.cpp
