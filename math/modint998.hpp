@@ -224,5 +224,4 @@ static_assert(std::is_trivially_copyable_v<modint998>);
 
 using mint998 = modint998;
 
-#endif
 #endif  // EEZCP_MATH_MODINT998_HPP
