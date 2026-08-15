@@ -18,7 +18,7 @@ data:
     pages:
     - icon: ':heavy_check_mark:'
       path: math/modint998.hpp
-      title: modint998
+      title: math/modint998.hpp
   verificationCategories:
   - name: .
     pages:
