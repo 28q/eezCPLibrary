@@ -29,48 +29,48 @@ data:
     \ 1\r\n#else\r\n#error \"eez::ntt998 requires an x86 target with AVX2 support\"\
     \r\n#endif\r\n\r\n#include <algorithm>\r\n#include <array>\r\n#line 14 \"convolution/ntt998.hpp\"\
     \n#include <cassert>\r\n#line 16 \"convolution/ntt998.hpp\"\n#include <cstdint>\r\
-    \n#include <immintrin.h>\r\n#include <memory>\r\n#include <new>\r\n#include <span>\r\
-    \n#include <stdexcept>\r\n#include <type_traits>\r\n#line 24 \"convolution/ntt998.hpp\"\
-    \n\r\n#line 1 \"math/modint998.hpp\"\n\n\n\r\n#line 6 \"math/modint998.hpp\"\n\
-    #include <iostream>\r\n#line 8 \"math/modint998.hpp\"\n\r\nstruct modint998 {\r\
-    \n    using u32 = std::uint32_t;\r\n    using i32 = std::int32_t;\r\n    using\
-    \ u64 = std::uint64_t;\r\n\r\n    static constexpr u32 MOD = 998244353u;\r\n \
-    \   static constexpr u32 MOD2 = MOD * 2;\r\n    static constexpr u32 primitive_root\
-    \ = 3;\r\n    static constexpr int max_power_of_two = 23;\r\n\r\nprivate:\r\n\
-    \    static constexpr u32 R = 3296722945u;\r\n    static constexpr u32 N2 = 932051910u;\r\
-    \n\r\n    struct montgomery_tag {};\r\n\r\n    constexpr modint998(u32 x, montgomery_tag)\
-    \ : a(x) {}\r\n\r\n    static constexpr u32 reduce(u64 x) {\r\n        return\
-    \ static_cast<u32>(\r\n            (x + u64(static_cast<u32>(x) * u32(-R)) * MOD)\
-    \ >> 32\r\n        );\r\n    }\r\n\r\npublic:\r\n    u32 a;\r\n\r\n    static_assert(MOD\
-    \ < (u32(1) << 30));\r\n    static_assert((MOD & 1) != 0);\r\n    static_assert(R\
-    \ * MOD == 1);\r\n\r\n    constexpr modint998() : a(0) {}\r\n\r\n    template\
-    \ <class T, std::enable_if_t<std::is_integral_v<T> &&\r\n                    \
-    \                    std::is_signed_v<T>, int> = 0>\r\n    constexpr modint998(T\
-    \ x) : a(0) {\r\n        const std::int64_t y =\r\n            static_cast<std::int64_t>(x)\
-    \ % std::int64_t(MOD) + MOD;\r\n        a = reduce(u64(y) * N2);\r\n    }\r\n\r\
-    \n    template <class T, std::enable_if_t<std::is_integral_v<T> &&\r\n       \
-    \                                 std::is_unsigned_v<T>, int> = 0>\r\n    constexpr\
-    \ modint998(T x)\r\n        : a(reduce(((u64(x) % MOD) + MOD) * N2)) {}\r\n\r\n\
-    \    static constexpr modint998 raw(u32 x) {\r\n        return modint998(reduce(u64(x)\
-    \ * N2), montgomery_tag{});\r\n    }\r\n\r\n    static constexpr modint998 montgomery_raw(u32\
-    \ x) {\r\n        return modint998(x, montgomery_tag{});\r\n    }\r\n\r\n    static\
-    \ constexpr u32 mod() { return MOD; }\r\n    static constexpr u32 get_mod() {\
-    \ return MOD; }\r\n\r\n    constexpr u32 val() const {\r\n        const u32 x\
-    \ = reduce(a);\r\n        return x >= MOD ? x - MOD : x;\r\n    }\r\n\r\n    constexpr\
-    \ u32 get() const { return val(); }\r\n\r\n    constexpr modint998& operator+=(const\
-    \ modint998& rhs) {\r\n        a += rhs.a - MOD2;\r\n        if (i32(a) < 0) a\
-    \ += MOD2;\r\n        return *this;\r\n    }\r\n\r\n    constexpr modint998& operator-=(const\
-    \ modint998& rhs) {\r\n        a -= rhs.a;\r\n        if (i32(a) < 0) a += MOD2;\r\
-    \n        return *this;\r\n    }\r\n\r\n    constexpr modint998& operator*=(const\
-    \ modint998& rhs) {\r\n        a = reduce(u64(a) * rhs.a);\r\n        return *this;\r\
-    \n    }\r\n\r\n    constexpr modint998& operator/=(const modint998& rhs) {\r\n\
-    \        return *this *= rhs.inv();\r\n    }\r\n\r\n    constexpr modint998 operator+()\
-    \ const { return *this; }\r\n    constexpr modint998 operator-() const { return\
-    \ modint998() - *this; }\r\n\r\n    friend constexpr modint998 operator+(modint998\
-    \ lhs,\r\n                                          const modint998& rhs) {\r\n\
-    \        return lhs += rhs;\r\n    }\r\n\r\n    friend constexpr modint998 operator-(modint998\
-    \ lhs,\r\n                                          const modint998& rhs) {\r\n\
-    \        return lhs -= rhs;\r\n    }\r\n\r\n    friend constexpr modint998 operator*(modint998\
+    \n#include <immintrin.h>\r\n#include <new>\r\n#include <span>\r\n#include <stdexcept>\r\
+    \n#include <type_traits>\r\n#line 23 \"convolution/ntt998.hpp\"\n\r\n#line 1 \"\
+    math/modint998.hpp\"\n\n\n\r\n#line 6 \"math/modint998.hpp\"\n#include <iostream>\r\
+    \n#line 8 \"math/modint998.hpp\"\n\r\nstruct modint998 {\r\n    using u32 = std::uint32_t;\r\
+    \n    using i32 = std::int32_t;\r\n    using u64 = std::uint64_t;\r\n\r\n    static\
+    \ constexpr u32 MOD = 998244353u;\r\n    static constexpr u32 MOD2 = MOD * 2;\r\
+    \n    static constexpr u32 primitive_root = 3;\r\n    static constexpr int max_power_of_two\
+    \ = 23;\r\n\r\nprivate:\r\n    static constexpr u32 R = 3296722945u;\r\n    static\
+    \ constexpr u32 N2 = 932051910u;\r\n\r\n    struct montgomery_tag {};\r\n\r\n\
+    \    constexpr modint998(u32 x, montgomery_tag) : a(x) {}\r\n\r\n    static constexpr\
+    \ u32 reduce(u64 x) {\r\n        return static_cast<u32>(\r\n            (x +\
+    \ u64(static_cast<u32>(x) * u32(-R)) * MOD) >> 32\r\n        );\r\n    }\r\n\r\
+    \npublic:\r\n    u32 a;\r\n\r\n    static_assert(MOD < (u32(1) << 30));\r\n  \
+    \  static_assert((MOD & 1) != 0);\r\n    static_assert(R * MOD == 1);\r\n\r\n\
+    \    constexpr modint998() : a(0) {}\r\n\r\n    template <class T, std::enable_if_t<std::is_integral_v<T>\
+    \ &&\r\n                                        std::is_signed_v<T>, int> = 0>\r\
+    \n    constexpr modint998(T x) : a(0) {\r\n        const std::int64_t y =\r\n\
+    \            static_cast<std::int64_t>(x) % std::int64_t(MOD) + MOD;\r\n     \
+    \   a = reduce(u64(y) * N2);\r\n    }\r\n\r\n    template <class T, std::enable_if_t<std::is_integral_v<T>\
+    \ &&\r\n                                        std::is_unsigned_v<T>, int> =\
+    \ 0>\r\n    constexpr modint998(T x)\r\n        : a(reduce(((u64(x) % MOD) + MOD)\
+    \ * N2)) {}\r\n\r\n    static constexpr modint998 raw(u32 x) {\r\n        return\
+    \ modint998(reduce(u64(x) * N2), montgomery_tag{});\r\n    }\r\n\r\n    static\
+    \ constexpr modint998 montgomery_raw(u32 x) {\r\n        return modint998(x, montgomery_tag{});\r\
+    \n    }\r\n\r\n    static constexpr u32 mod() { return MOD; }\r\n    static constexpr\
+    \ u32 get_mod() { return MOD; }\r\n\r\n    constexpr u32 val() const {\r\n   \
+    \     const u32 x = reduce(a);\r\n        return x >= MOD ? x - MOD : x;\r\n \
+    \   }\r\n\r\n    constexpr u32 get() const { return val(); }\r\n\r\n    constexpr\
+    \ modint998& operator+=(const modint998& rhs) {\r\n        a += rhs.a - MOD2;\r\
+    \n        if (i32(a) < 0) a += MOD2;\r\n        return *this;\r\n    }\r\n\r\n\
+    \    constexpr modint998& operator-=(const modint998& rhs) {\r\n        a -= rhs.a;\r\
+    \n        if (i32(a) < 0) a += MOD2;\r\n        return *this;\r\n    }\r\n\r\n\
+    \    constexpr modint998& operator*=(const modint998& rhs) {\r\n        a = reduce(u64(a)\
+    \ * rhs.a);\r\n        return *this;\r\n    }\r\n\r\n    constexpr modint998&\
+    \ operator/=(const modint998& rhs) {\r\n        return *this *= rhs.inv();\r\n\
+    \    }\r\n\r\n    constexpr modint998 operator+() const { return *this; }\r\n\
+    \    constexpr modint998 operator-() const { return modint998() - *this; }\r\n\
+    \r\n    friend constexpr modint998 operator+(modint998 lhs,\r\n              \
+    \                            const modint998& rhs) {\r\n        return lhs +=\
+    \ rhs;\r\n    }\r\n\r\n    friend constexpr modint998 operator-(modint998 lhs,\r\
+    \n                                          const modint998& rhs) {\r\n      \
+    \  return lhs -= rhs;\r\n    }\r\n\r\n    friend constexpr modint998 operator*(modint998\
     \ lhs,\r\n                                          const modint998& rhs) {\r\n\
     \        return lhs *= rhs;\r\n    }\r\n\r\n    friend constexpr modint998 operator/(modint998\
     \ lhs,\r\n                                          const modint998& rhs) {\r\n\
@@ -131,7 +131,7 @@ data:
     \     std::int64_t value;\r\n        is >> value;\r\n        x = modint998(value);\r\
     \n        return is;\r\n    }\r\n};\r\n\r\nstatic_assert(sizeof(modint998) ==\
     \ 4);\r\nstatic_assert(std::is_trivially_copyable_v<modint998>);\r\n\r\nusing\
-    \ mint998 = modint998;\r\n\r\n\n#line 26 \"convolution/ntt998.hpp\"\n\r\n#if defined(__GNUC__)\
+    \ mint998 = modint998;\r\n\r\n\n#line 25 \"convolution/ntt998.hpp\"\n\r\n#if defined(__GNUC__)\
     \ && !defined(__clang__) && \\\r\n    (defined(__x86_64__) || defined(__i386__))\r\
     \n#pragma GCC push_options\r\n#pragma GCC optimize(\"O3,unroll-loops\")\r\n#pragma\
     \ GCC target(\"avx2,bmi,bmi2,lzcnt,popcnt\")\r\n#elif defined(__clang__) && \\\
@@ -144,53 +144,65 @@ data:
     \n#else\r\n#define EEZ_NTT998_ALWAYS_INLINE inline\r\n#define EEZ_NTT998_RESTRICT\r\
     \n#endif\r\n\r\nnamespace eez::ntt998{\r\n\r\nusing mint = modint998;\r\nusing\
     \ u32 = std::uint32_t;\r\nusing usize = std::size_t;\r\n\r\ninline constexpr u32\
-    \ mod = mint::MOD;\ninline constexpr usize max_ntt_size = usize(1) << 23;\ninline\
-    \ constexpr usize max_convolution_size = usize(1) << 25;\ninline constexpr usize\
-    \ max_size = max_ntt_size;\ninline constexpr usize naive_cutoff = 60;\n\r\ninline\
-    \ void forward(std::span<mint> a) noexcept;\r\ninline void inverse(std::span<mint>\
-    \ a) noexcept;\r\n\r\ninline std::vector<mint> convolution(std::span<const mint>\
-    \ a, std::span<const mint> b);\r\n\r\ninline std::vector<mint> square(std::span<const\
+    \ mod = mint::MOD;\r\ninline constexpr usize max_ntt_size = usize(1) << 23;\r\n\
+    inline constexpr usize max_convolution_size = usize(1) << 25;\r\ninline constexpr\
+    \ usize max_size = max_ntt_size;\r\ninline constexpr usize naive_cutoff = 60;\r\
+    \n\r\ninline void forward(std::span<mint> a) noexcept;\r\ninline void inverse(std::span<mint>\
+    \ a) noexcept;\r\ninline std::vector<mint> convolution(std::span<const mint> a,\
+    \ std::span<const mint> b);\r\ninline std::vector<mint> square(std::span<const\
     \ mint> a);\r\n\r\ninline std::vector<mint> convolution(const std::vector<mint>&\
     \ a, const std::vector<mint>& b){\r\n    return convolution(std::span<const mint>(a.data(),\
     \ a.size()), std::span<const mint>(b.data(), b.size()));\r\n}\r\n\r\ninline std::vector<mint>\
     \ square(const std::vector<mint>& a){\r\n    return square(std::span<const mint>(a.data(),\
-    \ a.size()));\r\n}\r\n\r\nclass workspace{\r\npublic:\r\n    workspace() = default;\r\
-    \n    explicit workspace(usize n){\r\n        reserve(n);\r\n    }\r\n\r\n   \
-    \ void reserve(usize n){\r\n        if (a_.size() < n) a_.resize(n);\r\n     \
-    \   if (b_.size() < n) b_.resize(n);\r\n    }\r\n\r\n    [[nodiscard]] usize capacity()\
-    \ const noexcept {\r\n        return std::min(a_.size(), b_.size());\r\n    }\r\
-    \n\r\nprivate:\r\n    friend void convolution_to(std::span<const mint>, std::span<const\
-    \ mint>, std::span<mint>, workspace&);\r\n\r\n    friend void square_to(std::span<const\
-    \ mint>, std::span<mint>, workspace&);\r\n\r\n    std::vector<mint> a_;\r\n  \
-    \  std::vector<mint> b_;\r\n};\r\n\r\ninline void convolution_to(std::span<const\
-    \ mint> a, std::span<const mint> b, std::span<mint> out, workspace& ws);\r\n\r\
-    \ninline void square_to(std::span<const mint> a, std::span<mint> out, workspace&\
-    \ ws);\r\n\r\n\r\nclass frequency_buffer{\r\npublic:\r\n    frequency_buffer()\
-    \ = default;\r\n\r\n    [[nodiscard]] usize size() const noexcept {\r\n      \
-    \  return data_.size();\r\n    }\r\n\r\nprivate:\r\n    friend void forward_to(std::span<const\
-    \ mint>, frequency_buffer&, usize);\r\n\r\n    friend void pointwise_multiply(frequency_buffer&,\
-    \ const frequency_buffer&);\r\n\r\n    friend void pointwise_square(frequency_buffer&);\r\
-    \n\r\n    friend void inverse_to(frequency_buffer&, std::span<mint>);\r\n\r\n\
-    \    std::vector<mint> data_;\r\n};\r\n\r\ninline void forward_to(std::span<const\
-    \ mint> src, frequency_buffer& dst, usize n);\r\n\r\ninline void pointwise_multiply(frequency_buffer&\
-    \ lhs, const frequency_buffer& rhs);\r\n\r\ninline void pointwise_square(frequency_buffer&\
-    \ a);\r\n\r\ninline void inverse_to(frequency_buffer& src, std::span<mint> out);\r\
-    \n\r\nconstexpr usize convolution_size(usize n, usize m) noexcept {\r\n    return\
-    \ n && m ? n + m - 1 : 0;\r\n}\r\n\r\nconstexpr usize transform_size(usize n,\
-    \ usize m) noexcept {\n    if (!n || !m) return 0;\n    if (n > max_ntt_size ||\
-    \ m > max_ntt_size) return 0;\n    if (n > max_ntt_size - m + 1) return 0;\n\n\
-    \    const usize z = n + m - 1;\n    usize x = 1;\n    while (x < z) x <<= 1;\n\
-    \    return x;\n}\n\nconstexpr usize convolution_transform_size(usize n, usize\
-    \ m) noexcept {\n    if (!n || !m) return 0;\n    if (n > max_convolution_size\
-    \ || m > max_convolution_size) return 0;\n    if (n > max_convolution_size - m\
-    \ + 1) return 0;\n\n    const usize z = n + m - 1;\n    usize x = 1;\n    while\
-    \ (x < z) x <<= 1;\n    return x;\n}\n\nconstexpr bool valid_ntt_size(usize n)\
-    \ noexcept {\n    return n != 0 && (n & (n - 1)) == 0 && n <= max_ntt_size;\n\
-    }\n\nconstexpr bool valid_convolution_transform_size(usize n) noexcept {\n   \
-    \ return n >= 32 && (n & (n - 1)) == 0 && n <= max_convolution_size;\n}\n\r\n\
-    namespace detail{\r\n\r\nusing word = u32;\r\nusing u64 = std::uint64_t;\r\n\r\
-    \ninline constexpr word mod = mint::MOD;\r\ninline constexpr word mod2 = 2 * mod;\r\
-    \ninline constexpr unsigned max_log = 23;\r\n\r\ninline constexpr word montgomery_ninv\
+    \ a.size()));\r\n}\r\n\r\nnamespace detail{\r\n\r\ntemplate<class T>\r\nclass\
+    \ aligned_allocator{\r\npublic:\r\n    using value_type = T;\r\n    using is_always_equal\
+    \ = std::true_type;\r\n\r\n    aligned_allocator() noexcept = default;\r\n   \
+    \ template<class U> constexpr aligned_allocator(const aligned_allocator<U>&) noexcept\
+    \ {}\r\n\r\n    [[nodiscard]] T* allocate(usize n){\r\n        return static_cast<T*>(::operator\
+    \ new(n * sizeof(T), std::align_val_t{64}));\r\n    }\r\n\r\n    void deallocate(T*\
+    \ p, usize) noexcept {\r\n        ::operator delete(p, std::align_val_t{64});\r\
+    \n    }\r\n\r\n    template<class U>\r\n    struct rebind{\r\n        using other\
+    \ = aligned_allocator<U>;\r\n    };\r\n};\r\n\r\ntemplate<class T, class U>\r\n\
+    constexpr bool operator==(const aligned_allocator<T>&, const aligned_allocator<U>&)\
+    \ noexcept {\r\n    return true;\r\n}\r\n\r\ntemplate<class T, class U>\r\nconstexpr\
+    \ bool operator!=(const aligned_allocator<T>&, const aligned_allocator<U>&) noexcept\
+    \ {\r\n    return false;\r\n}\r\n\r\nusing aligned_vector = std::vector<mint,\
+    \ aligned_allocator<mint>>;\r\n\r\n}\r\n\r\nclass workspace{\r\npublic:\r\n  \
+    \  workspace() = default;\r\n    explicit workspace(usize n){ reserve(n); }\r\n\
+    \r\n    void reserve(usize n){\r\n        if(a_.size() < n) a_.resize(n);\r\n\
+    \        if(b_.size() < n) b_.resize(n);\r\n    }\r\n\r\n    [[nodiscard]] usize\
+    \ capacity() const noexcept {\r\n        return std::min(a_.size(), b_.size());\r\
+    \n    }\r\n\r\nprivate:\r\n    friend void convolution_to(std::span<const mint>,\
+    \ std::span<const mint>, std::span<mint>, workspace&);\r\n    friend void square_to(std::span<const\
+    \ mint>, std::span<mint>, workspace&);\r\n\r\n    detail::aligned_vector a_;\r\
+    \n    detail::aligned_vector b_;\r\n};\r\n\r\ninline void convolution_to(std::span<const\
+    \ mint> a, std::span<const mint> b, std::span<mint> out, workspace& ws);\r\ninline\
+    \ void square_to(std::span<const mint> a, std::span<mint> out, workspace& ws);\r\
+    \n\r\nclass frequency_buffer{\r\npublic:\r\n    frequency_buffer() = default;\r\
+    \n\r\n    [[nodiscard]] usize size() const noexcept {\r\n        return data_.size();\r\
+    \n    }\r\n\r\nprivate:\r\n    friend void forward_to(std::span<const mint>, frequency_buffer&,\
+    \ usize);\r\n    friend void pointwise_multiply(frequency_buffer&, const frequency_buffer&);\r\
+    \n    friend void pointwise_square(frequency_buffer&);\r\n    friend void inverse_to(frequency_buffer&,\
+    \ std::span<mint>);\r\n\r\n    std::vector<mint> data_;\r\n};\r\n\r\ninline void\
+    \ forward_to(std::span<const mint> src, frequency_buffer& dst, usize n);\r\ninline\
+    \ void pointwise_multiply(frequency_buffer& lhs, const frequency_buffer& rhs);\r\
+    \ninline void pointwise_square(frequency_buffer& a);\r\ninline void inverse_to(frequency_buffer&\
+    \ src, std::span<mint> out);\r\n\r\nconstexpr usize convolution_size(usize n,\
+    \ usize m) noexcept {\r\n    return n && m ? n + m - 1 : 0;\r\n}\r\n\r\nconstexpr\
+    \ usize transform_size(usize n, usize m) noexcept {\r\n    if(!n || !m) return\
+    \ 0;\r\n    if(n > max_ntt_size || m > max_ntt_size) return 0;\r\n    if(n > max_ntt_size\
+    \ - m + 1) return 0;\r\n    const usize z = n + m - 1;\r\n    usize x = 1;\r\n\
+    \    while(x < z) x <<= 1;\r\n    return x;\r\n}\r\n\r\nconstexpr usize convolution_transform_size(usize\
+    \ n, usize m) noexcept {\r\n    if(!n || !m) return 0;\r\n    if(n > max_convolution_size\
+    \ || m > max_convolution_size) return 0;\r\n    if(n > max_convolution_size -\
+    \ m + 1) return 0;\r\n    const usize z = n + m - 1;\r\n    usize x = 1;\r\n \
+    \   while(x < z) x <<= 1;\r\n    return x;\r\n}\r\n\r\nconstexpr bool valid_ntt_size(usize\
+    \ n) noexcept {\r\n    return n != 0 && (n & (n - 1)) == 0 && n <= max_ntt_size;\r\
+    \n}\r\n\r\nconstexpr bool valid_convolution_transform_size(usize n) noexcept {\r\
+    \n    return n >= 32 && (n & (n - 1)) == 0 && n <= max_convolution_size;\r\n}\r\
+    \n\r\nnamespace detail{\r\n\r\nusing word = u32;\r\nusing u64 = std::uint64_t;\r\
+    \n\r\ninline constexpr word mod = mint::MOD;\r\ninline constexpr word mod2 = 2\
+    \ * mod;\r\ninline constexpr unsigned max_log = 23;\r\ninline constexpr word montgomery_ninv\
     \ = 998244351u;\r\ninline constexpr word montgomery_one = mint::raw(1).a;\r\n\r\
     \nstatic_assert(mod < (word(1) << 30));\r\nstatic_assert(word(mod * montgomery_ninv)\
     \ == ~word(0));\r\nstatic_assert(sizeof(mint) == sizeof(word));\r\n\r\nEEZ_NTT998_ALWAYS_INLINE\
@@ -207,32 +219,24 @@ data:
     \ {\r\n    return a >= mod ? a - mod : a;\r\n}\r\n\r\nstruct twiddle_table{\r\n\
     \    std::array<word, max_log + 1> root{};\r\n    std::array<word, max_log + 1>\
     \ iroot{};\r\n    std::array<word, max_log + 1> rate1{};\r\n    std::array<word,\
-    \ max_log + 1> rate2{};\r\n    std::array<word, max_log + 1> irate2{};\r\n   \
-    \ std::array<word, max_log + 1> rate3{};\r\n    std::array<word, max_log + 1>\
-    \ irate3{};\r\n\r\n    constexpr twiddle_table(){\r\n        root[max_log] = mint::raw(mint::primitive_root).pow((mod\
+    \ max_log + 1> rate3{};\r\n    std::array<word, max_log + 1> irate3{};\r\n\r\n\
+    \    constexpr twiddle_table(){\r\n        root[max_log] = mint::raw(mint::primitive_root).pow((mod\
     \ - 1) >> max_log).a;\r\n        iroot[max_log] = mint::montgomery_raw(root[max_log]).inv().a;\r\
-    \n\r\n        for (int i = int(max_log) - 1; i >= 0; --i){\r\n            root[usize(i)]\
+    \n        for(int i = int(max_log) - 1; i >= 0; --i){\r\n            root[usize(i)]\
     \ = mul(root[usize(i + 1)], root[usize(i + 1)]);\r\n            iroot[usize(i)]\
     \ = mul(iroot[usize(i + 1)], iroot[usize(i + 1)]);\r\n        }\r\n\r\n      \
-    \  word prod = montgomery_one;\r\n        for (unsigned i = 0; i + 1 <= max_log;\
+    \  word prod = montgomery_one;\r\n        for(unsigned i = 0; i + 1 <= max_log;\
     \ ++i){\r\n            rate1[i] = mul(root[i + 1], prod);\r\n            prod\
     \ = mul(prod, iroot[i + 1]);\r\n        }\r\n\r\n        prod = montgomery_one;\r\
-    \n        word iprod = montgomery_one;\r\n        for (unsigned i = 0; i + 2 <=\
-    \ max_log; ++i){\r\n            rate2[i] = mul(root[i + 2], prod);\r\n       \
-    \     irate2[i] = mul(iroot[i + 2], iprod);\r\n            prod = mul(prod, iroot[i\
-    \ + 2]);\r\n            iprod = mul(iprod, root[i + 2]);\r\n        }\r\n\r\n\
-    \        prod = montgomery_one;\r\n        iprod = montgomery_one;\r\n       \
-    \ for (unsigned i = 0; i + 3 <= max_log; ++i){\r\n            rate3[i] = mul(root[i\
-    \ + 3], prod);\r\n            irate3[i] = mul(iroot[i + 3], iprod);\r\n      \
-    \      prod = mul(prod, iroot[i + 3]);\r\n            iprod = mul(iprod, root[i\
-    \ + 3]);\r\n        }\r\n    }\r\n};\r\n\r\ninline constexpr twiddle_table twiddles{};\r\
-    \n\r\nEEZ_NTT998_ALWAYS_INLINE word forward_rate1(unsigned i) noexcept {\r\n \
-    \   return twiddles.rate1[i];\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE word forward_rate3(unsigned\
-    \ i) noexcept {\r\n    return twiddles.rate3[i];\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE\
-    \ word inverse_rate3(unsigned i) noexcept {\r\n    return twiddles.irate3[i];\r\
-    \n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE word forward_rate2(unsigned i) noexcept {\r\
-    \n    return twiddles.rate2[i];\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE word inverse_rate2(unsigned\
-    \ i) noexcept {\r\n    return twiddles.irate2[i];\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE\
+    \n        word iprod = montgomery_one;\r\n        for(unsigned i = 0; i + 3 <=\
+    \ max_log; ++i){\r\n            rate3[i] = mul(root[i + 3], prod);\r\n       \
+    \     irate3[i] = mul(iroot[i + 3], iprod);\r\n            prod = mul(prod, iroot[i\
+    \ + 3]);\r\n            iprod = mul(iprod, root[i + 3]);\r\n        }\r\n    }\r\
+    \n};\r\n\r\ninline constexpr twiddle_table twiddles{};\r\n\r\nEEZ_NTT998_ALWAYS_INLINE\
+    \ word forward_rate1(unsigned i) noexcept {\r\n    return twiddles.rate1[i];\r\
+    \n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE word forward_rate3(unsigned i) noexcept {\r\
+    \n    return twiddles.rate3[i];\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE word inverse_rate3(unsigned\
+    \ i) noexcept {\r\n    return twiddles.irate3[i];\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE\
     \ unsigned twiddle_index(u32 block) noexcept {\r\n    return static_cast<unsigned>(std::countr_zero(~block));\r\
     \n}\r\n\r\n#if EEZ_NTT998_USE_AVX2\r\n\r\nusing vec = __m256i;\r\n\r\nEEZ_NTT998_ALWAYS_INLINE\
     \ vec load8(const mint* p) noexcept {\r\n    return _mm256_loadu_si256(reinterpret_cast<const\
@@ -247,422 +251,320 @@ data:
     \n    vec x = _mm256_sub_epi32(a, b);\r\n    return _mm256_add_epi32(x, _mm256_and_si256(_mm256_srai_epi32(x,\
     \ 31), two_p));\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE vec mul8(vec a, vec b) noexcept\
     \ {\r\n    const vec ninv = broadcast(montgomery_ninv);\r\n    const vec prime\
-    \ = broadcast(mod);\r\n\r\n    const vec product_even = _mm256_mul_epu32(a, b);\r\
-    \n    const vec product_odd = _mm256_mul_epu32(_mm256_bsrli_epi128(a, 4), _mm256_bsrli_epi128(b,\
-    \ 4));\r\n\r\n    const vec q_even = _mm256_mul_epu32(product_even, ninv);\r\n\
-    \    const vec q_odd = _mm256_mul_epu32(product_odd, ninv);\r\n\r\n    const vec\
-    \ reduced_even = _mm256_add_epi64(product_even, _mm256_mul_epu32(q_even, prime));\r\
+    \ = broadcast(mod);\r\n    const vec product_even = _mm256_mul_epu32(a, b);\r\n\
+    \    const vec product_odd = _mm256_mul_epu32(_mm256_bsrli_epi128(a, 4), _mm256_bsrli_epi128(b,\
+    \ 4));\r\n    const vec q_even = _mm256_mul_epu32(product_even, ninv);\r\n   \
+    \ const vec q_odd = _mm256_mul_epu32(product_odd, ninv);\r\n    const vec reduced_even\
+    \ = _mm256_add_epi64(product_even, _mm256_mul_epu32(q_even, prime));\r\n    const\
+    \ vec reduced_odd = _mm256_add_epi64(product_odd, _mm256_mul_epu32(q_odd, prime));\r\
+    \n    return _mm256_or_si256(_mm256_bsrli_epi128(reduced_even, 4), reduced_odd);\r\
+    \n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE vec mul8_fixed(vec a, vec b, vec bninv) noexcept\
+    \ {\r\n    const vec prime = broadcast(mod);\r\n    const vec odd_a = _mm256_bsrli_epi128(a,\
+    \ 4);\r\n    const vec product_even = _mm256_mul_epu32(a, b);\r\n    const vec\
+    \ product_odd = _mm256_mul_epu32(odd_a, b);\r\n    const vec q_even = _mm256_mul_epu32(a,\
+    \ bninv);\r\n    const vec q_odd = _mm256_mul_epu32(odd_a, bninv);\r\n    const\
+    \ vec reduced_even = _mm256_add_epi64(product_even, _mm256_mul_epu32(q_even, prime));\r\
     \n    const vec reduced_odd = _mm256_add_epi64(product_odd, _mm256_mul_epu32(q_odd,\
-    \ prime));\r\n\r\n    return _mm256_or_si256(_mm256_bsrli_epi128(reduced_even,\
-    \ 4), reduced_odd);\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE vec mul8_fixed(vec a,\
-    \ vec b, vec bninv) noexcept {\r\n    const vec prime = broadcast(mod);\r\n  \
-    \  const vec odd_a = _mm256_bsrli_epi128(a, 4);\r\n    const vec product_even\
-    \ = _mm256_mul_epu32(a, b);\r\n    const vec product_odd = _mm256_mul_epu32(odd_a,\
-    \ b);\r\n    const vec q_even = _mm256_mul_epu32(a, bninv);\r\n    const vec q_odd\
-    \ = _mm256_mul_epu32(odd_a, bninv);\r\n    const vec reduced_even = _mm256_add_epi64(product_even,\
-    \ _mm256_mul_epu32(q_even, prime));\r\n    const vec reduced_odd = _mm256_add_epi64(product_odd,\
-    \ _mm256_mul_epu32(q_odd, prime));\r\n    return _mm256_or_si256(_mm256_bsrli_epi128(reduced_even,\
-    \ 4), reduced_odd);\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE vec canonicalize8(vec\
-    \ x) noexcept {\r\n    const vec prime = broadcast(mod);\r\n    vec y = _mm256_sub_epi32(x,\
+    \ prime));\r\n    return _mm256_or_si256(_mm256_bsrli_epi128(reduced_even, 4),\
+    \ reduced_odd);\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE vec canonicalize8(vec x)\
+    \ noexcept {\r\n    const vec prime = broadcast(mod);\r\n    vec y = _mm256_sub_epi32(x,\
     \ prime);\r\n    return _mm256_add_epi32(y, _mm256_and_si256(_mm256_srai_epi32(y,\
     \ 31), prime));\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE vec pack_four(word x0, word\
-    \ x1) noexcept {\r\n    return _mm256_setr_epi32(\r\n        static_cast<int>(x0),\
-    \ static_cast<int>(x0),\r\n        static_cast<int>(x0), static_cast<int>(x0),\r\
-    \n        static_cast<int>(x1), static_cast<int>(x1),\r\n        static_cast<int>(x1),\
-    \ static_cast<int>(x1)\r\n    );\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE vec load2x4(const\
-    \ mint* p0, const mint* p1) noexcept {\r\n    const __m128i lo = _mm_loadu_si128(reinterpret_cast<const\
+    \ x1) noexcept {\r\n    return _mm256_setr_epi32(static_cast<int>(x0), static_cast<int>(x0),\
+    \ static_cast<int>(x0), static_cast<int>(x0),\r\n                            \
+    \ static_cast<int>(x1), static_cast<int>(x1), static_cast<int>(x1), static_cast<int>(x1));\r\
+    \n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE vec load2x4(const mint* p0, const mint* p1)\
+    \ noexcept {\r\n    const __m128i lo = _mm_loadu_si128(reinterpret_cast<const\
     \ __m128i*>(static_cast<const void*>(p0)));\r\n    const __m128i hi = _mm_loadu_si128(reinterpret_cast<const\
     \ __m128i*>(static_cast<const void*>(p1)));\r\n    return _mm256_set_m128i(hi,\
     \ lo);\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE void store2x4(mint* p0, mint* p1,\
     \ vec x) noexcept {\r\n    _mm_storeu_si128(reinterpret_cast<__m128i*>(static_cast<void*>(p0)),\
     \ _mm256_castsi256_si128(x));\r\n    _mm_storeu_si128(reinterpret_cast<__m128i*>(static_cast<void*>(p1)),\
-    \ _mm256_extracti128_si256(x, 1));\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE void transpose_8x4_to_4x8(\r\
-    \n    vec v0,\r\n    vec v1,\r\n    vec v2,\r\n    vec v3,\r\n    vec& x0,\r\n\
-    \    vec& x1,\r\n    vec& x2,\r\n    vec& x3\r\n) noexcept {\r\n    const vec\
-    \ t0 = _mm256_unpacklo_epi32(v0, v1);\r\n    const vec t1 = _mm256_unpackhi_epi32(v0,\
+    \ _mm256_extracti128_si256(x, 1));\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE void transpose_8x4_to_4x8(vec\
+    \ v0, vec v1, vec v2, vec v3, vec& x0, vec& x1, vec& x2, vec& x3) noexcept {\r\
+    \n    const vec t0 = _mm256_unpacklo_epi32(v0, v1);\r\n    const vec t1 = _mm256_unpackhi_epi32(v0,\
     \ v1);\r\n    const vec t2 = _mm256_unpacklo_epi32(v2, v3);\r\n    const vec t3\
     \ = _mm256_unpackhi_epi32(v2, v3);\r\n    const vec perm = _mm256_setr_epi32(0,\
-    \ 4, 1, 5, 2, 6, 3, 7);\r\n\r\n    x0 = _mm256_permutevar8x32_epi32(_mm256_unpacklo_epi64(t0,\
+    \ 4, 1, 5, 2, 6, 3, 7);\r\n    x0 = _mm256_permutevar8x32_epi32(_mm256_unpacklo_epi64(t0,\
     \ t2), perm);\r\n    x1 = _mm256_permutevar8x32_epi32(_mm256_unpackhi_epi64(t0,\
     \ t2), perm);\r\n    x2 = _mm256_permutevar8x32_epi32(_mm256_unpacklo_epi64(t1,\
     \ t3), perm);\r\n    x3 = _mm256_permutevar8x32_epi32(_mm256_unpackhi_epi64(t1,\
-    \ t3), perm);\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE void transpose_4x8_to_8x4(\r\
-    \n    vec x0,\r\n    vec x1,\r\n    vec x2,\r\n    vec x3,\r\n    vec& v0,\r\n\
-    \    vec& v1,\r\n    vec& v2,\r\n    vec& v3\r\n) noexcept {\r\n    const vec\
-    \ perm = _mm256_setr_epi32(0, 2, 4, 6, 1, 3, 5, 7);\r\n    const vec q0 = _mm256_permutevar8x32_epi32(x0,\
-    \ perm);\r\n    const vec q1 = _mm256_permutevar8x32_epi32(x1, perm);\r\n    const\
-    \ vec q2 = _mm256_permutevar8x32_epi32(x2, perm);\r\n    const vec q3 = _mm256_permutevar8x32_epi32(x3,\
-    \ perm);\r\n\r\n    const vec t0 = _mm256_unpacklo_epi64(q0, q1);\r\n    const\
-    \ vec t2 = _mm256_unpackhi_epi64(q0, q1);\r\n    const vec t1 = _mm256_unpacklo_epi64(q2,\
-    \ q3);\r\n    const vec t3 = _mm256_unpackhi_epi64(q2, q3);\r\n\r\n    v0 = _mm256_castps_si256(_mm256_shuffle_ps(\r\
-    \n        _mm256_castsi256_ps(t0),\r\n        _mm256_castsi256_ps(t1),\r\n   \
-    \     _MM_SHUFFLE(2, 0, 2, 0)\r\n    ));\r\n    v1 = _mm256_castps_si256(_mm256_shuffle_ps(\r\
-    \n        _mm256_castsi256_ps(t0),\r\n        _mm256_castsi256_ps(t1),\r\n   \
-    \     _MM_SHUFFLE(3, 1, 3, 1)\r\n    ));\r\n    v2 = _mm256_castps_si256(_mm256_shuffle_ps(\r\
-    \n        _mm256_castsi256_ps(t2),\r\n        _mm256_castsi256_ps(t3),\r\n   \
-    \     _MM_SHUFFLE(2, 0, 2, 0)\r\n    ));\r\n    v3 = _mm256_castps_si256(_mm256_shuffle_ps(\r\
-    \n        _mm256_castsi256_ps(t2),\r\n        _mm256_castsi256_ps(t3),\r\n   \
-    \     _MM_SHUFFLE(3, 1, 3, 1)\r\n    ));\r\n}\r\n\r\n#endif\r\n\r\nEEZ_NTT998_ALWAYS_INLINE\
-    \ void forward_butterfly(mint* b, usize stride, usize i, word r1, word r2, word\
-    \ r3) noexcept {\r\n    const word x0 = raw(b[i]);\r\n    const word x1 = mul(raw(b[stride\
-    \ + i]), r1);\r\n    const word x2 = mul(raw(b[2 * stride + i]), r2);\r\n    const\
-    \ word x3 = mul(raw(b[3 * stride + i]), r3);\r\n\r\n    const word s02 = add(x0,\
-    \ x2);\r\n    const word d02 = sub(x0, x2);\r\n    const word s13 = add(x1, x3);\r\
-    \n    const word t = mul(sub(x1, x3), twiddles.root[2]);\r\n\r\n    b[i] = from_raw(add(s02,\
-    \ s13));\r\n    b[stride + i] = from_raw(sub(s02, s13));\r\n    b[2 * stride +\
-    \ i] = from_raw(add(d02, t));\r\n    b[3 * stride + i] = from_raw(sub(d02, t));\r\
-    \n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE void inverse_butterfly(mint* b, usize stride,\
-    \ usize i, word r1, word r2, word r3) noexcept {\r\n    const word x0 = raw(b[i]);\r\
-    \n    const word x1 = raw(b[stride + i]);\r\n    const word x2 = raw(b[2 * stride\
-    \ + i]);\r\n    const word x3 = raw(b[3 * stride + i]);\r\n\r\n    const word\
-    \ s01 = add(x0, x1);\r\n    const word d01 = sub(x0, x1);\r\n    const word s23\
-    \ = add(x2, x3);\r\n    const word t = mul(sub(x2, x3), twiddles.iroot[2]);\r\n\
-    \r\n    b[i] = from_raw(add(s01, s23));\r\n    b[stride + i] = from_raw(mul(add(d01,\
+    \ t3), perm);\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE void transpose_4x8_to_8x4(vec\
+    \ x0, vec x1, vec x2, vec x3, vec& v0, vec& v1, vec& v2, vec& v3) noexcept {\r\
+    \n    const vec perm = _mm256_setr_epi32(0, 2, 4, 6, 1, 3, 5, 7);\r\n    const\
+    \ vec q0 = _mm256_permutevar8x32_epi32(x0, perm);\r\n    const vec q1 = _mm256_permutevar8x32_epi32(x1,\
+    \ perm);\r\n    const vec q2 = _mm256_permutevar8x32_epi32(x2, perm);\r\n    const\
+    \ vec q3 = _mm256_permutevar8x32_epi32(x3, perm);\r\n    const vec t0 = _mm256_unpacklo_epi64(q0,\
+    \ q1);\r\n    const vec t2 = _mm256_unpackhi_epi64(q0, q1);\r\n    const vec t1\
+    \ = _mm256_unpacklo_epi64(q2, q3);\r\n    const vec t3 = _mm256_unpackhi_epi64(q2,\
+    \ q3);\r\n    v0 = _mm256_castps_si256(_mm256_shuffle_ps(_mm256_castsi256_ps(t0),\
+    \ _mm256_castsi256_ps(t1), _MM_SHUFFLE(2, 0, 2, 0)));\r\n    v1 = _mm256_castps_si256(_mm256_shuffle_ps(_mm256_castsi256_ps(t0),\
+    \ _mm256_castsi256_ps(t1), _MM_SHUFFLE(3, 1, 3, 1)));\r\n    v2 = _mm256_castps_si256(_mm256_shuffle_ps(_mm256_castsi256_ps(t2),\
+    \ _mm256_castsi256_ps(t3), _MM_SHUFFLE(2, 0, 2, 0)));\r\n    v3 = _mm256_castps_si256(_mm256_shuffle_ps(_mm256_castsi256_ps(t2),\
+    \ _mm256_castsi256_ps(t3), _MM_SHUFFLE(3, 1, 3, 1)));\r\n}\r\n\r\n#endif\r\n\r\
+    \nEEZ_NTT998_ALWAYS_INLINE void forward_butterfly(mint* b, usize stride, usize\
+    \ i, word r1, word r2, word r3) noexcept {\r\n    const word x0 = raw(b[i]);\r\
+    \n    const word x1 = mul(raw(b[stride + i]), r1);\r\n    const word x2 = mul(raw(b[2\
+    \ * stride + i]), r2);\r\n    const word x3 = mul(raw(b[3 * stride + i]), r3);\r\
+    \n    const word s02 = add(x0, x2);\r\n    const word d02 = sub(x0, x2);\r\n \
+    \   const word s13 = add(x1, x3);\r\n    const word t = mul(sub(x1, x3), twiddles.root[2]);\r\
+    \n    b[i] = from_raw(add(s02, s13));\r\n    b[stride + i] = from_raw(sub(s02,\
+    \ s13));\r\n    b[2 * stride + i] = from_raw(add(d02, t));\r\n    b[3 * stride\
+    \ + i] = from_raw(sub(d02, t));\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE void inverse_butterfly(mint*\
+    \ b, usize stride, usize i, word r1, word r2, word r3) noexcept {\r\n    const\
+    \ word x0 = raw(b[i]);\r\n    const word x1 = raw(b[stride + i]);\r\n    const\
+    \ word x2 = raw(b[2 * stride + i]);\r\n    const word x3 = raw(b[3 * stride +\
+    \ i]);\r\n    const word s01 = add(x0, x1);\r\n    const word d01 = sub(x0, x1);\r\
+    \n    const word s23 = add(x2, x3);\r\n    const word t = mul(sub(x2, x3), twiddles.iroot[2]);\r\
+    \n    b[i] = from_raw(add(s01, s23));\r\n    b[stride + i] = from_raw(mul(add(d01,\
     \ t), r1));\r\n    b[2 * stride + i] = from_raw(mul(sub(s01, s23), r2));\r\n \
     \   b[3 * stride + i] = from_raw(mul(sub(d01, t), r3));\r\n}\r\n\r\ninline void\
     \ forward_radix4_scalar(mint* EEZ_NTT998_RESTRICT a, usize blocks, usize stride)\
-    \ noexcept {\r\n    {\r\n        mint* const b = a;\r\n        for (usize i =\
-    \ 0; i < stride; ++i) {\r\n            const word x0 = raw(b[i]);\r\n        \
-    \    const word x1 = raw(b[stride + i]);\r\n            const word x2 = raw(b[2\
-    \ * stride + i]);\r\n            const word x3 = raw(b[3 * stride + i]);\r\n\r\
-    \n            const word s02 = add(x0, x2);\r\n            const word d02 = sub(x0,\
-    \ x2);\r\n            const word s13 = add(x1, x3);\r\n            const word\
-    \ t = mul(sub(x1, x3), twiddles.root[2]);\r\n\r\n            b[i] = from_raw(add(s02,\
-    \ s13));\r\n            b[stride + i] = from_raw(sub(s02, s13));\r\n         \
-    \   b[2 * stride + i] = from_raw(add(d02, t));\r\n            b[3 * stride + i]\
-    \ = from_raw(sub(d02, t));\r\n        }\r\n    }\r\n\r\n    if (blocks == 1) return;\r\
-    \n\r\n    word rot = forward_rate3(0);\r\n\r\n    for (usize s = 1; s < blocks;\
-    \ ++s) {\r\n        const word rot2 = mul(rot, rot);\r\n        const word rot3\
-    \ = mul(rot2, rot);\r\n        mint* const b = a + s * 4 * stride;\r\n       \
-    \ for (usize i = 0; i < stride; ++i) {\r\n            forward_butterfly(b, stride,\
-    \ i, rot, rot2, rot3);\r\n        }\r\n        if (s + 1 < blocks) {\r\n     \
-    \       rot = mul(\r\n                rot,\r\n                forward_rate3(twiddle_index(static_cast<u32>(s)))\r\
-    \n            );\r\n        }\r\n    }\r\n}\r\n\r\ninline void inverse_radix4_scalar(mint*\
-    \ EEZ_NTT998_RESTRICT a, usize blocks, usize stride) noexcept {\r\n    {\r\n \
-    \       mint* const b = a;\r\n        for (usize i = 0; i < stride; ++i) {\r\n\
-    \            const word x0 = raw(b[i]);\r\n            const word x1 = raw(b[stride\
-    \ + i]);\r\n            const word x2 = raw(b[2 * stride + i]);\r\n          \
-    \  const word x3 = raw(b[3 * stride + i]);\r\n\r\n            const word s01 =\
-    \ add(x0, x1);\r\n            const word d01 = sub(x0, x1);\r\n            const\
-    \ word s23 = add(x2, x3);\r\n            const word t = mul(sub(x2, x3), twiddles.iroot[2]);\r\
-    \n\r\n            b[i] = from_raw(add(s01, s23));\r\n            b[stride + i]\
-    \ = from_raw(add(d01, t));\r\n            b[2 * stride + i] = from_raw(sub(s01,\
-    \ s23));\r\n            b[3 * stride + i] = from_raw(sub(d01, t));\r\n       \
-    \ }\r\n    }\r\n\r\n    if (blocks == 1) return;\r\n\r\n    word rot = inverse_rate3(0);\r\
-    \n\r\n    for (usize s = 1; s < blocks; ++s) {\r\n        const word rot2 = mul(rot,\
-    \ rot);\r\n        const word rot3 = mul(rot2, rot);\r\n        mint* const b\
-    \ = a + s * 4 * stride;\r\n        for (usize i = 0; i < stride; ++i) {\r\n  \
-    \          inverse_butterfly(b, stride, i, rot, rot2, rot3);\r\n        }\r\n\
-    \        if (s + 1 < blocks) {\r\n            rot = mul(\r\n                rot,\r\
-    \n                inverse_rate3(twiddle_index(static_cast<u32>(s)))\r\n      \
-    \      );\r\n        }\r\n    }\r\n}\r\n\r\n#if EEZ_NTT998_USE_AVX2\r\n\r\nEEZ_NTT998_ALWAYS_INLINE\
-    \ void forward_radix4_large_block(\r\n    mint* EEZ_NTT998_RESTRICT b,\r\n   \
-    \ usize stride,\r\n    vec imag,\r\n    word r1,\r\n    word r2,\r\n    word r3\r\
-    \n) noexcept {\r\n    const vec w1 = broadcast(r1);\r\n    const vec w2 = broadcast(r2);\r\
-    \n    const vec w3 = broadcast(r3);\r\n\r\n    for (usize i = 0; i < stride; i\
-    \ += 8){\r\n        const vec x0 = load8(b + i);\r\n        const vec x1 = mul8(load8(b\
-    \ + stride + i), w1);\r\n        const vec x2 = mul8(load8(b + 2 * stride + i),\
-    \ w2);\r\n        const vec x3 = mul8(load8(b + 3 * stride + i), w3);\r\n\r\n\
-    \        const vec s02 = add8(x0, x2);\r\n        const vec d02 = sub8(x0, x2);\r\
-    \n        const vec s13 = add8(x1, x3);\r\n        const vec t = mul8(sub8(x1,\
-    \ x3), imag);\r\n\r\n        store8(b + i, add8(s02, s13));\r\n        store8(b\
-    \ + stride + i, sub8(s02, s13));\r\n        store8(b + 2 * stride + i, add8(d02,\
-    \ t));\r\n        store8(b + 3 * stride + i, sub8(d02, t));\r\n    }\r\n}\r\n\r\
-    \nEEZ_NTT998_ALWAYS_INLINE void inverse_radix4_large_block(\r\n    mint* EEZ_NTT998_RESTRICT\
-    \ b,\r\n    usize stride,\r\n    vec iimag,\r\n    word r1,\r\n    word r2,\r\n\
-    \    word r3\r\n) noexcept {\r\n    const vec w1 = broadcast(r1);\r\n    const\
-    \ vec w2 = broadcast(r2);\r\n    const vec w3 = broadcast(r3);\r\n\r\n    for\
-    \ (usize i = 0; i < stride; i += 8){\r\n        const vec x0 = load8(b + i);\r\
-    \n        const vec x1 = load8(b + stride + i);\r\n        const vec x2 = load8(b\
-    \ + 2 * stride + i);\r\n        const vec x3 = load8(b + 3 * stride + i);\r\n\r\
-    \n        const vec s01 = add8(x0, x1);\r\n        const vec d01 = sub8(x0, x1);\r\
-    \n        const vec s23 = add8(x2, x3);\r\n        const vec t = mul8(sub8(x2,\
-    \ x3), iimag);\r\n\r\n        store8(b + i, add8(s01, s23));\r\n        store8(b\
-    \ + stride + i, mul8(add8(d01, t), w1));\r\n        store8(b + 2 * stride + i,\
-    \ mul8(sub8(s01, s23), w2));\r\n        store8(b + 3 * stride + i, mul8(sub8(d01,\
-    \ t), w3));\r\n    }\r\n}\r\n\r\ninline void forward_radix4_large(mint* EEZ_NTT998_RESTRICT\
-    \ a, usize blocks, usize stride) noexcept {\r\n    const vec imag = broadcast(twiddles.root[2]);\r\
-    \n    {\r\n        mint* const b = a;\r\n        for (usize i = 0; i < stride;\
-    \ i += 8){\r\n            const vec x0 = load8(b + i);\r\n            const vec\
-    \ x1 = load8(b + stride + i);\r\n            const vec x2 = load8(b + 2 * stride\
-    \ + i);\r\n            const vec x3 = load8(b + 3 * stride + i);\r\n\r\n     \
-    \       const vec s02 = add8(x0, x2);\r\n            const vec d02 = sub8(x0,\
-    \ x2);\r\n            const vec s13 = add8(x1, x3);\r\n            const vec t\
-    \ = mul8(sub8(x1, x3), imag);\r\n\r\n            store8(b + i, add8(s02, s13));\r\
-    \n            store8(b + stride + i, sub8(s02, s13));\r\n            store8(b\
-    \ + 2 * stride + i, add8(d02, t));\r\n            store8(b + 3 * stride + i, sub8(d02,\
-    \ t));\r\n        }\r\n    }\r\n\r\n    if (blocks == 1) return;\r\n\r\n    word\
-    \ rot = forward_rate3(0);\r\n    usize s = 1;\r\n\r\n    for (; s + 8 <= blocks;\
-    \ s += 8){\r\n        alignas(32) word r1[8];\r\n        alignas(32) word r2[8];\r\
-    \n        alignas(32) word r3[8];\r\n        for (unsigned lane = 0; lane < 8;\
-    \ ++lane){\r\n            r1[lane] = rot;\r\n            if (s + lane + 1 < blocks){\r\
-    \n                rot = mul(rot, forward_rate3(twiddle_index(static_cast<u32>(s\
-    \ + lane))));\r\n            }\r\n        }\r\n\r\n        const vec w1 = _mm256_load_si256(reinterpret_cast<const\
+    \ noexcept {\r\n    {\r\n        mint* const b = a;\r\n        for(usize i = 0;\
+    \ i < stride; ++i){\r\n            const word x0 = raw(b[i]);\r\n            const\
+    \ word x1 = raw(b[stride + i]);\r\n            const word x2 = raw(b[2 * stride\
+    \ + i]);\r\n            const word x3 = raw(b[3 * stride + i]);\r\n          \
+    \  const word s02 = add(x0, x2);\r\n            const word d02 = sub(x0, x2);\r\
+    \n            const word s13 = add(x1, x3);\r\n            const word t = mul(sub(x1,\
+    \ x3), twiddles.root[2]);\r\n            b[i] = from_raw(add(s02, s13));\r\n \
+    \           b[stride + i] = from_raw(sub(s02, s13));\r\n            b[2 * stride\
+    \ + i] = from_raw(add(d02, t));\r\n            b[3 * stride + i] = from_raw(sub(d02,\
+    \ t));\r\n        }\r\n    }\r\n    if(blocks == 1) return;\r\n    word rot =\
+    \ forward_rate3(0);\r\n    for(usize s = 1; s < blocks; ++s){\r\n        const\
+    \ word rot2 = mul(rot, rot);\r\n        const word rot3 = mul(rot2, rot);\r\n\
+    \        mint* const b = a + s * 4 * stride;\r\n        for(usize i = 0; i < stride;\
+    \ ++i) forward_butterfly(b, stride, i, rot, rot2, rot3);\r\n        if(s + 1 <\
+    \ blocks) rot = mul(rot, forward_rate3(twiddle_index(static_cast<u32>(s))));\r\
+    \n    }\r\n}\r\n\r\ninline void inverse_radix4_scalar(mint* EEZ_NTT998_RESTRICT\
+    \ a, usize blocks, usize stride) noexcept {\r\n    {\r\n        mint* const b\
+    \ = a;\r\n        for(usize i = 0; i < stride; ++i){\r\n            const word\
+    \ x0 = raw(b[i]);\r\n            const word x1 = raw(b[stride + i]);\r\n     \
+    \       const word x2 = raw(b[2 * stride + i]);\r\n            const word x3 =\
+    \ raw(b[3 * stride + i]);\r\n            const word s01 = add(x0, x1);\r\n   \
+    \         const word d01 = sub(x0, x1);\r\n            const word s23 = add(x2,\
+    \ x3);\r\n            const word t = mul(sub(x2, x3), twiddles.iroot[2]);\r\n\
+    \            b[i] = from_raw(add(s01, s23));\r\n            b[stride + i] = from_raw(add(d01,\
+    \ t));\r\n            b[2 * stride + i] = from_raw(sub(s01, s23));\r\n       \
+    \     b[3 * stride + i] = from_raw(sub(d01, t));\r\n        }\r\n    }\r\n   \
+    \ if(blocks == 1) return;\r\n    word rot = inverse_rate3(0);\r\n    for(usize\
+    \ s = 1; s < blocks; ++s){\r\n        const word rot2 = mul(rot, rot);\r\n   \
+    \     const word rot3 = mul(rot2, rot);\r\n        mint* const b = a + s * 4 *\
+    \ stride;\r\n        for(usize i = 0; i < stride; ++i) inverse_butterfly(b, stride,\
+    \ i, rot, rot2, rot3);\r\n        if(s + 1 < blocks) rot = mul(rot, inverse_rate3(twiddle_index(static_cast<u32>(s))));\r\
+    \n    }\r\n}\r\n\r\n#if EEZ_NTT998_USE_AVX2\r\n\r\nEEZ_NTT998_ALWAYS_INLINE void\
+    \ forward_radix4_large_block(mint* EEZ_NTT998_RESTRICT b, usize stride, vec imag,\
+    \ word r1, word r2, word r3) noexcept {\r\n    const vec w1 = broadcast(r1);\r\
+    \n    const vec w2 = broadcast(r2);\r\n    const vec w3 = broadcast(r3);\r\n \
+    \   for(usize i = 0; i < stride; i += 8){\r\n        const vec x0 = load8(b +\
+    \ i);\r\n        const vec x1 = mul8(load8(b + stride + i), w1);\r\n        const\
+    \ vec x2 = mul8(load8(b + 2 * stride + i), w2);\r\n        const vec x3 = mul8(load8(b\
+    \ + 3 * stride + i), w3);\r\n        const vec s02 = add8(x0, x2);\r\n       \
+    \ const vec d02 = sub8(x0, x2);\r\n        const vec s13 = add8(x1, x3);\r\n \
+    \       const vec t = mul8(sub8(x1, x3), imag);\r\n        store8(b + i, add8(s02,\
+    \ s13));\r\n        store8(b + stride + i, sub8(s02, s13));\r\n        store8(b\
+    \ + 2 * stride + i, add8(d02, t));\r\n        store8(b + 3 * stride + i, sub8(d02,\
+    \ t));\r\n    }\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE void inverse_radix4_large_block(mint*\
+    \ EEZ_NTT998_RESTRICT b, usize stride, vec iimag, word r1, word r2, word r3) noexcept\
+    \ {\r\n    const vec w1 = broadcast(r1);\r\n    const vec w2 = broadcast(r2);\r\
+    \n    const vec w3 = broadcast(r3);\r\n    for(usize i = 0; i < stride; i += 8){\r\
+    \n        const vec x0 = load8(b + i);\r\n        const vec x1 = load8(b + stride\
+    \ + i);\r\n        const vec x2 = load8(b + 2 * stride + i);\r\n        const\
+    \ vec x3 = load8(b + 3 * stride + i);\r\n        const vec s01 = add8(x0, x1);\r\
+    \n        const vec d01 = sub8(x0, x1);\r\n        const vec s23 = add8(x2, x3);\r\
+    \n        const vec t = mul8(sub8(x2, x3), iimag);\r\n        store8(b + i, add8(s01,\
+    \ s23));\r\n        store8(b + stride + i, mul8(add8(d01, t), w1));\r\n      \
+    \  store8(b + 2 * stride + i, mul8(sub8(s01, s23), w2));\r\n        store8(b +\
+    \ 3 * stride + i, mul8(sub8(d01, t), w3));\r\n    }\r\n}\r\n\r\ninline void forward_radix4_large(mint*\
+    \ EEZ_NTT998_RESTRICT a, usize blocks, usize stride) noexcept {\r\n    const vec\
+    \ imag = broadcast(twiddles.root[2]);\r\n    {\r\n        mint* const b = a;\r\
+    \n        for(usize i = 0; i < stride; i += 8){\r\n            const vec x0 =\
+    \ load8(b + i);\r\n            const vec x1 = load8(b + stride + i);\r\n     \
+    \       const vec x2 = load8(b + 2 * stride + i);\r\n            const vec x3\
+    \ = load8(b + 3 * stride + i);\r\n            const vec s02 = add8(x0, x2);\r\n\
+    \            const vec d02 = sub8(x0, x2);\r\n            const vec s13 = add8(x1,\
+    \ x3);\r\n            const vec t = mul8(sub8(x1, x3), imag);\r\n            store8(b\
+    \ + i, add8(s02, s13));\r\n            store8(b + stride + i, sub8(s02, s13));\r\
+    \n            store8(b + 2 * stride + i, add8(d02, t));\r\n            store8(b\
+    \ + 3 * stride + i, sub8(d02, t));\r\n        }\r\n    }\r\n    if(blocks == 1)\
+    \ return;\r\n    word rot = forward_rate3(0);\r\n    usize s = 1;\r\n    for(;\
+    \ s + 8 <= blocks; s += 8){\r\n        alignas(32) word r1[8], r2[8], r3[8];\r\
+    \n        for(unsigned lane = 0; lane < 8; ++lane){\r\n            r1[lane] =\
+    \ rot;\r\n            if(s + lane + 1 < blocks) rot = mul(rot, forward_rate3(twiddle_index(static_cast<u32>(s\
+    \ + lane))));\r\n        }\r\n        const vec w1 = _mm256_load_si256(reinterpret_cast<const\
     \ vec*>(r1));\r\n        const vec w2 = mul8(w1, w1);\r\n        const vec w3\
     \ = mul8(w2, w1);\r\n        _mm256_store_si256(reinterpret_cast<vec*>(r2), w2);\r\
-    \n        _mm256_store_si256(reinterpret_cast<vec*>(r3), w3);\r\n\r\n        for\
-    \ (unsigned lane = 0; lane < 8; ++lane){\r\n            forward_radix4_large_block(\r\
-    \n                a + (s + lane) * 4 * stride,\r\n                stride,\r\n\
-    \                imag,\r\n                r1[lane],\r\n                r2[lane],\r\
-    \n                r3[lane]\r\n            );\r\n        }\r\n    }\r\n\r\n   \
-    \ for (; s < blocks; ++s){\r\n        const word rot2 = mul(rot, rot);\r\n   \
-    \     const word rot3 = mul(rot2, rot);\r\n        forward_radix4_large_block(a\
-    \ + s * 4 * stride, stride, imag, rot, rot2, rot3);\r\n\r\n        if (s + 1 <\
-    \ blocks){\r\n            rot = mul(rot, forward_rate3(twiddle_index(static_cast<u32>(s))));\r\
-    \n        }\r\n    }\r\n}\r\n\r\ninline void inverse_radix4_large(mint* EEZ_NTT998_RESTRICT\
-    \ a, usize blocks, usize stride) noexcept {\r\n    const vec iimag = broadcast(twiddles.iroot[2]);\r\
-    \n    {\r\n        mint* const b = a;\r\n        for (usize i = 0; i < stride;\
+    \n        _mm256_store_si256(reinterpret_cast<vec*>(r3), w3);\r\n        for(unsigned\
+    \ lane = 0; lane < 8; ++lane)\r\n            forward_radix4_large_block(a + (s\
+    \ + lane) * 4 * stride, stride, imag, r1[lane], r2[lane], r3[lane]);\r\n    }\r\
+    \n    for(; s < blocks; ++s){\r\n        const word rot2 = mul(rot, rot);\r\n\
+    \        const word rot3 = mul(rot2, rot);\r\n        forward_radix4_large_block(a\
+    \ + s * 4 * stride, stride, imag, rot, rot2, rot3);\r\n        if(s + 1 < blocks)\
+    \ rot = mul(rot, forward_rate3(twiddle_index(static_cast<u32>(s))));\r\n    }\r\
+    \n}\r\n\r\ninline void inverse_radix4_large(mint* EEZ_NTT998_RESTRICT a, usize\
+    \ blocks, usize stride) noexcept {\r\n    const vec iimag = broadcast(twiddles.iroot[2]);\r\
+    \n    {\r\n        mint* const b = a;\r\n        for(usize i = 0; i < stride;\
     \ i += 8){\r\n            const vec x0 = load8(b + i);\r\n            const vec\
     \ x1 = load8(b + stride + i);\r\n            const vec x2 = load8(b + 2 * stride\
-    \ + i);\r\n            const vec x3 = load8(b + 3 * stride + i);\r\n\r\n     \
-    \       const vec s01 = add8(x0, x1);\r\n            const vec d01 = sub8(x0,\
-    \ x1);\r\n            const vec s23 = add8(x2, x3);\r\n            const vec t\
-    \ = mul8(sub8(x2, x3), iimag);\r\n\r\n            store8(b + i, add8(s01, s23));\r\
-    \n            store8(b + stride + i, add8(d01, t));\r\n            store8(b +\
-    \ 2 * stride + i, sub8(s01, s23));\r\n            store8(b + 3 * stride + i, sub8(d01,\
-    \ t));\r\n        }\r\n    }\r\n\r\n    if (blocks == 1) return;\r\n\r\n    word\
-    \ rot = inverse_rate3(0);\r\n    usize s = 1;\r\n\r\n    for (; s + 8 <= blocks;\
-    \ s += 8){\r\n        alignas(32) word r1[8];\r\n        alignas(32) word r2[8];\r\
-    \n        alignas(32) word r3[8];\r\n        for (unsigned lane = 0; lane < 8;\
-    \ ++lane){\r\n            r1[lane] = rot;\r\n            if (s + lane + 1 < blocks){\r\
-    \n                rot = mul(rot, inverse_rate3(twiddle_index(static_cast<u32>(s\
-    \ + lane))));\r\n            }\r\n        }\r\n\r\n        const vec w1 = _mm256_load_si256(reinterpret_cast<const\
-    \ vec*>(r1));\r\n        const vec w2 = mul8(w1, w1);\r\n        const vec w3\
-    \ = mul8(w2, w1);\r\n        _mm256_store_si256(reinterpret_cast<vec*>(r2), w2);\r\
-    \n        _mm256_store_si256(reinterpret_cast<vec*>(r3), w3);\r\n\r\n        for\
-    \ (unsigned lane = 0; lane < 8; ++lane){\r\n            inverse_radix4_large_block(\r\
-    \n                a + (s + lane) * 4 * stride,\r\n                stride,\r\n\
-    \                iimag,\r\n                r1[lane],\r\n                r2[lane],\r\
-    \n                r3[lane]\r\n            );\r\n        }\r\n    }\r\n\r\n   \
-    \ for (; s < blocks; ++s){\r\n        const word rot2 = mul(rot, rot);\r\n   \
-    \     const word rot3 = mul(rot2, rot);\r\n        inverse_radix4_large_block(a\
-    \ + s * 4 * stride, stride, iimag, rot, rot2, rot3);\r\n\r\n        if (s + 1\
-    \ < blocks){\r\n            rot = mul(rot, inverse_rate3(twiddle_index(static_cast<u32>(s))));\r\
-    \n        }\r\n    }\r\n}\r\n\r\ninline void forward_radix4_p4(mint* EEZ_NTT998_RESTRICT\
-    \ a, usize blocks) noexcept {\r\n    if (blocks < 2){\r\n        forward_radix4_scalar(a,\
-    \ blocks, 4);\r\n        return;\r\n    }\r\n\r\n    const vec imag = broadcast(twiddles.root[2]);\r\
-    \n    word rot = montgomery_one;\r\n\r\n    for (usize s = 0; s < blocks; s +=\
-    \ 2){\r\n        const word r10 = rot;\r\n        rot = mul(rot, forward_rate3(twiddle_index(static_cast<u32>(s))));\r\
-    \n        const word r11 = rot;\r\n\r\n        const vec w1 = pack_four(r10, r11);\r\
+    \ + i);\r\n            const vec x3 = load8(b + 3 * stride + i);\r\n         \
+    \   const vec s01 = add8(x0, x1);\r\n            const vec d01 = sub8(x0, x1);\r\
+    \n            const vec s23 = add8(x2, x3);\r\n            const vec t = mul8(sub8(x2,\
+    \ x3), iimag);\r\n            store8(b + i, add8(s01, s23));\r\n            store8(b\
+    \ + stride + i, add8(d01, t));\r\n            store8(b + 2 * stride + i, sub8(s01,\
+    \ s23));\r\n            store8(b + 3 * stride + i, sub8(d01, t));\r\n        }\r\
+    \n    }\r\n    if(blocks == 1) return;\r\n    word rot = inverse_rate3(0);\r\n\
+    \    usize s = 1;\r\n    for(; s + 8 <= blocks; s += 8){\r\n        alignas(32)\
+    \ word r1[8], r2[8], r3[8];\r\n        for(unsigned lane = 0; lane < 8; ++lane){\r\
+    \n            r1[lane] = rot;\r\n            if(s + lane + 1 < blocks) rot = mul(rot,\
+    \ inverse_rate3(twiddle_index(static_cast<u32>(s + lane))));\r\n        }\r\n\
+    \        const vec w1 = _mm256_load_si256(reinterpret_cast<const vec*>(r1));\r\
+    \n        const vec w2 = mul8(w1, w1);\r\n        const vec w3 = mul8(w2, w1);\r\
+    \n        _mm256_store_si256(reinterpret_cast<vec*>(r2), w2);\r\n        _mm256_store_si256(reinterpret_cast<vec*>(r3),\
+    \ w3);\r\n        for(unsigned lane = 0; lane < 8; ++lane)\r\n            inverse_radix4_large_block(a\
+    \ + (s + lane) * 4 * stride, stride, iimag, r1[lane], r2[lane], r3[lane]);\r\n\
+    \    }\r\n    for(; s < blocks; ++s){\r\n        const word rot2 = mul(rot, rot);\r\
+    \n        const word rot3 = mul(rot2, rot);\r\n        inverse_radix4_large_block(a\
+    \ + s * 4 * stride, stride, iimag, rot, rot2, rot3);\r\n        if(s + 1 < blocks)\
+    \ rot = mul(rot, inverse_rate3(twiddle_index(static_cast<u32>(s))));\r\n    }\r\
+    \n}\r\n\r\ninline void forward_radix4_p4(mint* EEZ_NTT998_RESTRICT a, usize blocks)\
+    \ noexcept {\r\n    if(blocks < 2){\r\n        forward_radix4_scalar(a, blocks,\
+    \ 4);\r\n        return;\r\n    }\r\n    const vec imag = broadcast(twiddles.root[2]);\r\
+    \n    word rot = montgomery_one;\r\n    for(usize s = 0; s < blocks; s += 2){\r\
+    \n        const word r10 = rot;\r\n        rot = mul(rot, forward_rate3(twiddle_index(static_cast<u32>(s))));\r\
+    \n        const word r11 = rot;\r\n        const vec w1 = pack_four(r10, r11);\r\
     \n        const vec w2 = mul8(w1, w1);\r\n        const vec w3 = mul8(w2, w1);\r\
     \n        mint* const b0 = a + s * 16;\r\n        mint* const b1 = b0 + 16;\r\n\
-    \r\n        const vec x0 = load2x4(b0, b1);\r\n        const vec x1 = mul8(load2x4(b0\
+    \        const vec x0 = load2x4(b0, b1);\r\n        const vec x1 = mul8(load2x4(b0\
     \ + 4, b1 + 4), w1);\r\n        const vec x2 = mul8(load2x4(b0 + 8, b1 + 8), w2);\r\
-    \n        const vec x3 = mul8(load2x4(b0 + 12, b1 + 12), w3);\r\n\r\n        const\
+    \n        const vec x3 = mul8(load2x4(b0 + 12, b1 + 12), w3);\r\n        const\
     \ vec s02 = add8(x0, x2);\r\n        const vec d02 = sub8(x0, x2);\r\n       \
     \ const vec s13 = add8(x1, x3);\r\n        const vec t = mul8(sub8(x1, x3), imag);\r\
-    \n\r\n        store2x4(b0, b1, add8(s02, s13));\r\n        store2x4(b0 + 4, b1\
-    \ + 4, sub8(s02, s13));\r\n        store2x4(b0 + 8, b1 + 8, add8(d02, t));\r\n\
-    \        store2x4(b0 + 12, b1 + 12, sub8(d02, t));\r\n\r\n        if (s + 2 <\
-    \ blocks){\r\n            rot = mul(rot, forward_rate3(twiddle_index(static_cast<u32>(s\
-    \ + 1))));\r\n        }\r\n    }\r\n}\r\n\r\ninline void inverse_radix4_p4(mint*\
-    \ EEZ_NTT998_RESTRICT a, usize blocks) noexcept {\r\n    if (blocks < 2){\r\n\
-    \        inverse_radix4_scalar(a, blocks, 4);\r\n        return;\r\n    }\r\n\r\
-    \n    const vec iimag = broadcast(twiddles.iroot[2]);\r\n    word rot = montgomery_one;\r\
-    \n\r\n    for (usize s = 0; s < blocks; s += 2){\r\n        const word r10 = rot;\r\
-    \n        rot = mul(rot, inverse_rate3(twiddle_index(static_cast<u32>(s))));\r\
-    \n        const word r11 = rot;\r\n\r\n        const vec w1 = pack_four(r10, r11);\r\
+    \n        store2x4(b0, b1, add8(s02, s13));\r\n        store2x4(b0 + 4, b1 + 4,\
+    \ sub8(s02, s13));\r\n        store2x4(b0 + 8, b1 + 8, add8(d02, t));\r\n    \
+    \    store2x4(b0 + 12, b1 + 12, sub8(d02, t));\r\n        if(s + 2 < blocks) rot\
+    \ = mul(rot, forward_rate3(twiddle_index(static_cast<u32>(s + 1))));\r\n    }\r\
+    \n}\r\n\r\ninline void inverse_radix4_p4(mint* EEZ_NTT998_RESTRICT a, usize blocks)\
+    \ noexcept {\r\n    if(blocks < 2){\r\n        inverse_radix4_scalar(a, blocks,\
+    \ 4);\r\n        return;\r\n    }\r\n    const vec iimag = broadcast(twiddles.iroot[2]);\r\
+    \n    word rot = montgomery_one;\r\n    for(usize s = 0; s < blocks; s += 2){\r\
+    \n        const word r10 = rot;\r\n        rot = mul(rot, inverse_rate3(twiddle_index(static_cast<u32>(s))));\r\
+    \n        const word r11 = rot;\r\n        const vec w1 = pack_four(r10, r11);\r\
     \n        const vec w2 = mul8(w1, w1);\r\n        const vec w3 = mul8(w2, w1);\r\
     \n        mint* const b0 = a + s * 16;\r\n        mint* const b1 = b0 + 16;\r\n\
-    \r\n        const vec x0 = load2x4(b0, b1);\r\n        const vec x1 = load2x4(b0\
+    \        const vec x0 = load2x4(b0, b1);\r\n        const vec x1 = load2x4(b0\
     \ + 4, b1 + 4);\r\n        const vec x2 = load2x4(b0 + 8, b1 + 8);\r\n       \
-    \ const vec x3 = load2x4(b0 + 12, b1 + 12);\r\n\r\n        const vec s01 = add8(x0,\
+    \ const vec x3 = load2x4(b0 + 12, b1 + 12);\r\n        const vec s01 = add8(x0,\
     \ x1);\r\n        const vec d01 = sub8(x0, x1);\r\n        const vec s23 = add8(x2,\
-    \ x3);\r\n        const vec t = mul8(sub8(x2, x3), iimag);\r\n\r\n        store2x4(b0,\
+    \ x3);\r\n        const vec t = mul8(sub8(x2, x3), iimag);\r\n        store2x4(b0,\
     \ b1, add8(s01, s23));\r\n        store2x4(b0 + 4, b1 + 4, mul8(add8(d01, t),\
     \ w1));\r\n        store2x4(b0 + 8, b1 + 8, mul8(sub8(s01, s23), w2));\r\n   \
-    \     store2x4(b0 + 12, b1 + 12, mul8(sub8(d01, t), w3));\r\n\r\n        if (s\
-    \ + 2 < blocks){\r\n            rot = mul(rot, inverse_rate3(twiddle_index(static_cast<u32>(s\
-    \ + 1))));\r\n        }\r\n    }\r\n}\r\n\r\ninline void forward_radix4_p1(mint*\
-    \ EEZ_NTT998_RESTRICT a, usize blocks) noexcept {\r\n    const vec imag = broadcast(twiddles.root[2]);\r\
-    \n    word rot = montgomery_one;\r\n    usize s = 0;\r\n\r\n    for (; s + 8 <=\
-    \ blocks; s += 8){\r\n        alignas(32) word r1[8];\r\n        for (unsigned\
-    \ lane = 0; lane < 8; ++lane){\r\n            r1[lane] = rot;\r\n            if\
-    \ (s + lane + 1 < blocks){\r\n                rot = mul(rot, forward_rate3(twiddle_index(static_cast<u32>(s\
-    \ + lane))));\r\n            }\r\n        }\r\n\r\n        const vec w1 = _mm256_load_si256(reinterpret_cast<const\
+    \     store2x4(b0 + 12, b1 + 12, mul8(sub8(d01, t), w3));\r\n        if(s + 2\
+    \ < blocks) rot = mul(rot, inverse_rate3(twiddle_index(static_cast<u32>(s + 1))));\r\
+    \n    }\r\n}\r\n\r\ninline void forward_radix4_p1(mint* EEZ_NTT998_RESTRICT a,\
+    \ usize blocks) noexcept {\r\n    const vec imag = broadcast(twiddles.root[2]);\r\
+    \n    word rot = montgomery_one;\r\n    usize s = 0;\r\n    for(; s + 8 <= blocks;\
+    \ s += 8){\r\n        alignas(32) word r1[8];\r\n        for(unsigned lane = 0;\
+    \ lane < 8; ++lane){\r\n            r1[lane] = rot;\r\n            if(s + lane\
+    \ + 1 < blocks) rot = mul(rot, forward_rate3(twiddle_index(static_cast<u32>(s\
+    \ + lane))));\r\n        }\r\n        const vec w1 = _mm256_load_si256(reinterpret_cast<const\
     \ vec*>(r1));\r\n        const vec w2 = mul8(w1, w1);\r\n        const vec w3\
-    \ = mul8(w2, w1);\r\n\r\n        mint* const b = a + 4 * s;\r\n        vec x0;\r\
-    \n        vec x1;\r\n        vec x2;\r\n        vec x3;\r\n        transpose_8x4_to_4x8(load8(b),\
-    \ load8(b + 8), load8(b + 16), load8(b + 24), x0, x1, x2, x3);\r\n\r\n       \
-    \ x1 = mul8(x1, w1);\r\n        x2 = mul8(x2, w2);\r\n        x3 = mul8(x3, w3);\r\
-    \n\r\n        const vec s02 = add8(x0, x2);\r\n        const vec d02 = sub8(x0,\
-    \ x2);\r\n        const vec s13 = add8(x1, x3);\r\n        const vec t = mul8(sub8(x1,\
-    \ x3), imag);\r\n\r\n        vec v0;\r\n        vec v1;\r\n        vec v2;\r\n\
-    \        vec v3;\r\n        transpose_4x8_to_8x4(add8(s02, s13), sub8(s02, s13),\
-    \ add8(d02, t), sub8(d02, t), v0, v1, v2, v3);\r\n        store8(b, v0);\r\n \
-    \       store8(b + 8, v1);\r\n        store8(b + 16, v2);\r\n        store8(b\
-    \ + 24, v3);\r\n    }\r\n\r\n    for (; s < blocks; ++s){\r\n        const word\
-    \ rot2 = mul(rot, rot);\r\n        const word rot3 = mul(rot2, rot);\r\n     \
-    \   forward_butterfly(a + 4 * s, 1, 0, rot, rot2, rot3);\r\n        if (s + 1\
-    \ < blocks){\r\n            rot = mul(rot, forward_rate3(twiddle_index(static_cast<u32>(s))));\r\
-    \n        }\r\n    }\r\n}\r\n\r\ninline void inverse_radix4_p1(mint* EEZ_NTT998_RESTRICT\
-    \ a, usize blocks) noexcept {\r\n    const vec iimag = broadcast(twiddles.iroot[2]);\r\
-    \n    word rot = montgomery_one;\r\n    usize s = 0;\r\n\r\n    for (; s + 8 <=\
-    \ blocks; s += 8){\r\n        alignas(32) word r1[8];\r\n        for (unsigned\
-    \ lane = 0; lane < 8; ++lane){\r\n            r1[lane] = rot;\r\n            if\
-    \ (s + lane + 1 < blocks){\r\n                rot = mul(rot, inverse_rate3(twiddle_index(static_cast<u32>(s\
-    \ + lane))));\r\n            }\r\n        }\r\n\r\n        const vec w1 = _mm256_load_si256(reinterpret_cast<const\
+    \ = mul8(w2, w1);\r\n        mint* const b = a + 4 * s;\r\n        vec x0, x1,\
+    \ x2, x3;\r\n        transpose_8x4_to_4x8(load8(b), load8(b + 8), load8(b + 16),\
+    \ load8(b + 24), x0, x1, x2, x3);\r\n        x1 = mul8(x1, w1);\r\n        x2\
+    \ = mul8(x2, w2);\r\n        x3 = mul8(x3, w3);\r\n        const vec s02 = add8(x0,\
+    \ x2);\r\n        const vec d02 = sub8(x0, x2);\r\n        const vec s13 = add8(x1,\
+    \ x3);\r\n        const vec t = mul8(sub8(x1, x3), imag);\r\n        vec v0, v1,\
+    \ v2, v3;\r\n        transpose_4x8_to_8x4(add8(s02, s13), sub8(s02, s13), add8(d02,\
+    \ t), sub8(d02, t), v0, v1, v2, v3);\r\n        store8(b, v0);\r\n        store8(b\
+    \ + 8, v1);\r\n        store8(b + 16, v2);\r\n        store8(b + 24, v3);\r\n\
+    \    }\r\n    for(; s < blocks; ++s){\r\n        const word rot2 = mul(rot, rot);\r\
+    \n        const word rot3 = mul(rot2, rot);\r\n        forward_butterfly(a + 4\
+    \ * s, 1, 0, rot, rot2, rot3);\r\n        if(s + 1 < blocks) rot = mul(rot, forward_rate3(twiddle_index(static_cast<u32>(s))));\r\
+    \n    }\r\n}\r\n\r\ninline void inverse_radix4_p1(mint* EEZ_NTT998_RESTRICT a,\
+    \ usize blocks) noexcept {\r\n    const vec iimag = broadcast(twiddles.iroot[2]);\r\
+    \n    word rot = montgomery_one;\r\n    usize s = 0;\r\n    for(; s + 8 <= blocks;\
+    \ s += 8){\r\n        alignas(32) word r1[8];\r\n        for(unsigned lane = 0;\
+    \ lane < 8; ++lane){\r\n            r1[lane] = rot;\r\n            if(s + lane\
+    \ + 1 < blocks) rot = mul(rot, inverse_rate3(twiddle_index(static_cast<u32>(s\
+    \ + lane))));\r\n        }\r\n        const vec w1 = _mm256_load_si256(reinterpret_cast<const\
     \ vec*>(r1));\r\n        const vec w2 = mul8(w1, w1);\r\n        const vec w3\
-    \ = mul8(w2, w1);\r\n\r\n        mint* const b = a + 4 * s;\r\n        vec x0;\r\
-    \n        vec x1;\r\n        vec x2;\r\n        vec x3;\r\n        transpose_8x4_to_4x8(load8(b),\
-    \ load8(b + 8), load8(b + 16), load8(b + 24), x0, x1, x2, x3);\r\n\r\n       \
-    \ const vec s01 = add8(x0, x1);\r\n        const vec d01 = sub8(x0, x1);\r\n \
-    \       const vec s23 = add8(x2, x3);\r\n        const vec t = mul8(sub8(x2, x3),\
-    \ iimag);\r\n\r\n        vec v0;\r\n        vec v1;\r\n        vec v2;\r\n   \
-    \     vec v3;\r\n        transpose_4x8_to_8x4(\r\n            add8(s01, s23),\r\
-    \n            mul8(add8(d01, t), w1),\r\n            mul8(sub8(s01, s23), w2),\r\
-    \n            mul8(sub8(d01, t), w3),\r\n            v0,\r\n            v1,\r\n\
-    \            v2,\r\n            v3\r\n        );\r\n        store8(b, v0);\r\n\
-    \        store8(b + 8, v1);\r\n        store8(b + 16, v2);\r\n        store8(b\
-    \ + 24, v3);\r\n    }\r\n\r\n    for (; s < blocks; ++s){\r\n        const word\
-    \ rot2 = mul(rot, rot);\r\n        const word rot3 = mul(rot2, rot);\r\n     \
-    \   inverse_butterfly(a + 4 * s, 1, 0, rot, rot2, rot3);\r\n        if (s + 1\
-    \ < blocks){\r\n            rot = mul(rot, inverse_rate3(twiddle_index(static_cast<u32>(s))));\r\
-    \n        }\r\n    }\r\n}\r\n\r\n#endif\r\n\r\ninline void forward_radix2_first(mint*\
-    \ EEZ_NTT998_RESTRICT a, usize n) noexcept {\r\n    const usize half = n >> 1;\r\
-    \n    usize i = 0;\r\n\r\n#if EEZ_NTT998_USE_AVX2\r\n    for (; i + 8 <= half;\
-    \ i += 8){\r\n        const vec x = load8(a + i);\r\n        const vec y = load8(a\
-    \ + half + i);\r\n        store8(a + i, add8(x, y));\r\n        store8(a + half\
-    \ + i, sub8(x, y));\r\n    }\r\n#endif\r\n\r\n    for (; i < half; ++i){\r\n \
-    \       const word x = raw(a[i]);\r\n        const word y = raw(a[half + i]);\r\
-    \n        a[i] = from_raw(add(x, y));\r\n        a[half + i] = from_raw(sub(x,\
-    \ y));\r\n    }\r\n}\r\n\r\ninline void forward_radix4_stage(mint* EEZ_NTT998_RESTRICT\
-    \ a, usize n, int stage) noexcept {\r\n    const int h = static_cast<int>(std::countr_zero(n));\r\
-    \n    assert(stage >= 0 && stage + 2 <= h);\r\n    const usize stride = usize(1)\
-    \ << (h - stage - 2);\r\n    const usize blocks = usize(1) << stage;\r\n\r\n#if\
-    \ EEZ_NTT998_USE_AVX2\r\n    if (stride >= 8){\r\n        forward_radix4_large(a,\
-    \ blocks, stride);\r\n    } else if (stride == 4){\r\n        forward_radix4_p4(a,\
-    \ blocks);\r\n    } else if (stride == 1){\r\n        forward_radix4_p1(a, blocks);\r\
-    \n    } else{\r\n        forward_radix4_scalar(a, blocks, stride);\r\n    }\r\n\
-    #else\r\n    forward_radix4_scalar(a, blocks, stride);\r\n#endif\r\n}\r\n\r\n\
-    inline void inverse_radix4_stage(mint* EEZ_NTT998_RESTRICT a, usize n, int stage)\
-    \ noexcept {\r\n    const int h = static_cast<int>(std::countr_zero(n));\r\n \
-    \   assert(stage >= 0 && stage + 2 <= h);\r\n    const usize stride = usize(1)\
-    \ << (h - stage - 2);\r\n    const usize blocks = usize(1) << stage;\r\n\r\n#if\
-    \ EEZ_NTT998_USE_AVX2\r\n    if (stride >= 8){\r\n        inverse_radix4_large(a,\
-    \ blocks, stride);\r\n    } else if (stride == 4){\r\n        inverse_radix4_p4(a,\
-    \ blocks);\r\n    } else if (stride == 1){\r\n        inverse_radix4_p1(a, blocks);\r\
-    \n    } else{\r\n        inverse_radix4_scalar(a, blocks, stride);\r\n    }\r\n\
-    #else\r\n    inverse_radix4_scalar(a, blocks, stride);\r\n#endif\r\n}\r\n\r\n\
-    inline void final_radix2_scale(mint* EEZ_NTT998_RESTRICT a, usize n, word scale_mont)\
-    \ noexcept {\r\n    const usize half = n >> 1;\r\n    usize i = 0;\r\n\r\n#if\
-    \ EEZ_NTT998_USE_AVX2\r\n    const vec scale = broadcast(scale_mont);\r\n    for\
-    \ (; i + 8 <= half; i += 8){\r\n        const vec x = load8(a + i);\r\n      \
-    \  const vec y = load8(a + half + i);\r\n        store8(a + i, mul8(add8(x, y),\
-    \ scale));\r\n        store8(a + half + i, mul8(sub8(x, y), scale));\r\n    }\r\
-    \n#endif\r\n\r\n    for (; i < half; ++i){\r\n        const word x = raw(a[i]);\r\
-    \n        const word y = raw(a[half + i]);\r\n        a[i] = from_raw(mul(add(x,\
-    \ y), scale_mont));\r\n        a[half + i] = from_raw(mul(sub(x, y), scale_mont));\r\
-    \n    }\r\n}\r\n\r\ninline void inverse_radix2_final(mint* EEZ_NTT998_RESTRICT\
-    \ a, usize n, word scale) noexcept {\r\n    final_radix2_scale(a, n, scale);\r\
-    \n}\r\n\r\ninline void final_radix4_scale(mint* EEZ_NTT998_RESTRICT a, usize n,\
-    \ word scale_mont) noexcept {\r\n    const usize stride = n >> 2;\r\n    usize\
-    \ i = 0;\r\n\r\n#if EEZ_NTT998_USE_AVX2\r\n    const vec iimag = broadcast(twiddles.iroot[2]);\r\
-    \n    const vec scale = broadcast(scale_mont);\r\n    for (; i + 8 <= stride;\
-    \ i += 8){\r\n        const vec x0 = load8(a + i);\r\n        const vec x1 = load8(a\
-    \ + stride + i);\r\n        const vec x2 = load8(a + 2 * stride + i);\r\n    \
-    \    const vec x3 = load8(a + 3 * stride + i);\r\n\r\n        const vec s01 =\
-    \ add8(x0, x1);\r\n        const vec d01 = sub8(x0, x1);\r\n        const vec\
-    \ s23 = add8(x2, x3);\r\n        const vec t = mul8(sub8(x2, x3), iimag);\r\n\r\
-    \n        store8(a + i, mul8(add8(s01, s23), scale));\r\n        store8(a + stride\
-    \ + i, mul8(add8(d01, t), scale));\r\n        store8(a + 2 * stride + i, mul8(sub8(s01,\
-    \ s23), scale));\r\n        store8(a + 3 * stride + i, mul8(sub8(d01, t), scale));\r\
-    \n    }\r\n#endif\r\n\r\n    for (; i < stride; ++i){\r\n        const word x0\
-    \ = raw(a[i]);\r\n        const word x1 = raw(a[stride + i]);\r\n        const\
-    \ word x2 = raw(a[2 * stride + i]);\r\n        const word x3 = raw(a[3 * stride\
-    \ + i]);\r\n        const word s01 = add(x0, x1);\r\n        const word d01 =\
-    \ sub(x0, x1);\r\n        const word s23 = add(x2, x3);\r\n        const word\
-    \ t = mul(sub(x2, x3), twiddles.iroot[2]);\r\n\r\n        a[i] = from_raw(mul(add(s01,\
-    \ s23), scale_mont));\r\n        a[stride + i] = from_raw(mul(add(d01, t), scale_mont));\r\
-    \n        a[2 * stride + i] = from_raw(mul(sub(s01, s23), scale_mont));\r\n  \
-    \      a[3 * stride + i] = from_raw(mul(sub(d01, t), scale_mont));\r\n    }\r\n\
-    }\r\n\r\ninline void forward_dif(mint* EEZ_NTT998_RESTRICT a, usize n) noexcept\
-    \ {\r\n    if (n <= 1) return;\r\n    const int h = static_cast<int>(std::countr_zero(n));\r\
-    \n    int stage = 0;\r\n\r\n    if (h & 1){\r\n        forward_radix2_first(a,\
-    \ n);\r\n        stage = 1;\r\n    }\r\n\r\n    for (; stage < h; stage += 2){\r\
-    \n        forward_radix4_stage(a, n, stage);\r\n    }\r\n}\r\n\r\ninline void\
-    \ inverse_dit(mint* EEZ_NTT998_RESTRICT a, usize n) noexcept {\r\n    if (n <=\
-    \ 1) return;\r\n    const int h = static_cast<int>(std::countr_zero(n));\r\n \
-    \   const word scale = mint::raw(static_cast<u32>(n)).inv().a;\r\n\r\n    if (h\
-    \ & 1){\r\n        for (int stage = h - 2; stage >= 1; stage -= 2){\r\n      \
-    \      inverse_radix4_stage(a, n, stage);\r\n        }\r\n        final_radix2_scale(a,\
-    \ n, scale);\r\n    } else{\r\n        for (int stage = h - 2; stage >= 2; stage\
-    \ -= 2){\r\n            inverse_radix4_stage(a, n, stage);\r\n        }\r\n  \
-    \      final_radix4_scale(a, n, scale);\r\n    }\r\n}\r\n\r\ninline void forward_dif_partial(mint*\
-    \ EEZ_NTT998_RESTRICT a, usize n) noexcept {\r\n    if (n <= 4) return;\r\n  \
-    \  const int h = static_cast<int>(std::countr_zero(n));\r\n    const int levels\
-    \ = h - 2;\r\n    int stage = 0;\r\n\r\n    if (levels & 1){\r\n        forward_radix2_first(a,\
-    \ n);\r\n        stage = 1;\r\n    }\r\n\r\n    for (; stage < levels; stage +=\
-    \ 2){\r\n        forward_radix4_stage(a, n, stage);\r\n    }\r\n}\r\n\r\ninline\
-    \ void inverse_dit_partial(mint* EEZ_NTT998_RESTRICT a, usize n) noexcept {\r\n\
-    \    if (n <= 4) return;\r\n    const int h = static_cast<int>(std::countr_zero(n));\r\
-    \n    const int levels = h - 2;\r\n    const word scale = mint::raw(static_cast<u32>(n\
-    \ >> 2)).inv().a;\r\n\r\n    if (levels & 1){\r\n        for (int stage = levels\
-    \ - 2; stage >= 1; stage -= 2){\r\n            inverse_radix4_stage(a, n, stage);\r\
-    \n        }\r\n        final_radix2_scale(a, n, scale);\r\n    } else{\r\n   \
-    \     for (int stage = levels - 2; stage >= 2; stage -= 2){\r\n            inverse_radix4_stage(a,\
-    \ n, stage);\r\n        }\r\n        final_radix4_scale(a, n, scale);\r\n    }\r\
-    \n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE word block_modulus4(word w, u32 block) noexcept\
-    \ {\r\n    return mul(w, forward_rate1(twiddle_index(block)));\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE\
-    \ vec block_product4x2(vec x, vec y, vec w) noexcept {\r\n    const vec z = _mm256_setzero_si256();\r\
-    \n    vec lo = mul8(_mm256_shuffle_epi32(x, _MM_SHUFFLE(0, 0, 0, 0)), y);\r\n\
-    \    vec hi = z;\r\n\r\n    {\r\n        const vec p = mul8(_mm256_shuffle_epi32(x,\
-    \ _MM_SHUFFLE(1, 1, 1, 1)), y);\r\n        const vec q = _mm256_shuffle_epi32(p,\
-    \ _MM_SHUFFLE(2, 1, 0, 3));\r\n        lo = add8(lo, _mm256_blend_epi32(q, z,\
-    \ 0x11));\r\n        hi = add8(hi, _mm256_blend_epi32(z, q, 0x11));\r\n    }\r\
-    \n    {\r\n        const vec p = mul8(_mm256_shuffle_epi32(x, _MM_SHUFFLE(2, 2,\
-    \ 2, 2)), y);\r\n        const vec q = _mm256_shuffle_epi32(p, _MM_SHUFFLE(1,\
-    \ 0, 3, 2));\r\n        lo = add8(lo, _mm256_blend_epi32(q, z, 0x33));\r\n   \
-    \     hi = add8(hi, _mm256_blend_epi32(z, q, 0x33));\r\n    }\r\n    {\r\n   \
-    \     const vec p = mul8(_mm256_shuffle_epi32(x, _MM_SHUFFLE(3, 3, 3, 3)), y);\r\
-    \n        const vec q = _mm256_shuffle_epi32(p, _MM_SHUFFLE(0, 3, 2, 1));\r\n\
-    \        lo = add8(lo, _mm256_blend_epi32(q, z, 0x77));\r\n        hi = add8(hi,\
-    \ _mm256_blend_epi32(z, q, 0x77));\r\n    }\r\n\r\n    return add8(lo, mul8(hi,\
-    \ w));\r\n}\r\n\r\ninline void block_product4_scalar(mint* a, const mint* b, word\
-    \ w) noexcept {\r\n    word x[4];\r\n    word y[4];\r\n    word result[4]{};\r\
-    \n    for (unsigned i = 0; i < 4; ++i){\r\n        x[i] = raw(a[i]);\r\n     \
-    \   y[i] = raw(b[i]);\r\n    }\r\n    for (unsigned i = 0; i < 4; ++i){\r\n  \
-    \      for (unsigned j = 0; j < 4; ++j){\r\n            const unsigned degree\
-    \ = i + j;\r\n            word term = mul(x[i], y[j]);\r\n            if (degree\
-    \ >= 4) term = mul(term, w);\r\n            result[degree & 3] = add(result[degree\
-    \ & 3], term);\r\n        }\r\n    }\r\n    for (unsigned i = 0; i < 4; ++i) a[i]\
-    \ = from_raw(result[i]);\r\n}\r\n\r\ninline void block_convolution4(mint* EEZ_NTT998_RESTRICT\
-    \ a, const mint* EEZ_NTT998_RESTRICT b, usize n) noexcept {\r\n    const usize\
-    \ blocks = n >> 2;\r\n    word w = montgomery_one;\r\n    usize s = 0;\r\n\r\n\
-    \    for (; s + 2 <= blocks; s += 2){\r\n        const word w1 = block_modulus4(w,\
-    \ static_cast<u32>(s));\r\n        const vec modulus = pack_four(w, w1);\r\n \
-    \       store8(a + 4 * s, block_product4x2(load8(a + 4 * s), load8(b + 4 * s),\
-    \ modulus));\r\n        if (s + 2 < blocks){\r\n            w = block_modulus4(w1,\
-    \ static_cast<u32>(s + 1));\r\n        }\r\n    }\r\n    if (s < blocks) block_product4_scalar(a\
-    \ + 4 * s, b + 4 * s, w);\r\n}\r\n\r\ninline void block_square4(mint* EEZ_NTT998_RESTRICT\
-    \ a, usize n) noexcept {\r\n    const usize blocks = n >> 2;\r\n    word w = montgomery_one;\r\
-    \n    usize s = 0;\r\n\r\n    for (; s + 2 <= blocks; s += 2){\r\n        const\
-    \ word w1 = block_modulus4(w, static_cast<u32>(s));\r\n        const vec x = load8(a\
-    \ + 4 * s);\r\n        store8(a + 4 * s, block_product4x2(x, x, pack_four(w, w1)));\r\
-    \n        if (s + 2 < blocks){\r\n            w = block_modulus4(w1, static_cast<u32>(s\
-    \ + 1));\r\n        }\r\n    }\r\n    if (s < blocks) block_product4_scalar(a\
-    \ + 4 * s, a + 4 * s, w);\r\n}\r\n\r\n#if EEZ_NTT998_USE_AVX2\r\n\r\nclass aligned_buffer\
-    \ {\r\n    mint* data_ = nullptr;\r\n    usize size_ = 0;\r\n\r\npublic:\r\n \
-    \   explicit aligned_buffer(usize n)\r\n        : data_(static_cast<mint*>(::operator\
-    \ new[](n * sizeof(mint), std::align_val_t{64}))),\r\n          size_(n) {\r\n\
-    \        std::uninitialized_value_construct_n(data_, size_);\r\n    }\r\n\r\n\
-    \    aligned_buffer(const aligned_buffer&) = delete;\r\n    aligned_buffer& operator=(const\
-    \ aligned_buffer&) = delete;\r\n\r\n    ~aligned_buffer() {\r\n        std::destroy_n(data_,\
-    \ size_);\r\n        ::operator delete[](data_, std::align_val_t{64});\r\n   \
-    \ }\r\n\r\n    mint* data() noexcept { return data_; }\n    const mint* data()\
-    \ const noexcept { return data_; }\n    [[nodiscard]] usize size() const noexcept\
-    \ { return size_; }\n    mint& operator[](usize i) noexcept { return data_[i];\
-    \ }\n    const mint& operator[](usize i) const noexcept { return data_[i]; }\n\
-    };\n\r\nclass aligned_uninitialized_buffer {\r\n    static_assert(std::is_trivially_destructible_v<mint>);\r\
-    \n    mint* data_ = nullptr;\r\n\r\npublic:\r\n    explicit aligned_uninitialized_buffer(usize\
-    \ n)\r\n        : data_(static_cast<mint*>(::operator new[](n * sizeof(mint),\
-    \ std::align_val_t{64}))) {}\r\n\r\n    aligned_uninitialized_buffer(const aligned_uninitialized_buffer&)\
-    \ = delete;\r\n    aligned_uninitialized_buffer& operator=(const aligned_uninitialized_buffer&)\
-    \ = delete;\r\n\r\n    ~aligned_uninitialized_buffer() {\r\n        ::operator\
-    \ delete[](data_, std::align_val_t{64});\r\n    }\r\n\r\n    mint* data() noexcept\
-    \ { return data_; }\r\n    const mint* data() const noexcept { return data_; }\r\
-    \n};\r\n\r\nEEZ_NTT998_ALWAYS_INLINE vec load8_aligned(const mint* p) noexcept\
-    \ {\r\n    return _mm256_load_si256(reinterpret_cast<const __m256i*>(static_cast<const\
+    \ = mul8(w2, w1);\r\n        mint* const b = a + 4 * s;\r\n        vec x0, x1,\
+    \ x2, x3;\r\n        transpose_8x4_to_4x8(load8(b), load8(b + 8), load8(b + 16),\
+    \ load8(b + 24), x0, x1, x2, x3);\r\n        const vec s01 = add8(x0, x1);\r\n\
+    \        const vec d01 = sub8(x0, x1);\r\n        const vec s23 = add8(x2, x3);\r\
+    \n        const vec t = mul8(sub8(x2, x3), iimag);\r\n        vec v0, v1, v2,\
+    \ v3;\r\n        transpose_4x8_to_8x4(add8(s01, s23), mul8(add8(d01, t), w1),\
+    \ mul8(sub8(s01, s23), w2), mul8(sub8(d01, t), w3), v0, v1, v2, v3);\r\n     \
+    \   store8(b, v0);\r\n        store8(b + 8, v1);\r\n        store8(b + 16, v2);\r\
+    \n        store8(b + 24, v3);\r\n    }\r\n    for(; s < blocks; ++s){\r\n    \
+    \    const word rot2 = mul(rot, rot);\r\n        const word rot3 = mul(rot2, rot);\r\
+    \n        inverse_butterfly(a + 4 * s, 1, 0, rot, rot2, rot3);\r\n        if(s\
+    \ + 1 < blocks) rot = mul(rot, inverse_rate3(twiddle_index(static_cast<u32>(s))));\r\
+    \n    }\r\n}\r\n\r\n#endif\r\n\r\ninline void forward_radix2_first(mint* EEZ_NTT998_RESTRICT\
+    \ a, usize n) noexcept {\r\n    const usize half = n >> 1;\r\n    usize i = 0;\r\
+    \n#if EEZ_NTT998_USE_AVX2\r\n    for(; i + 8 <= half; i += 8){\r\n        const\
+    \ vec x = load8(a + i);\r\n        const vec y = load8(a + half + i);\r\n    \
+    \    store8(a + i, add8(x, y));\r\n        store8(a + half + i, sub8(x, y));\r\
+    \n    }\r\n#endif\r\n    for(; i < half; ++i){\r\n        const word x = raw(a[i]);\r\
+    \n        const word y = raw(a[half + i]);\r\n        a[i] = from_raw(add(x, y));\r\
+    \n        a[half + i] = from_raw(sub(x, y));\r\n    }\r\n}\r\n\r\ninline void\
+    \ forward_radix4_stage(mint* EEZ_NTT998_RESTRICT a, usize n, int stage) noexcept\
+    \ {\r\n    const int h = static_cast<int>(std::countr_zero(n));\r\n    assert(stage\
+    \ >= 0 && stage + 2 <= h);\r\n    const usize stride = usize(1) << (h - stage\
+    \ - 2);\r\n    const usize blocks = usize(1) << stage;\r\n#if EEZ_NTT998_USE_AVX2\r\
+    \n    if(stride >= 8) forward_radix4_large(a, blocks, stride);\r\n    else if(stride\
+    \ == 4) forward_radix4_p4(a, blocks);\r\n    else if(stride == 1) forward_radix4_p1(a,\
+    \ blocks);\r\n    else forward_radix4_scalar(a, blocks, stride);\r\n#else\r\n\
+    \    forward_radix4_scalar(a, blocks, stride);\r\n#endif\r\n}\r\n\r\ninline void\
+    \ inverse_radix4_stage(mint* EEZ_NTT998_RESTRICT a, usize n, int stage) noexcept\
+    \ {\r\n    const int h = static_cast<int>(std::countr_zero(n));\r\n    assert(stage\
+    \ >= 0 && stage + 2 <= h);\r\n    const usize stride = usize(1) << (h - stage\
+    \ - 2);\r\n    const usize blocks = usize(1) << stage;\r\n#if EEZ_NTT998_USE_AVX2\r\
+    \n    if(stride >= 8) inverse_radix4_large(a, blocks, stride);\r\n    else if(stride\
+    \ == 4) inverse_radix4_p4(a, blocks);\r\n    else if(stride == 1) inverse_radix4_p1(a,\
+    \ blocks);\r\n    else inverse_radix4_scalar(a, blocks, stride);\r\n#else\r\n\
+    \    inverse_radix4_scalar(a, blocks, stride);\r\n#endif\r\n}\r\n\r\ninline void\
+    \ final_radix2_scale(mint* EEZ_NTT998_RESTRICT a, usize n, word scale_mont) noexcept\
+    \ {\r\n    const usize half = n >> 1;\r\n    usize i = 0;\r\n#if EEZ_NTT998_USE_AVX2\r\
+    \n    const vec scale = broadcast(scale_mont);\r\n    for(; i + 8 <= half; i +=\
+    \ 8){\r\n        const vec x = load8(a + i);\r\n        const vec y = load8(a\
+    \ + half + i);\r\n        store8(a + i, mul8(add8(x, y), scale));\r\n        store8(a\
+    \ + half + i, mul8(sub8(x, y), scale));\r\n    }\r\n#endif\r\n    for(; i < half;\
+    \ ++i){\r\n        const word x = raw(a[i]);\r\n        const word y = raw(a[half\
+    \ + i]);\r\n        a[i] = from_raw(mul(add(x, y), scale_mont));\r\n        a[half\
+    \ + i] = from_raw(mul(sub(x, y), scale_mont));\r\n    }\r\n}\r\n\r\ninline void\
+    \ final_radix4_scale(mint* EEZ_NTT998_RESTRICT a, usize n, word scale_mont) noexcept\
+    \ {\r\n    const usize stride = n >> 2;\r\n    usize i = 0;\r\n#if EEZ_NTT998_USE_AVX2\r\
+    \n    const vec iimag = broadcast(twiddles.iroot[2]);\r\n    const vec scale =\
+    \ broadcast(scale_mont);\r\n    for(; i + 8 <= stride; i += 8){\r\n        const\
+    \ vec x0 = load8(a + i);\r\n        const vec x1 = load8(a + stride + i);\r\n\
+    \        const vec x2 = load8(a + 2 * stride + i);\r\n        const vec x3 = load8(a\
+    \ + 3 * stride + i);\r\n        const vec s01 = add8(x0, x1);\r\n        const\
+    \ vec d01 = sub8(x0, x1);\r\n        const vec s23 = add8(x2, x3);\r\n       \
+    \ const vec t = mul8(sub8(x2, x3), iimag);\r\n        store8(a + i, mul8(add8(s01,\
+    \ s23), scale));\r\n        store8(a + stride + i, mul8(add8(d01, t), scale));\r\
+    \n        store8(a + 2 * stride + i, mul8(sub8(s01, s23), scale));\r\n       \
+    \ store8(a + 3 * stride + i, mul8(sub8(d01, t), scale));\r\n    }\r\n#endif\r\n\
+    \    for(; i < stride; ++i){\r\n        const word x0 = raw(a[i]);\r\n       \
+    \ const word x1 = raw(a[stride + i]);\r\n        const word x2 = raw(a[2 * stride\
+    \ + i]);\r\n        const word x3 = raw(a[3 * stride + i]);\r\n        const word\
+    \ s01 = add(x0, x1);\r\n        const word d01 = sub(x0, x1);\r\n        const\
+    \ word s23 = add(x2, x3);\r\n        const word t = mul(sub(x2, x3), twiddles.iroot[2]);\r\
+    \n        a[i] = from_raw(mul(add(s01, s23), scale_mont));\r\n        a[stride\
+    \ + i] = from_raw(mul(add(d01, t), scale_mont));\r\n        a[2 * stride + i]\
+    \ = from_raw(mul(sub(s01, s23), scale_mont));\r\n        a[3 * stride + i] = from_raw(mul(sub(d01,\
+    \ t), scale_mont));\r\n    }\r\n}\r\n\r\ninline void forward_dif(mint* EEZ_NTT998_RESTRICT\
+    \ a, usize n) noexcept {\r\n    if(n <= 1) return;\r\n    const int h = static_cast<int>(std::countr_zero(n));\r\
+    \n    int stage = 0;\r\n    if(h & 1){\r\n        forward_radix2_first(a, n);\r\
+    \n        stage = 1;\r\n    }\r\n    for(; stage < h; stage += 2) forward_radix4_stage(a,\
+    \ n, stage);\r\n}\r\n\r\ninline void inverse_dit(mint* EEZ_NTT998_RESTRICT a,\
+    \ usize n) noexcept {\r\n    if(n <= 1) return;\r\n    const int h = static_cast<int>(std::countr_zero(n));\r\
+    \n    const word scale = mint::raw(static_cast<u32>(n)).inv().a;\r\n    if(h &\
+    \ 1){\r\n        for(int stage = h - 2; stage >= 1; stage -= 2) inverse_radix4_stage(a,\
+    \ n, stage);\r\n        final_radix2_scale(a, n, scale);\r\n    }else{\r\n   \
+    \     for(int stage = h - 2; stage >= 2; stage -= 2) inverse_radix4_stage(a, n,\
+    \ stage);\r\n        final_radix4_scale(a, n, scale);\r\n    }\r\n}\r\n\r\n#if\
+    \ EEZ_NTT998_USE_AVX2\r\n\r\nEEZ_NTT998_ALWAYS_INLINE vec load8_aligned(const\
+    \ mint* p) noexcept {\r\n    return _mm256_load_si256(reinterpret_cast<const __m256i*>(static_cast<const\
     \ void*>(p)));\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE void store8_aligned(mint*\
     \ p, vec x) noexcept {\r\n    _mm256_store_si256(reinterpret_cast<__m256i*>(static_cast<void*>(p)),\
     \ x);\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE vec shrink4_to_2(vec x) noexcept {\r\
@@ -670,16 +572,15 @@ data:
     \n\r\nEEZ_NTT998_ALWAYS_INLINE vec lazy_add8(vec a, vec b) noexcept {\r\n    return\
     \ _mm256_add_epi32(a, b);\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE vec lazy_sub8(vec\
     \ a, vec b) noexcept {\r\n    return _mm256_add_epi32(a, _mm256_sub_epi32(broadcast(mod2),\
-    \ b));\r\n}\r\n\r\ntemplate <bool trivial_twiddle, bool convert_input = false>\r\
-    \ninline void forward_radix4_block_lazy(mint* b, usize stride, word r1) noexcept\
-    \ {\r\n    const word imag = canonicalize(twiddles.root[2]);\r\n    const vec\
-    \ vimag = broadcast(imag);\r\n    const vec vimag_ninv = broadcast(imag * montgomery_ninv);\r\
-    \n    const vec vr1 = broadcast(r1);\r\n    const vec vr1_ninv = broadcast(r1\
-    \ * montgomery_ninv);\r\n    const word r2 = canonicalize(mul(r1, r1));\r\n  \
-    \  const vec vr2 = broadcast(r2);\r\n    const vec vr2_ninv = broadcast(r2 * montgomery_ninv);\r\
-    \n    const word r3 = canonicalize(mul(r2, r1));\r\n    const vec vr3 = broadcast(r3);\r\
-    \n    const vec vr3_ninv = broadcast(r3 * montgomery_ninv);\r\n\r\n    for(usize\
-    \ i = 0; i < stride; i += 8){\r\n        vec x0 = shrink4_to_2(load8_aligned(b\
+    \ b));\r\n}\r\n\r\ntemplate<bool trivial_twiddle>\r\ninline void forward_radix4_block_lazy(mint*\
+    \ b, usize stride, word r1) noexcept {\r\n    const word imag = canonicalize(twiddles.root[2]);\r\
+    \n    const vec vimag = broadcast(imag);\r\n    const vec vimag_ninv = broadcast(imag\
+    \ * montgomery_ninv);\r\n    const vec vr1 = broadcast(r1);\r\n    const vec vr1_ninv\
+    \ = broadcast(r1 * montgomery_ninv);\r\n    const word r2 = canonicalize(mul(r1,\
+    \ r1));\r\n    const vec vr2 = broadcast(r2);\r\n    const vec vr2_ninv = broadcast(r2\
+    \ * montgomery_ninv);\r\n    const word r3 = canonicalize(mul(r2, r1));\r\n  \
+    \  const vec vr3 = broadcast(r3);\r\n    const vec vr3_ninv = broadcast(r3 * montgomery_ninv);\r\
+    \n\r\n    for(usize i = 0; i < stride; i += 8){\r\n        vec x0 = shrink4_to_2(load8_aligned(b\
     \ + i));\r\n        vec x1 = load8_aligned(b + stride + i);\r\n        vec x2\
     \ = load8_aligned(b + 2 * stride + i);\r\n        vec x3 = load8_aligned(b + 3\
     \ * stride + i);\r\n        if constexpr(!trivial_twiddle){\r\n            x1\
@@ -690,28 +591,17 @@ data:
     \ x2);\r\n        vec d02 = lazy_sub8(x0, x2);\r\n        vec s13 = lazy_add8(x1,\
     \ x3);\r\n        const vec t = mul8_fixed(lazy_sub8(x1, x3), vimag, vimag_ninv);\r\
     \n        s02 = shrink4_to_2(s02);\r\n        d02 = shrink4_to_2(d02);\r\n   \
-    \     s13 = shrink4_to_2(s13);\r\n\r\n        vec y0 = lazy_add8(s02, s13);\r\n\
-    \        vec y1 = lazy_sub8(s02, s13);\r\n        vec y2 = lazy_add8(d02, t);\r\
-    \n        vec y3 = lazy_sub8(d02, t);\r\n        if constexpr(convert_input){\r\
-    \n            constexpr word montgomery_r2 = 932051910u;\r\n            const\
-    \ vec vr2_convert = broadcast(montgomery_r2);\r\n            const vec vr2_convert_ninv\
-    \ = broadcast(montgomery_r2 * montgomery_ninv);\r\n            y0 = mul8_fixed(y0,\
-    \ vr2_convert, vr2_convert_ninv);\r\n            y1 = mul8_fixed(y1, vr2_convert,\
-    \ vr2_convert_ninv);\r\n            y2 = mul8_fixed(y2, vr2_convert, vr2_convert_ninv);\r\
-    \n            y3 = mul8_fixed(y3, vr2_convert, vr2_convert_ninv);\r\n        }\r\
-    \n\r\n        store8_aligned(b + i,              y0);\r\n        store8_aligned(b\
-    \ + stride + i,     y1);\r\n        store8_aligned(b + 2 * stride + i, y2);\r\n\
-    \        store8_aligned(b + 3 * stride + i, y3);\r\n    }\r\n}\r\n\r\ntemplate\
-    \ <bool trivial_twiddle, bool convert_input = false>\r\nEEZ_NTT998_ALWAYS_INLINE\
-    \ void forward_radix4_block_pair_lazy(mint* EEZ_NTT998_RESTRICT a, mint* EEZ_NTT998_RESTRICT\
-    \ b, usize stride, word r1) noexcept {\r\n    forward_radix4_block_lazy<trivial_twiddle,\
-    \ convert_input>(a, stride, r1);\r\n    forward_radix4_block_lazy<trivial_twiddle,\
-    \ convert_input>(b, stride, r1);\r\n}\r\n\r\ntemplate <bool trivial_twiddle, bool\
-    \ apply_scale, bool convert_output = false, bool direct_output = false>\r\ninline\
-    \ void inverse_radix4_block_lazy(mint* b, usize stride, word r1, word scale) noexcept\
-    \ {\r\n    const word iimag = canonicalize(twiddles.iroot[2]);\r\n    const vec\
-    \ viimag = broadcast(iimag);\r\n    const vec viimag_ninv = broadcast(iimag *\
-    \ montgomery_ninv);\r\n    const vec vr1 = broadcast(r1);\r\n    const vec vr1_ninv\
+    \     s13 = shrink4_to_2(s13);\r\n\r\n        store8_aligned(b + i, lazy_add8(s02,\
+    \ s13));\r\n        store8_aligned(b + stride + i, lazy_sub8(s02, s13));\r\n \
+    \       store8_aligned(b + 2 * stride + i, lazy_add8(d02, t));\r\n        store8_aligned(b\
+    \ + 3 * stride + i, lazy_sub8(d02, t));\r\n    }\r\n}\r\n\r\ntemplate<bool trivial_twiddle>\r\
+    \nEEZ_NTT998_ALWAYS_INLINE void forward_radix4_block_pair_lazy(mint* EEZ_NTT998_RESTRICT\
+    \ a, mint* EEZ_NTT998_RESTRICT b, usize stride, word r1) noexcept {\r\n    forward_radix4_block_lazy<trivial_twiddle>(a,\
+    \ stride, r1);\r\n    forward_radix4_block_lazy<trivial_twiddle>(b, stride, r1);\r\
+    \n}\r\n\r\ntemplate<bool trivial_twiddle, bool apply_scale>\r\ninline void inverse_radix4_block_lazy(mint*\
+    \ b, usize stride, word r1, word scale) noexcept {\r\n    const word iimag = canonicalize(twiddles.iroot[2]);\r\
+    \n    const vec viimag = broadcast(iimag);\r\n    const vec viimag_ninv = broadcast(iimag\
+    \ * montgomery_ninv);\r\n    const vec vr1 = broadcast(r1);\r\n    const vec vr1_ninv\
     \ = broadcast(r1 * montgomery_ninv);\r\n    const word r2 = canonicalize(mul(r1,\
     \ r1));\r\n    const vec vr2 = broadcast(r2);\r\n    const vec vr2_ninv = broadcast(r2\
     \ * montgomery_ninv);\r\n    const word r3 = canonicalize(mul(r2, r1));\r\n  \
@@ -726,187 +616,141 @@ data:
     \ x3), viimag, viimag_ninv);\r\n        s01 = shrink4_to_2(s01);\r\n        d01\
     \ = shrink4_to_2(d01);\r\n        s23 = shrink4_to_2(s23);\r\n\r\n        vec\
     \ y0 = lazy_add8(s01, s23);\r\n        vec y1 = lazy_add8(d01, t);\r\n       \
-    \ vec y2 = lazy_sub8(s01, s23);\r\n        vec y3 = lazy_sub8(d01, t);\r\n   \
-    \     if constexpr(apply_scale){\r\n            const word s0 = scale_canonical;\r\
+    \ vec y2 = lazy_sub8(s01, s23);\r\n        vec y3 = lazy_sub8(d01, t);\r\n\r\n\
+    \        if constexpr(apply_scale){\r\n            const word s0 = scale_canonical;\r\
     \n            const word s1 = trivial_twiddle ? s0 : canonicalize(mul(s0, r1));\r\
     \n            const word s2 = trivial_twiddle ? s0 : canonicalize(mul(s0, r2));\r\
     \n            const word s3 = trivial_twiddle ? s0 : canonicalize(mul(s0, r3));\r\
-    \n            const vec vs0 = broadcast(s0);\r\n            const vec vs1 = broadcast(s1);\r\
-    \n            const vec vs2 = broadcast(s2);\r\n            const vec vs3 = broadcast(s3);\r\
-    \n            y0 = mul8_fixed(y0, vs0, broadcast(s0 * montgomery_ninv));\r\n \
-    \           y1 = mul8_fixed(y1, vs1, broadcast(s1 * montgomery_ninv));\r\n   \
-    \         y2 = mul8_fixed(y2, vs2, broadcast(s2 * montgomery_ninv));\r\n     \
-    \       y3 = mul8_fixed(y3, vs3, broadcast(s3 * montgomery_ninv));\r\n       \
-    \ }else if constexpr(!trivial_twiddle){\r\n            y1 = mul8_fixed(y1, vr1,\
-    \ vr1_ninv);\r\n            y2 = mul8_fixed(y2, vr2, vr2_ninv);\r\n          \
-    \  y3 = mul8_fixed(y3, vr3, vr3_ninv);\r\n        }\r\n        if constexpr(convert_output){\r\
-    \n            const vec vone = broadcast(1);\r\n            const vec vninv =\
-    \ broadcast(montgomery_ninv);\r\n            y0 = canonicalize8(mul8_fixed(y0,\
-    \ vone, vninv));\r\n            y1 = canonicalize8(mul8_fixed(y1, vone, vninv));\r\
-    \n            y2 = canonicalize8(mul8_fixed(y2, vone, vninv));\r\n           \
-    \ y3 = canonicalize8(mul8_fixed(y3, vone, vninv));\r\n        }else if constexpr(direct_output){\r\
-    \n            y0 = canonicalize8(shrink4_to_2(y0));\r\n            y1 = canonicalize8(shrink4_to_2(y1));\r\
-    \n            y2 = canonicalize8(shrink4_to_2(y2));\r\n            y3 = canonicalize8(shrink4_to_2(y3));\r\
-    \n        }\r\n\r\n        store8_aligned(b + i,              y0);\r\n       \
-    \ store8_aligned(b + stride + i,     y1);\r\n        store8_aligned(b + 2 * stride\
-    \ + i, y2);\r\n        store8_aligned(b + 3 * stride + i, y3);\r\n    }\r\n}\r\
-    \n\r\ninline unsigned adaptive_leaf_log(usize n) noexcept {\r\n    const unsigned\
-    \ h = static_cast<unsigned>(std::countr_zero(n));\r\n    return (h & 1u) ? 3u\
-    \ : 4u;\r\n}\r\n\r\ntemplate <bool convert_input = false>\r\nEEZ_NTT998_ALWAYS_INLINE\
-    \ void forward_cache_node(mint* EEZ_NTT998_RESTRICT base, usize block_size, unsigned\
-    \ layer, usize block, usize blocks_at_layer, std::array<word, max_log / 2 + 1>&\
-    \ rotation) noexcept {\r\n    const usize stride = block_size >> 2;\r\n    if\
-    \ constexpr(convert_input) forward_radix4_block_lazy<true, true>(base, stride,\
-    \ montgomery_one);\r\n    else if(block == 0) forward_radix4_block_lazy<true>(base,\
+    \n            y0 = mul8_fixed(y0, broadcast(s0), broadcast(s0 * montgomery_ninv));\r\
+    \n            y1 = mul8_fixed(y1, broadcast(s1), broadcast(s1 * montgomery_ninv));\r\
+    \n            y2 = mul8_fixed(y2, broadcast(s2), broadcast(s2 * montgomery_ninv));\r\
+    \n            y3 = mul8_fixed(y3, broadcast(s3), broadcast(s3 * montgomery_ninv));\r\
+    \n        }else if constexpr(!trivial_twiddle){\r\n            y1 = mul8_fixed(y1,\
+    \ vr1, vr1_ninv);\r\n            y2 = mul8_fixed(y2, vr2, vr2_ninv);\r\n     \
+    \       y3 = mul8_fixed(y3, vr3, vr3_ninv);\r\n        }\r\n\r\n        store8_aligned(b\
+    \ + i, y0);\r\n        store8_aligned(b + stride + i, y1);\r\n        store8_aligned(b\
+    \ + 2 * stride + i, y2);\r\n        store8_aligned(b + 3 * stride + i, y3);\r\n\
+    \    }\r\n}\r\n\r\ninline unsigned adaptive_leaf_log(usize n) noexcept {\r\n \
+    \   const unsigned h = static_cast<unsigned>(std::countr_zero(n));\r\n    return\
+    \ (h & 1u) ? 3u : 4u;\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE void forward_cache_node(mint*\
+    \ EEZ_NTT998_RESTRICT base, usize block_size, unsigned layer, usize block, usize\
+    \ blocks_at_layer, std::array<word, max_log / 2 + 1>& rotation) noexcept {\r\n\
+    \    const usize stride = block_size >> 2;\r\n    if(block == 0) forward_radix4_block_lazy<true>(base,\
     \ stride, montgomery_one);\r\n    else forward_radix4_block_lazy<false>(base,\
     \ stride, rotation[layer]);\r\n    if(block + 1 < blocks_at_layer) rotation[layer]\
     \ = canonicalize(mul(rotation[layer], forward_rate3(twiddle_index(static_cast<u32>(block)))));\r\
-    \n}\r\n\r\ntemplate <bool convert_input = false>\r\ninline void forward_cache_block(mint*\
-    \ EEZ_NTT998_RESTRICT base, usize block_size, unsigned layer, usize block, usize\
-    \ blocks_at_layer, std::array<word, max_log / 2 + 1>& rotation) noexcept {\r\n\
-    \    forward_cache_node<convert_input>(base, block_size, layer, block, blocks_at_layer,\
-    \ rotation);\r\n    const usize child_size = block_size >> 2;\r\n    for(usize\
-    \ child = 0; child < 4; ++child){\r\n        mint* const child_base = base + child\
-    \ * child_size;\r\n        const usize child_block = block * 4 + child;\r\n  \
-    \      forward_cache_node(child_base, child_size, layer + 1, child_block, blocks_at_layer\
-    \ * 4, rotation);\r\n        const usize grandchild_size = child_size >> 2;\r\n\
-    \        for(usize grandchild = 0; grandchild < 4; ++grandchild){\r\n        \
-    \    forward_cache_node(child_base + grandchild * grandchild_size, grandchild_size,\
-    \ layer + 2, child_block * 4 + grandchild, blocks_at_layer * 16, rotation);\r\n\
-    \        }\r\n    }\r\n}\r\n\r\ntemplate <bool convert_input = false>\r\ninline\
-    \ void forward_cache_dfs(mint* EEZ_NTT998_RESTRICT base, usize block_size, usize\
-    \ leaf_size, unsigned layer, usize block, usize blocks_at_layer, std::array<word,\
-    \ max_log / 2 + 1>& rotation) noexcept {\r\n    if(block_size == leaf_size * 64){\r\
-    \n        forward_cache_block<convert_input>(base, block_size, layer, block, blocks_at_layer,\
-    \ rotation);\r\n        return;\r\n    }\r\n    const usize stride = block_size\
-    \ >> 2;\r\n    if constexpr(convert_input){\r\n        forward_radix4_block_lazy<true,\
-    \ true>(base, stride, montgomery_one);\r\n    }else if(block == 0){\r\n      \
-    \  forward_radix4_block_lazy<true>(base, stride, montgomery_one);\r\n    }else{\r\
-    \n        forward_radix4_block_lazy<false>(base, stride, rotation[layer]);\r\n\
-    \    }\r\n\r\n    if(block + 1 < blocks_at_layer){\r\n        rotation[layer]\
-    \ = canonicalize(mul(rotation[layer], forward_rate3(twiddle_index(static_cast<u32>(block)))));\r\
-    \n    }\r\n\r\n    const usize child_size = block_size >> 2;\r\n    if(child_size\
-    \ == leaf_size) return;\r\n    for(usize child = 0; child < 4; ++child){\r\n \
-    \       forward_cache_dfs<false>(base + child * child_size, child_size, leaf_size,\
-    \ layer + 1, block * 4 + child, blocks_at_layer * 4, rotation);\r\n    }\r\n}\r\
-    \n\r\ntemplate <bool convert_input = false>\r\nEEZ_NTT998_ALWAYS_INLINE void forward_cache_pair_node(mint*\
-    \ EEZ_NTT998_RESTRICT a, mint* EEZ_NTT998_RESTRICT b, usize block_size, unsigned\
-    \ layer, usize block, usize blocks_at_layer, std::array<word, max_log / 2 + 1>&\
-    \ rotation) noexcept {\r\n    const usize stride = block_size >> 2;\r\n    if\
-    \ constexpr(convert_input) forward_radix4_block_pair_lazy<true, true>(a, b, stride,\
-    \ montgomery_one);\r\n    else if(block == 0) forward_radix4_block_pair_lazy<true>(a,\
-    \ b, stride, montgomery_one);\r\n    else forward_radix4_block_pair_lazy<false>(a,\
-    \ b, stride, rotation[layer]);\r\n    if(block + 1 < blocks_at_layer) rotation[layer]\
-    \ = canonicalize(mul(rotation[layer], forward_rate3(twiddle_index(static_cast<u32>(block)))));\r\
-    \n}\r\n\r\ntemplate <bool convert_input = false>\r\ninline void forward_cache_pair_block(mint*\
-    \ EEZ_NTT998_RESTRICT a, mint* EEZ_NTT998_RESTRICT b, usize block_size, unsigned\
-    \ layer, usize block, usize blocks_at_layer, std::array<word, max_log / 2 + 1>&\
-    \ rotation) noexcept {\r\n    forward_cache_pair_node<convert_input>(a, b, block_size,\
+    \n}\r\n\r\ninline void forward_cache_block(mint* EEZ_NTT998_RESTRICT base, usize\
+    \ block_size, unsigned layer, usize block, usize blocks_at_layer, std::array<word,\
+    \ max_log / 2 + 1>& rotation) noexcept {\r\n    forward_cache_node(base, block_size,\
     \ layer, block, blocks_at_layer, rotation);\r\n    const usize child_size = block_size\
     \ >> 2;\r\n    for(usize child = 0; child < 4; ++child){\r\n        mint* const\
-    \ child_a = a + child * child_size;\r\n        mint* const child_b = b + child\
-    \ * child_size;\r\n        const usize child_block = block * 4 + child;\r\n  \
-    \      forward_cache_pair_node(child_a, child_b, child_size, layer + 1, child_block,\
+    \ child_base = base + child * child_size;\r\n        const usize child_block =\
+    \ block * 4 + child;\r\n        forward_cache_node(child_base, child_size, layer\
+    \ + 1, child_block, blocks_at_layer * 4, rotation);\r\n        const usize grandchild_size\
+    \ = child_size >> 2;\r\n        for(usize grandchild = 0; grandchild < 4; ++grandchild)\r\
+    \n            forward_cache_node(child_base + grandchild * grandchild_size, grandchild_size,\
+    \ layer + 2, child_block * 4 + grandchild, blocks_at_layer * 16, rotation);\r\n\
+    \    }\r\n}\r\n\r\ninline void forward_cache_dfs(mint* EEZ_NTT998_RESTRICT base,\
+    \ usize block_size, usize leaf_size, unsigned layer, usize block, usize blocks_at_layer,\
+    \ std::array<word, max_log / 2 + 1>& rotation) noexcept {\r\n    if(block_size\
+    \ == leaf_size * 64){\r\n        forward_cache_block(base, block_size, layer,\
+    \ block, blocks_at_layer, rotation);\r\n        return;\r\n    }\r\n    const\
+    \ usize stride = block_size >> 2;\r\n    if(block == 0) forward_radix4_block_lazy<true>(base,\
+    \ stride, montgomery_one);\r\n    else forward_radix4_block_lazy<false>(base,\
+    \ stride, rotation[layer]);\r\n    if(block + 1 < blocks_at_layer) rotation[layer]\
+    \ = canonicalize(mul(rotation[layer], forward_rate3(twiddle_index(static_cast<u32>(block)))));\r\
+    \n    const usize child_size = block_size >> 2;\r\n    if(child_size == leaf_size)\
+    \ return;\r\n    for(usize child = 0; child < 4; ++child)\r\n        forward_cache_dfs(base\
+    \ + child * child_size, child_size, leaf_size, layer + 1, block * 4 + child, blocks_at_layer\
+    \ * 4, rotation);\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE void forward_cache_pair_node(mint*\
+    \ EEZ_NTT998_RESTRICT a, mint* EEZ_NTT998_RESTRICT b, usize block_size, unsigned\
+    \ layer, usize block, usize blocks_at_layer, std::array<word, max_log / 2 + 1>&\
+    \ rotation) noexcept {\r\n    const usize stride = block_size >> 2;\r\n    if(block\
+    \ == 0) forward_radix4_block_pair_lazy<true>(a, b, stride, montgomery_one);\r\n\
+    \    else forward_radix4_block_pair_lazy<false>(a, b, stride, rotation[layer]);\r\
+    \n    if(block + 1 < blocks_at_layer) rotation[layer] = canonicalize(mul(rotation[layer],\
+    \ forward_rate3(twiddle_index(static_cast<u32>(block)))));\r\n}\r\n\r\ninline\
+    \ void forward_cache_pair_block(mint* EEZ_NTT998_RESTRICT a, mint* EEZ_NTT998_RESTRICT\
+    \ b, usize block_size, unsigned layer, usize block, usize blocks_at_layer, std::array<word,\
+    \ max_log / 2 + 1>& rotation) noexcept {\r\n    forward_cache_pair_node(a, b,\
+    \ block_size, layer, block, blocks_at_layer, rotation);\r\n    const usize child_size\
+    \ = block_size >> 2;\r\n    for(usize child = 0; child < 4; ++child){\r\n    \
+    \    mint* const child_a = a + child * child_size;\r\n        mint* const child_b\
+    \ = b + child * child_size;\r\n        const usize child_block = block * 4 + child;\r\
+    \n        forward_cache_pair_node(child_a, child_b, child_size, layer + 1, child_block,\
     \ blocks_at_layer * 4, rotation);\r\n        const usize grandchild_size = child_size\
-    \ >> 2;\r\n        for(usize grandchild = 0; grandchild < 4; ++grandchild){\r\n\
+    \ >> 2;\r\n        for(usize grandchild = 0; grandchild < 4; ++grandchild)\r\n\
     \            forward_cache_pair_node(child_a + grandchild * grandchild_size, child_b\
     \ + grandchild * grandchild_size, grandchild_size, layer + 2, child_block * 4\
-    \ + grandchild, blocks_at_layer * 16, rotation);\r\n        }\r\n    }\r\n}\r\n\
-    \r\ntemplate <bool convert_input = false>\r\ninline void forward_cache_pair_dfs(mint*\
-    \ EEZ_NTT998_RESTRICT a, mint* EEZ_NTT998_RESTRICT b, usize block_size, usize\
-    \ leaf_size, unsigned layer, usize block, usize blocks_at_layer, std::array<word,\
-    \ max_log / 2 + 1>& rotation) noexcept {\r\n    if(block_size == leaf_size * 64){\r\
-    \n        forward_cache_pair_block<convert_input>(a, b, block_size, layer, block,\
-    \ blocks_at_layer, rotation);\r\n        return;\r\n    }\r\n    forward_cache_pair_node<convert_input>(a,\
+    \ + grandchild, blocks_at_layer * 16, rotation);\r\n    }\r\n}\r\n\r\ninline void\
+    \ forward_cache_pair_dfs(mint* EEZ_NTT998_RESTRICT a, mint* EEZ_NTT998_RESTRICT\
+    \ b, usize block_size, usize leaf_size, unsigned layer, usize block, usize blocks_at_layer,\
+    \ std::array<word, max_log / 2 + 1>& rotation) noexcept {\r\n    if(block_size\
+    \ == leaf_size * 64){\r\n        forward_cache_pair_block(a, b, block_size, layer,\
+    \ block, blocks_at_layer, rotation);\r\n        return;\r\n    }\r\n    forward_cache_pair_node(a,\
     \ b, block_size, layer, block, blocks_at_layer, rotation);\r\n    const usize\
     \ child_size = block_size >> 2;\r\n    if(child_size == leaf_size) return;\r\n\
-    \    for(usize child = 0; child < 4; ++child){\r\n        forward_cache_pair_dfs<false>(a\
+    \    for(usize child = 0; child < 4; ++child)\r\n        forward_cache_pair_dfs(a\
     \ + child * child_size, b + child * child_size, child_size, leaf_size, layer +\
-    \ 1, block * 4 + child, blocks_at_layer * 4, rotation);\r\n    }\r\n}\r\n\r\n\
-    template <bool apply_scale, bool convert_output = false, bool direct_output =\
-    \ false>\r\nEEZ_NTT998_ALWAYS_INLINE void inverse_cache_node(mint* EEZ_NTT998_RESTRICT\
+    \ 1, block * 4 + child, blocks_at_layer * 4, rotation);\r\n}\r\n\r\ntemplate<bool\
+    \ apply_scale>\r\nEEZ_NTT998_ALWAYS_INLINE void inverse_cache_node(mint* EEZ_NTT998_RESTRICT\
     \ base, usize block_size, unsigned layer, usize block, usize blocks_at_layer,\
     \ word scale, std::array<word, max_log / 2 + 1>& rotation) noexcept {\r\n    const\
     \ usize stride = block_size >> 2;\r\n    if(block == 0) inverse_radix4_block_lazy<true,\
-    \ apply_scale, convert_output, direct_output>(base, stride, montgomery_one, scale);\r\
-    \n    else inverse_radix4_block_lazy<false, apply_scale, convert_output, direct_output>(base,\
-    \ stride, rotation[layer], scale);\r\n    if(block + 1 < blocks_at_layer) rotation[layer]\
-    \ = canonicalize(mul(rotation[layer], inverse_rate3(twiddle_index(static_cast<u32>(block)))));\r\
-    \n}\r\n\r\ntemplate <bool scale_leaf, bool convert_output = false, bool direct_output\
-    \ = false>\r\ninline void inverse_cache_block(mint* EEZ_NTT998_RESTRICT base,\
-    \ usize block_size, unsigned layer, usize block, usize blocks_at_layer, word scale,\
-    \ std::array<word, max_log / 2 + 1>& rotation) noexcept {\r\n    const usize child_size\
-    \ = block_size >> 2;\r\n    const usize grandchild_size = child_size >> 2;\r\n\
-    \    for(usize child = 0; child < 4; ++child){\r\n        mint* const child_base\
-    \ = base + child * child_size;\r\n        const usize child_block = block * 4\
-    \ + child;\r\n        for(usize grandchild = 0; grandchild < 4; ++grandchild){\r\
-    \n            inverse_cache_node<scale_leaf>(child_base + grandchild * grandchild_size,\
-    \ grandchild_size, layer + 2, child_block * 4 + grandchild, blocks_at_layer *\
-    \ 16, scale, rotation);\r\n        }\r\n        inverse_cache_node<false>(child_base,\
+    \ apply_scale>(base, stride, montgomery_one, scale);\r\n    else inverse_radix4_block_lazy<false,\
+    \ apply_scale>(base, stride, rotation[layer], scale);\r\n    if(block + 1 < blocks_at_layer)\
+    \ rotation[layer] = canonicalize(mul(rotation[layer], inverse_rate3(twiddle_index(static_cast<u32>(block)))));\r\
+    \n}\r\n\r\ntemplate<bool scale_leaf>\r\ninline void inverse_cache_block(mint*\
+    \ EEZ_NTT998_RESTRICT base, usize block_size, unsigned layer, usize block, usize\
+    \ blocks_at_layer, word scale, std::array<word, max_log / 2 + 1>& rotation) noexcept\
+    \ {\r\n    const usize child_size = block_size >> 2;\r\n    const usize grandchild_size\
+    \ = child_size >> 2;\r\n    for(usize child = 0; child < 4; ++child){\r\n    \
+    \    mint* const child_base = base + child * child_size;\r\n        const usize\
+    \ child_block = block * 4 + child;\r\n        for(usize grandchild = 0; grandchild\
+    \ < 4; ++grandchild)\r\n            inverse_cache_node<scale_leaf>(child_base\
+    \ + grandchild * grandchild_size, grandchild_size, layer + 2, child_block * 4\
+    \ + grandchild, blocks_at_layer * 16, scale, rotation);\r\n        inverse_cache_node<false>(child_base,\
     \ child_size, layer + 1, child_block, blocks_at_layer * 4, scale, rotation);\r\
-    \n    }\r\n    inverse_cache_node<false, convert_output, direct_output>(base,\
-    \ block_size, layer, block, blocks_at_layer, scale, rotation);\r\n}\r\n\r\ntemplate\
-    \ <bool scale_leaf, bool convert_output = false, bool direct_output = false>\r\
-    \ninline void inverse_cache_dfs(mint* EEZ_NTT998_RESTRICT base, usize block_size,\
-    \ usize leaf_size, unsigned layer, usize block, usize blocks_at_layer, word scale,\
-    \ std::array<word, max_log / 2 + 1>& rotation) noexcept {\r\n    if(block_size\
-    \ == leaf_size * 64){\r\n        inverse_cache_block<scale_leaf, convert_output,\
-    \ direct_output>(base, block_size, layer, block, blocks_at_layer, scale, rotation);\r\
-    \n        return;\r\n    }\r\n    const usize child_size = block_size >> 2;\r\n\
-    \    if(child_size != leaf_size){\r\n        for(usize child = 0; child < 4; ++child){\r\
-    \n            inverse_cache_dfs<scale_leaf, false>(base + child * child_size,\
-    \ child_size, leaf_size, layer + 1, block * 4 + child, blocks_at_layer * 4, scale,\
-    \ rotation);\r\n        }\r\n    }\r\n\r\n    const usize stride = block_size\
-    \ >> 2;\r\n    if constexpr(scale_leaf){\r\n        if(child_size == leaf_size){\r\
-    \n            if(block == 0) inverse_radix4_block_lazy<true, true, convert_output,\
-    \ direct_output>(base, stride, montgomery_one, scale);\r\n            else inverse_radix4_block_lazy<false,\
-    \ true, convert_output, direct_output>(base, stride, rotation[layer], scale);\r\
-    \n        }else if(block == 0){\r\n            inverse_radix4_block_lazy<true,\
-    \ false, convert_output, direct_output>(base, stride, montgomery_one, scale);\r\
-    \n        }else{\r\n            inverse_radix4_block_lazy<false, false, convert_output,\
-    \ direct_output>(base, stride, rotation[layer], scale);\r\n        }\r\n    }else\
-    \ if(block == 0){\r\n        inverse_radix4_block_lazy<true, false, convert_output,\
-    \ direct_output>(base, stride, montgomery_one, scale);\r\n    }else{\r\n     \
-    \   inverse_radix4_block_lazy<false, false, convert_output, direct_output>(base,\
-    \ stride, rotation[layer], scale);\r\n    }\r\n\r\n    if(block + 1 < blocks_at_layer){\r\
-    \n        rotation[layer] = canonicalize(mul(rotation[layer], inverse_rate3(twiddle_index(static_cast<u32>(block)))));\r\
-    \n    }\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE void convert_to_montgomery(mint*\
-    \ a, usize n) noexcept {\r\n    constexpr word montgomery_r2 = 932051910u;\r\n\
-    \    const vec vr2 = broadcast(montgomery_r2);\r\n    const vec vr2_ninv = broadcast(montgomery_r2\
-    \ * montgomery_ninv);\r\n    for(usize i = 0; i < n; i += 8) store8_aligned(a\
-    \ + i, mul8_fixed(load8_aligned(a + i), vr2, vr2_ninv));\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE\
-    \ void convert_from_montgomery(mint* a, usize n) noexcept {\r\n    const vec vone\
-    \ = broadcast(1);\r\n    const vec vninv = broadcast(montgomery_ninv);\r\n   \
-    \ for(usize i = 0; i < n; i += 8) store8_aligned(a + i, canonicalize8(mul8_fixed(load8_aligned(a\
-    \ + i), vone, vninv)));\r\n}\r\n\r\ntemplate <bool convert_input = false>\r\n\
-    inline void forward_adaptive(mint* a, usize n, unsigned leaf_log) noexcept {\r\
-    \n    const usize leaf_size = usize(1) << leaf_log;\r\n    if(n == leaf_size){\r\
-    \n        if constexpr(convert_input) convert_to_montgomery(a, n);\r\n       \
-    \ return;\r\n    }\r\n    std::array<word, max_log / 2 + 1> rotation{};\r\n  \
-    \  rotation.fill(canonicalize(montgomery_one));\r\n    if((std::countr_zero(n)\
-    \ - leaf_log) & 1u){\r\n        forward_radix2_first(a, n);\r\n        if constexpr(convert_input)\
-    \ convert_to_montgomery(a, n);\r\n        forward_cache_dfs(a, n >> 1, leaf_size,\
-    \ 0, 0, 2, rotation);\r\n        forward_cache_dfs(a + (n >> 1), n >> 1, leaf_size,\
-    \ 0, 1, 2, rotation);\r\n        return;\r\n    }\r\n    forward_cache_dfs<convert_input>(a,\
-    \ n, leaf_size, 0, 0, 1, rotation);\r\n}\r\n\r\ntemplate <bool convert_input =\
-    \ false>\r\ninline void forward_adaptive_pair(mint* EEZ_NTT998_RESTRICT a, mint*\
-    \ EEZ_NTT998_RESTRICT b, usize n, unsigned leaf_log) noexcept {\r\n    const usize\
-    \ leaf_size = usize(1) << leaf_log;\r\n    if(n == leaf_size){\r\n        if constexpr(convert_input){\r\
-    \n            convert_to_montgomery(a, n);\r\n            convert_to_montgomery(b,\
-    \ n);\r\n        }\r\n        return;\r\n    }\r\n    std::array<word, max_log\
-    \ / 2 + 1> rotation{};\r\n    rotation.fill(canonicalize(montgomery_one));\r\n\
-    \    if((std::countr_zero(n) - leaf_log) & 1u){\r\n        forward_radix2_first(a,\
-    \ n);\r\n        forward_radix2_first(b, n);\r\n        if constexpr(convert_input){\r\
-    \n            convert_to_montgomery(a, n);\r\n            convert_to_montgomery(b,\
-    \ n);\r\n        }\r\n        forward_cache_pair_dfs(a, b, n >> 1, leaf_size,\
-    \ 0, 0, 2, rotation);\r\n        forward_cache_pair_dfs(a + (n >> 1), b + (n >>\
-    \ 1), n >> 1, leaf_size, 0, 1, 2, rotation);\r\n        return;\r\n    }\r\n \
-    \   forward_cache_pair_dfs<convert_input>(a, b, n, leaf_size, 0, 0, 1, rotation);\r\
-    \n}\r\n\r\ntemplate <bool convert_output = false, bool direct_output = false>\r\
-    \ninline void inverse_adaptive(mint* a, usize n, unsigned leaf_log) noexcept {\r\
-    \n    const usize leaf_size = usize(1) << leaf_log;\r\n    if(n == leaf_size){\r\
-    \n        if constexpr(convert_output) convert_from_montgomery(a, n);\r\n    \
-    \    return;\r\n    }\r\n    const word scale = mint::raw(static_cast<word>(n\
+    \n    }\r\n    inverse_cache_node<false>(base, block_size, layer, block, blocks_at_layer,\
+    \ scale, rotation);\r\n}\r\n\r\ntemplate<bool scale_leaf>\r\ninline void inverse_cache_dfs(mint*\
+    \ EEZ_NTT998_RESTRICT base, usize block_size, usize leaf_size, unsigned layer,\
+    \ usize block, usize blocks_at_layer, word scale, std::array<word, max_log / 2\
+    \ + 1>& rotation) noexcept {\r\n    if(block_size == leaf_size * 64){\r\n    \
+    \    inverse_cache_block<scale_leaf>(base, block_size, layer, block, blocks_at_layer,\
+    \ scale, rotation);\r\n        return;\r\n    }\r\n    const usize child_size\
+    \ = block_size >> 2;\r\n    if(child_size != leaf_size){\r\n        for(usize\
+    \ child = 0; child < 4; ++child)\r\n            inverse_cache_dfs<scale_leaf>(base\
+    \ + child * child_size, child_size, leaf_size, layer + 1, block * 4 + child, blocks_at_layer\
+    \ * 4, scale, rotation);\r\n    }\r\n\r\n    const usize stride = block_size >>\
+    \ 2;\r\n    if constexpr(scale_leaf){\r\n        if(child_size == leaf_size){\r\
+    \n            if(block == 0) inverse_radix4_block_lazy<true, true>(base, stride,\
+    \ montgomery_one, scale);\r\n            else inverse_radix4_block_lazy<false,\
+    \ true>(base, stride, rotation[layer], scale);\r\n        }else if(block == 0)\
+    \ inverse_radix4_block_lazy<true, false>(base, stride, montgomery_one, scale);\r\
+    \n        else inverse_radix4_block_lazy<false, false>(base, stride, rotation[layer],\
+    \ scale);\r\n    }else if(block == 0) inverse_radix4_block_lazy<true, false>(base,\
+    \ stride, montgomery_one, scale);\r\n    else inverse_radix4_block_lazy<false,\
+    \ false>(base, stride, rotation[layer], scale);\r\n\r\n    if(block + 1 < blocks_at_layer)\
+    \ rotation[layer] = canonicalize(mul(rotation[layer], inverse_rate3(twiddle_index(static_cast<u32>(block)))));\r\
+    \n}\r\n\r\ninline void forward_adaptive(mint* a, usize n, unsigned leaf_log) noexcept\
+    \ {\r\n    const usize leaf_size = usize(1) << leaf_log;\r\n    if(n == leaf_size)\
+    \ return;\r\n    std::array<word, max_log / 2 + 1> rotation{};\r\n    rotation.fill(canonicalize(montgomery_one));\r\
+    \n    if((std::countr_zero(n) - leaf_log) & 1u){\r\n        forward_radix2_first(a,\
+    \ n);\r\n        forward_cache_dfs(a, n >> 1, leaf_size, 0, 0, 2, rotation);\r\
+    \n        forward_cache_dfs(a + (n >> 1), n >> 1, leaf_size, 0, 1, 2, rotation);\r\
+    \n        return;\r\n    }\r\n    forward_cache_dfs(a, n, leaf_size, 0, 0, 1,\
+    \ rotation);\r\n}\r\n\r\ninline void forward_adaptive_pair(mint* EEZ_NTT998_RESTRICT\
+    \ a, mint* EEZ_NTT998_RESTRICT b, usize n, unsigned leaf_log) noexcept {\r\n \
+    \   const usize leaf_size = usize(1) << leaf_log;\r\n    if(n == leaf_size) return;\r\
+    \n    std::array<word, max_log / 2 + 1> rotation{};\r\n    rotation.fill(canonicalize(montgomery_one));\r\
+    \n    if((std::countr_zero(n) - leaf_log) & 1u){\r\n        forward_radix2_first(a,\
+    \ n);\r\n        forward_radix2_first(b, n);\r\n        forward_cache_pair_dfs(a,\
+    \ b, n >> 1, leaf_size, 0, 0, 2, rotation);\r\n        forward_cache_pair_dfs(a\
+    \ + (n >> 1), b + (n >> 1), n >> 1, leaf_size, 0, 1, 2, rotation);\r\n       \
+    \ return;\r\n    }\r\n    forward_cache_pair_dfs(a, b, n, leaf_size, 0, 0, 1,\
+    \ rotation);\r\n}\r\n\r\ninline void inverse_adaptive(mint* a, usize n, unsigned\
+    \ leaf_log) noexcept {\r\n    const usize leaf_size = usize(1) << leaf_log;\r\n\
+    \    if(n == leaf_size) return;\r\n    const word scale = mint::raw(static_cast<word>(n\
     \ >> leaf_log)).inv().a;\r\n    std::array<word, max_log / 2 + 1> rotation{};\r\
     \n    rotation.fill(canonicalize(montgomery_one));\r\n    if((std::countr_zero(n)\
     \ - leaf_log) & 1u){\r\n        inverse_cache_dfs<true>(a, n >> 1, leaf_size,\
@@ -914,58 +758,47 @@ data:
     \ n >> 1, leaf_size, 0, 1, 2, scale, rotation);\r\n        const usize half =\
     \ n >> 1;\r\n        for(usize i = 0; i < half; i += 8){\r\n            const\
     \ vec x = shrink4_to_2(load8_aligned(a + i));\r\n            const vec y = shrink4_to_2(load8_aligned(a\
-    \ + half + i));\r\n            vec z0 = lazy_add8(x, y);\r\n            vec z1\
-    \ = lazy_sub8(x, y);\r\n            if constexpr(convert_output){\r\n        \
-    \        const vec vone = broadcast(1);\r\n                const vec vninv = broadcast(montgomery_ninv);\r\
-    \n                z0 = canonicalize8(mul8_fixed(z0, vone, vninv));\r\n       \
-    \         z1 = canonicalize8(mul8_fixed(z1, vone, vninv));\r\n            }else\
-    \ if constexpr(direct_output){\r\n                z0 = canonicalize8(shrink4_to_2(z0));\r\
-    \n                z1 = canonicalize8(shrink4_to_2(z1));\r\n            }\r\n \
-    \           store8_aligned(a + i, z0);\r\n            store8_aligned(a + half\
-    \ + i, z1);\r\n        }\r\n        return;\r\n    }\r\n    inverse_cache_dfs<true,\
-    \ convert_output, direct_output>(a, n, leaf_size, 0, 0, 1, scale, rotation);\r\
-    \n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE __m128i reduce_four_accumulators(vec x) noexcept\
-    \ {\r\n    const vec ninv = broadcast(montgomery_ninv);\r\n    const vec prime\
-    \ = broadcast(mod);\r\n    const vec q = _mm256_mul_epu32(x, ninv);\r\n    const\
-    \ vec sum = _mm256_add_epi64(x, _mm256_mul_epu32(q, prime));\r\n    const vec\
-    \ high = _mm256_bsrli_epi128(sum, 4);\r\n    const vec packed = _mm256_permutevar8x32_epi32(\r\
-    \n        high, _mm256_setr_epi32(0, 2, 4, 6, 0, 0, 0, 0)\r\n    );\r\n    return\
-    \ _mm256_castsi256_si128(packed);\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE vec reduce_eight_accumulators(vec\
-    \ even, vec odd) noexcept {\r\n    const vec ninv = broadcast(montgomery_ninv);\r\
-    \n    const vec prime = broadcast(mod);\r\n    const vec q_even = _mm256_mul_epu32(even,\
+    \ + half + i));\r\n            store8_aligned(a + i, lazy_add8(x, y));\r\n   \
+    \         store8_aligned(a + half + i, lazy_sub8(x, y));\r\n        }\r\n    \
+    \    return;\r\n    }\r\n    inverse_cache_dfs<true>(a, n, leaf_size, 0, 0, 1,\
+    \ scale, rotation);\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE __m128i reduce_four_accumulators(vec\
+    \ x) noexcept {\r\n    const vec ninv = broadcast(montgomery_ninv);\r\n    const\
+    \ vec prime = broadcast(mod);\r\n    const vec q = _mm256_mul_epu32(x, ninv);\r\
+    \n    const vec sum = _mm256_add_epi64(x, _mm256_mul_epu32(q, prime));\r\n   \
+    \ const vec high = _mm256_bsrli_epi128(sum, 4);\r\n    const vec packed = _mm256_permutevar8x32_epi32(high,\
+    \ _mm256_setr_epi32(0, 2, 4, 6, 0, 0, 0, 0));\r\n    return _mm256_castsi256_si128(packed);\r\
+    \n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE vec reduce_eight_accumulators(vec even, vec\
+    \ odd) noexcept {\r\n    const vec ninv = broadcast(montgomery_ninv);\r\n    const\
+    \ vec prime = broadcast(mod);\r\n    const vec q_even = _mm256_mul_epu32(even,\
     \ ninv);\r\n    const vec q_odd = _mm256_mul_epu32(odd, ninv);\r\n    const vec\
     \ reduced_even = _mm256_add_epi64(even, _mm256_mul_epu32(q_even, prime));\r\n\
     \    const vec reduced_odd = _mm256_add_epi64(odd, _mm256_mul_epu32(q_odd, prime));\r\
     \n    return shrink4_to_2(_mm256_or_si256(_mm256_bsrli_epi128(reduced_even, 4),\
-    \ reduced_odd));\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE void leaf_product8x4(\r\n\
-    \    mint* EEZ_NTT998_RESTRICT a,\r\n    mint* EEZ_NTT998_RESTRICT b,\r\n    usize\
-    \ first_block,\r\n    const std::array<word, 4>& modulus\r\n) noexcept {\r\n \
-    \   alignas(64) word lhs[4][16];\r\n    alignas(64) vec even[4]{};\r\n    alignas(64)\
-    \ vec odd[4]{};\r\n\r\n    for(unsigned k = 0; k < 4; ++k){\r\n        const usize\
-    \ offset = (first_block + k) * 8;\r\n        const vec x = canonicalize8(shrink4_to_2(load8_aligned(a\
-    \ + offset)));\r\n        const vec y = canonicalize8(shrink4_to_2(load8_aligned(b\
-    \ + offset)));\r\n        const word w = canonicalize(modulus[k]);\r\n       \
-    \ const vec vw = broadcast(w);\r\n        const vec vwninv = broadcast(w * montgomery_ninv);\r\
-    \n        _mm256_store_si256(reinterpret_cast<vec*>(lhs[k]), mul8_fixed(x, vw,\
-    \ vwninv));\r\n        _mm256_store_si256(reinterpret_cast<vec*>(lhs[k] + 8),\
-    \ x);\r\n        store8_aligned(b + offset, y);\r\n    }\r\n\r\n    for(unsigned\
+    \ reduced_odd));\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE void leaf_product8x4(mint*\
+    \ EEZ_NTT998_RESTRICT a, mint* EEZ_NTT998_RESTRICT b, usize first_block, const\
+    \ std::array<word, 4>& modulus) noexcept {\r\n    alignas(64) word lhs[4][16];\r\
+    \n    alignas(64) vec even[4]{};\r\n    alignas(64) vec odd[4]{};\r\n\r\n    for(unsigned\
+    \ k = 0; k < 4; ++k){\r\n        const usize offset = (first_block + k) * 8;\r\
+    \n        const vec x = canonicalize8(shrink4_to_2(load8_aligned(a + offset)));\r\
+    \n        const vec y = canonicalize8(shrink4_to_2(load8_aligned(b + offset)));\r\
+    \n        const word w = canonicalize(modulus[k]);\r\n        _mm256_store_si256(reinterpret_cast<vec*>(lhs[k]),\
+    \ mul8_fixed(x, broadcast(w), broadcast(w * montgomery_ninv)));\r\n        _mm256_store_si256(reinterpret_cast<vec*>(lhs[k]\
+    \ + 8), x);\r\n        store8_aligned(b + offset, y);\r\n    }\r\n\r\n    for(unsigned\
     \ i = 0; i < 8; ++i){\r\n        for(unsigned k = 0; k < 4; ++k){\r\n        \
     \    const usize offset = (first_block + k) * 8;\r\n            const vec y =\
     \ broadcast(raw(b[offset + i]));\r\n            const vec x = _mm256_loadu_si256(reinterpret_cast<const\
     \ vec*>(lhs[k] + 8 - i));\r\n            even[k] = _mm256_add_epi64(even[k], _mm256_mul_epu32(y,\
     \ x));\r\n            odd[k] = _mm256_add_epi64(odd[k], _mm256_mul_epu32(y, _mm256_bsrli_epi128(x,\
-    \ 4)));\r\n        }\r\n    }\r\n\r\n    for(unsigned k = 0; k < 4; ++k){\r\n\
-    \        const usize offset = (first_block + k) * 8;\r\n        store8_aligned(a\
-    \ + offset, reduce_eight_accumulators(even[k], odd[k]));\r\n    }\r\n}\r\n\r\n\
-    EEZ_NTT998_ALWAYS_INLINE void leaf_product16x2_karatsuba(\r\n    mint* EEZ_NTT998_RESTRICT\
-    \ a,\r\n    const mint* EEZ_NTT998_RESTRICT b,\r\n    usize first_block,\r\n \
-    \   const std::array<word, 2>& modulus\r\n) noexcept {\r\n    const vec split\
-    \ = _mm256_setr_epi32(0, 2, 4, 6, 1, 3, 5, 7);\r\n    alignas(64) word lhs[6][16];\r\
-    \n    alignas(64) word rhs[6][8];\r\n    alignas(64) vec even[6]{};\r\n    alignas(64)\
-    \ vec odd[6]{};\r\n    word w[2];\r\n\r\n    for(unsigned k = 0; k < 2; ++k){\r\
-    \n        const usize offset = (first_block + k) * 16;\r\n        const vec ax0\
-    \ = _mm256_permutevar8x32_epi32(canonicalize8(shrink4_to_2(load8_aligned(a + offset))),\
-    \ split);\r\n        const vec ax1 = _mm256_permutevar8x32_epi32(canonicalize8(shrink4_to_2(load8_aligned(a\
+    \ 4)));\r\n        }\r\n    }\r\n\r\n    for(unsigned k = 0; k < 4; ++k)\r\n \
+    \       store8_aligned(a + (first_block + k) * 8, reduce_eight_accumulators(even[k],\
+    \ odd[k]));\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE void leaf_product16x2_karatsuba(mint*\
+    \ EEZ_NTT998_RESTRICT a, const mint* EEZ_NTT998_RESTRICT b, usize first_block,\
+    \ const std::array<word, 2>& modulus) noexcept {\r\n    const vec split = _mm256_setr_epi32(0,\
+    \ 2, 4, 6, 1, 3, 5, 7);\r\n    alignas(64) word lhs[6][16];\r\n    alignas(64)\
+    \ word rhs[6][8];\r\n    alignas(64) vec even[6]{};\r\n    alignas(64) vec odd[6]{};\r\
+    \n    word w[2];\r\n\r\n    for(unsigned k = 0; k < 2; ++k){\r\n        const\
+    \ usize offset = (first_block + k) * 16;\r\n        const vec ax0 = _mm256_permutevar8x32_epi32(canonicalize8(shrink4_to_2(load8_aligned(a\
+    \ + offset))), split);\r\n        const vec ax1 = _mm256_permutevar8x32_epi32(canonicalize8(shrink4_to_2(load8_aligned(a\
     \ + offset + 8))), split);\r\n        const vec bx0 = _mm256_permutevar8x32_epi32(canonicalize8(shrink4_to_2(load8_aligned(b\
     \ + offset))), split);\r\n        const vec bx1 = _mm256_permutevar8x32_epi32(canonicalize8(shrink4_to_2(load8_aligned(b\
     \ + offset + 8))), split);\r\n        const vec ae = _mm256_permute2x128_si256(ax0,\
@@ -995,167 +828,190 @@ data:
     \ co);\r\n        const vec hi = _mm256_unpackhi_epi32(ce, co);\r\n        const\
     \ usize offset = (first_block + k) * 16;\r\n        store8_aligned(a + offset,\
     \ _mm256_permute2x128_si256(lo, hi, 0x20));\r\n        store8_aligned(a + offset\
-    \ + 8, _mm256_permute2x128_si256(lo, hi, 0x31));\r\n    }\r\n}\r\n\r\ntemplate\
-    \ <unsigned leaf_size, unsigned parallel_blocks>\r\ninline void leaf_product_group(\r\
-    \n    mint* a,\r\n    const mint* b,\r\n    usize first_block,\r\n    const std::array<word,\
-    \ parallel_blocks>& modulus\r\n) noexcept {\r\n    static_assert(leaf_size ==\
-    \ 8 || leaf_size == 16);\r\n    static_assert(leaf_size * parallel_blocks == 32);\r\
-    \n    alignas(64) word lhs[parallel_blocks][leaf_size];\r\n    alignas(64) word\
-    \ rhs[parallel_blocks][leaf_size];\r\n    alignas(64) u64 wrapped_rhs[parallel_blocks][2\
-    \ * leaf_size];\r\n    alignas(64) vec acc[parallel_blocks][leaf_size / 4];\r\n\
-    \r\n    for(unsigned k = 0; k < parallel_blocks; ++k){\r\n        const usize\
-    \ offset = (first_block + k) * leaf_size;\r\n        for(unsigned j = 0; j < leaf_size;\
-    \ j += 8){\r\n            const vec x = canonicalize8(shrink4_to_2(load8_aligned(a\
-    \ + offset + j)));\r\n            const vec y = canonicalize8(shrink4_to_2(load8_aligned(b\
-    \ + offset + j)));\r\n            _mm256_store_si256(reinterpret_cast<vec*>(lhs[k]\
-    \ + j), x);\r\n            _mm256_store_si256(reinterpret_cast<vec*>(rhs[k] +\
-    \ j), y);\r\n        }\r\n        for(unsigned j = 0; j < leaf_size; ++j){\r\n\
-    \            wrapped_rhs[k][j] = canonicalize(mul(rhs[k][j], modulus[k]));\r\n\
-    \            wrapped_rhs[k][leaf_size + j] = rhs[k][j];\r\n        }\r\n     \
-    \   for(unsigned j = 0; j < leaf_size / 4; ++j) acc[k][j] = _mm256_setzero_si256();\r\
-    \n    }\r\n\r\n    for(unsigned i = 0; i < leaf_size; ++i){\r\n        for(unsigned\
-    \ k = 0; k < parallel_blocks; ++k){\r\n            const vec x = broadcast(lhs[k][i]);\r\
-    \n            for(unsigned j = 0; j < leaf_size; j += 4){\r\n                const\
-    \ vec y = _mm256_loadu_si256(reinterpret_cast<const vec*>(wrapped_rhs[k] + leaf_size\
-    \ - i + j));\r\n                acc[k][j / 4] = _mm256_add_epi64(acc[k][j / 4],\
-    \ _mm256_mul_epu32(x, y));\r\n            }\r\n        }\r\n    }\r\n\r\n    for(unsigned\
-    \ k = 0; k < parallel_blocks; ++k){\r\n        if constexpr(leaf_size == 16){\r\
-    \n            for(unsigned j = 0; j < leaf_size / 4; ++j) acc[k][j] = shrink4_to_2(acc[k][j]);\r\
-    \n        }\r\n        __m128i reduced[leaf_size / 4];\r\n        for(unsigned\
-    \ j = 0; j < leaf_size / 4; ++j){\r\n            reduced[j] = reduce_four_accumulators(acc[k][j]);\r\
-    \n        }\r\n        const usize offset = (first_block + k) * leaf_size;\r\n\
-    \        store8_aligned(a + offset, _mm256_set_m128i(reduced[1], reduced[0]));\r\
-    \n        if constexpr(leaf_size == 16){\r\n            store8_aligned(a + offset\
-    \ + 8, _mm256_set_m128i(reduced[3], reduced[2]));\r\n        }\r\n    }\r\n}\r\
-    \n\r\ntemplate <unsigned leaf_size, unsigned parallel_blocks>\r\ninline void leaf_products(mint*\
+    \ + 8, _mm256_permute2x128_si256(lo, hi, 0x31));\r\n    }\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE\
+    \ word twice(word x) noexcept {\r\n    return x + x;\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE\
+    \ vec pack4_u32(word x0, word x1, word x2, word x3) noexcept {\r\n    const __m128i\
+    \ x = _mm_setr_epi32(static_cast<int>(x0), static_cast<int>(x1), static_cast<int>(x2),\
+    \ static_cast<int>(x3));\r\n    return _mm256_cvtepu32_epi64(x);\r\n}\r\n\r\n\
+    EEZ_NTT998_ALWAYS_INLINE vec mul4_u32(word a0, word b0, word a1, word b1, word\
+    \ a2, word b2, word a3, word b3) noexcept {\r\n    return _mm256_mul_epu32(pack4_u32(a0,\
+    \ a1, a2, a3), pack4_u32(b0, b1, b2, b3));\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE\
+    \ u64 hsum4_u64(vec x) noexcept {\r\n    __m128i s = _mm_add_epi64(_mm256_castsi256_si128(x),\
+    \ _mm256_extracti128_si256(x, 1));\r\n    s = _mm_add_epi64(s, _mm_srli_si128(s,\
+    \ 8));\r\n    return static_cast<u64>(_mm_cvtsi128_si64(s));\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE\
+    \ vec square8_packed(vec vx, word w) noexcept {\r\n    alignas(32) word x[8],\
+    \ xw[8];\r\n    vx = canonicalize8(shrink4_to_2(vx));\r\n    w = canonicalize(w);\r\
+    \n    _mm256_store_si256(reinterpret_cast<vec*>(x), vx);\r\n    _mm256_store_si256(reinterpret_cast<vec*>(xw),\
+    \ mul8_fixed(vx, broadcast(w), broadcast(w * montgomery_ninv)));\r\n\r\n    u64\
+    \ a0 = hsum4_u64(mul4_u32(\r\n        x[0], x[0],\r\n        twice(xw[1]), x[7],\r\
+    \n        twice(xw[2]), x[6],\r\n        twice(xw[3]), x[5]\r\n    ));\r\n   \
+    \ const u64 a1 = hsum4_u64(mul4_u32(\r\n        twice(x[0]), x[1],\r\n       \
+    \ twice(xw[2]), x[7],\r\n        twice(xw[3]), x[6],\r\n        twice(xw[4]),\
+    \ x[5]\r\n    ));\r\n    u64 a2 = hsum4_u64(mul4_u32(\r\n        twice(x[0]),\
+    \ x[2],\r\n        x[1], x[1],\r\n        twice(xw[3]), x[7],\r\n        twice(xw[4]),\
+    \ x[6]\r\n    ));\r\n    const u64 a3 = hsum4_u64(mul4_u32(\r\n        twice(x[0]),\
+    \ x[3],\r\n        twice(x[1]), x[2],\r\n        twice(xw[4]), x[7],\r\n     \
+    \   twice(xw[5]), x[6]\r\n    ));\r\n    u64 a4 = hsum4_u64(mul4_u32(\r\n    \
+    \    twice(x[0]), x[4],\r\n        twice(x[1]), x[3],\r\n        x[2], x[2],\r\
+    \n        twice(xw[5]), x[7]\r\n    ));\r\n    const u64 a5 = hsum4_u64(mul4_u32(\r\
+    \n        twice(x[0]), x[5],\r\n        twice(x[1]), x[4],\r\n        twice(x[2]),\
+    \ x[3],\r\n        twice(xw[6]), x[7]\r\n    ));\r\n    u64 a6 = hsum4_u64(mul4_u32(\r\
+    \n        twice(x[0]), x[6],\r\n        twice(x[1]), x[5],\r\n        twice(x[2]),\
+    \ x[4],\r\n        x[3], x[3]\r\n    ));\r\n    const u64 a7 = hsum4_u64(mul4_u32(\r\
+    \n        twice(x[0]), x[7],\r\n        twice(x[1]), x[6],\r\n        twice(x[2]),\
+    \ x[5],\r\n        twice(x[3]), x[4]\r\n    ));\r\n\r\n    const vec extra = mul4_u32(\r\
+    \n        xw[4], x[4],\r\n        xw[5], x[5],\r\n        xw[6], x[6],\r\n   \
+    \     xw[7], x[7]\r\n    );\r\n    alignas(32) u64 e[4];\r\n    _mm256_store_si256(reinterpret_cast<vec*>(e),\
+    \ extra);\r\n    a0 += e[0];\r\n    a2 += e[1];\r\n    a4 += e[2];\r\n    a6 +=\
+    \ e[3];\r\n\r\n    const vec lo = _mm256_setr_epi64x(static_cast<long long>(a0),\
+    \ static_cast<long long>(a1),\r\n                                      static_cast<long\
+    \ long>(a2), static_cast<long long>(a3));\r\n    const vec hi = _mm256_setr_epi64x(static_cast<long\
+    \ long>(a4), static_cast<long long>(a5),\r\n                                 \
+    \     static_cast<long long>(a6), static_cast<long long>(a7));\r\n    return shrink4_to_2(_mm256_set_m128i(reduce_four_accumulators(hi),\
+    \ reduce_four_accumulators(lo)));\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE void leaf_square8x4(mint*\
+    \ EEZ_NTT998_RESTRICT a, usize first_block, const std::array<word, 4>& modulus)\
+    \ noexcept {\r\n    for(unsigned k = 0; k < 4; ++k){\r\n        const usize offset\
+    \ = (first_block + k) * 8;\r\n        store8_aligned(a + offset, square8_packed(load8_aligned(a\
+    \ + offset), modulus[k]));\r\n    }\r\n}\r\n\r\nEEZ_NTT998_ALWAYS_INLINE void\
+    \ leaf_square16x2_karatsuba(mint* EEZ_NTT998_RESTRICT a, usize first_block, const\
+    \ std::array<word, 2>& modulus) noexcept {\r\n    const vec split = _mm256_setr_epi32(0,\
+    \ 2, 4, 6, 1, 3, 5, 7);\r\n\r\n    for(unsigned k = 0; k < 2; ++k){\r\n      \
+    \  const usize offset = (first_block + k) * 16;\r\n        const vec x0 = _mm256_permutevar8x32_epi32(canonicalize8(shrink4_to_2(load8_aligned(a\
+    \ + offset))), split);\r\n        const vec x1 = _mm256_permutevar8x32_epi32(canonicalize8(shrink4_to_2(load8_aligned(a\
+    \ + offset + 8))), split);\r\n        const vec xe = _mm256_permute2x128_si256(x0,\
+    \ x1, 0x20);\r\n        const vec xo = _mm256_permute2x128_si256(x0, x1, 0x31);\r\
+    \n        const vec xs = canonicalize8(add8(xe, xo));\r\n        const word w\
+    \ = canonicalize(modulus[k]);\r\n\r\n        const vec p0 = square8_packed(xe,\
+    \ w);\r\n        const vec p1 = square8_packed(xo, w);\r\n        const vec p2\
+    \ = square8_packed(xs, w);\r\n\r\n        vec yp1 = _mm256_permutevar8x32_epi32(p1,\
+    \ _mm256_setr_epi32(7, 0, 1, 2, 3, 4, 5, 6));\r\n        yp1 = _mm256_insert_epi32(yp1,\
+    \ canonicalize(mul(static_cast<word>(_mm256_extract_epi32(p1, 7)), w)), 0);\r\n\
+    \        const vec ce = add8(p0, yp1);\r\n        const vec co = sub8(sub8(p2,\
+    \ p0), p1);\r\n        const vec lo = _mm256_unpacklo_epi32(ce, co);\r\n     \
+    \   const vec hi = _mm256_unpackhi_epi32(ce, co);\r\n\r\n        store8_aligned(a\
+    \ + offset, _mm256_permute2x128_si256(lo, hi, 0x20));\r\n        store8_aligned(a\
+    \ + offset + 8, _mm256_permute2x128_si256(lo, hi, 0x31));\r\n    }\r\n}\r\n\r\n\
+    template<unsigned leaf_size, unsigned parallel_blocks>\r\ninline void leaf_products(mint*\
     \ a, mint* b, usize n) noexcept {\r\n    const usize blocks = n / leaf_size;\r\
     \n    word w = montgomery_one;\r\n    for(usize s = 0; s < blocks; s += parallel_blocks){\r\
     \n        std::array<word, parallel_blocks> modulus{};\r\n        for(unsigned\
     \ k = 0; k < parallel_blocks; ++k){\r\n            modulus[k] = w;\r\n       \
-    \     const usize block = s + k;\r\n            if(block + 1 < blocks){\r\n  \
-    \              w = mul(w, forward_rate1(twiddle_index(static_cast<u32>(block))));\r\
-    \n            }\r\n        }\r\n        if constexpr(leaf_size == 8) leaf_product8x4(a,\
-    \ b, s, modulus);\r\n        else leaf_product16x2_karatsuba(a, b, s, modulus);\r\
-    \n    }\r\n}\r\n\r\ninline void convolution_adaptive_inplace(mint* a, mint* b,\
-    \ usize n) noexcept {\r\n    const unsigned leaf_log = adaptive_leaf_log(n);\r\
-    \n    forward_adaptive_pair(a, b, n, leaf_log);\r\n    if(leaf_log == 3){\r\n\
-    \        leaf_products<8, 4>(a, b, n);\r\n    }else{\r\n        leaf_products<16,\
-    \ 2>(a, b, n);\r\n    }\r\n    inverse_adaptive(a, n, leaf_log);\r\n}\r\n\r\n\
-    inline void convolution_adaptive_normal_inplace(mint* a, mint* b, usize n) noexcept\
-    \ {\r\n    const unsigned leaf_log = adaptive_leaf_log(n);\r\n    forward_adaptive_pair<true>(a,\
-    \ b, n, leaf_log);\r\n    if(leaf_log == 3){\r\n        leaf_products<8, 4>(a,\
-    \ b, n);\r\n    }else{\r\n        leaf_products<16, 2>(a, b, n);\r\n    }\r\n\
-    \    inverse_adaptive<true>(a, n, leaf_log);\r\n}\r\n\r\ninline void convolution_adaptive_mixed_normal_inplace(mint*\
+    \     const usize block = s + k;\r\n            if(block + 1 < blocks) w = mul(w,\
+    \ forward_rate1(twiddle_index(static_cast<u32>(block))));\r\n        }\r\n   \
+    \     if constexpr(leaf_size == 8) leaf_product8x4(a, b, s, modulus);\r\n    \
+    \    else leaf_product16x2_karatsuba(a, b, s, modulus);\r\n    }\r\n}\r\n\r\n\
+    template<unsigned leaf_size, unsigned parallel_blocks>\r\ninline void leaf_squares(mint*\
+    \ a, usize n) noexcept {\r\n    const usize blocks = n / leaf_size;\r\n    word\
+    \ w = montgomery_one;\r\n    for(usize s = 0; s < blocks; s += parallel_blocks){\r\
+    \n        std::array<word, parallel_blocks> modulus{};\r\n        for(unsigned\
+    \ k = 0; k < parallel_blocks; ++k){\r\n            modulus[k] = w;\r\n       \
+    \     const usize block = s + k;\r\n            if(block + 1 < blocks) w = mul(w,\
+    \ forward_rate1(twiddle_index(static_cast<u32>(block))));\r\n        }\r\n   \
+    \     if constexpr(leaf_size == 8) leaf_square8x4(a, s, modulus);\r\n        else\
+    \ leaf_square16x2_karatsuba(a, s, modulus);\r\n    }\r\n}\r\n\r\ninline void convolution_adaptive_inplace(mint*\
     \ a, mint* b, usize n) noexcept {\r\n    const unsigned leaf_log = adaptive_leaf_log(n);\r\
-    \n    forward_adaptive_pair(a, b, n, leaf_log);\r\n    if(leaf_log == 3){\r\n\
-    \        leaf_products<8, 4>(a, b, n);\r\n    }else{\r\n        leaf_products<16,\
-    \ 2>(a, b, n);\r\n    }\r\n    inverse_adaptive<false, true>(a, n, leaf_log);\r\
+    \n    forward_adaptive_pair(a, b, n, leaf_log);\r\n    if(leaf_log == 3) leaf_products<8,\
+    \ 4>(a, b, n);\r\n    else leaf_products<16, 2>(a, b, n);\r\n    inverse_adaptive(a,\
+    \ n, leaf_log);\r\n}\r\n\r\ninline void square_adaptive_inplace(mint* a, usize\
+    \ n) noexcept {\r\n    const unsigned leaf_log = adaptive_leaf_log(n);\r\n   \
+    \ forward_adaptive(a, n, leaf_log);\r\n    if(leaf_log == 3) leaf_squares<8, 4>(a,\
+    \ n);\r\n    else leaf_squares<16, 2>(a, n);\r\n    inverse_adaptive(a, n, leaf_log);\r\
     \n}\r\n\r\n#endif\r\n\r\ninline void pointwise_multiply(mint* EEZ_NTT998_RESTRICT\
     \ a, const mint* EEZ_NTT998_RESTRICT b, usize n) noexcept {\r\n    usize i = 0;\r\
-    \n#if EEZ_NTT998_USE_AVX2\r\n    for (; i + 8 <= n; i += 8){\r\n        store8(a\
-    \ + i, mul8(load8(a + i), load8(b + i)));\r\n    }\r\n#endif\r\n    for (; i <\
-    \ n; ++i){\r\n        a[i] = from_raw(mul(raw(a[i]), raw(b[i])));\r\n    }\r\n\
-    }\r\n\r\ninline void pointwise_square(mint* EEZ_NTT998_RESTRICT a, usize n) noexcept\
-    \ {\r\n    usize i = 0;\r\n#if EEZ_NTT998_USE_AVX2\r\n    for (; i + 8 <= n; i\
-    \ += 8){\r\n        const vec x = load8(a + i);\r\n        store8(a + i, mul8(x,\
-    \ x));\r\n    }\r\n#endif\r\n    for (; i < n; ++i){\r\n        a[i] = from_raw(mul(raw(a[i]),\
-    \ raw(a[i])));\r\n    }\r\n}\r\n\r\n}\r\n\r\ninline void forward(std::span<mint>\
-    \ a) noexcept {\r\n    if (a.size() <= 1) return;\r\n    assert(valid_ntt_size(a.size()));\r\
+    \n#if EEZ_NTT998_USE_AVX2\r\n    for(; i + 8 <= n; i += 8) store8(a + i, mul8(load8(a\
+    \ + i), load8(b + i)));\r\n#endif\r\n    for(; i < n; ++i) a[i] = from_raw(mul(raw(a[i]),\
+    \ raw(b[i])));\r\n}\r\n\r\ninline void pointwise_square(mint* EEZ_NTT998_RESTRICT\
+    \ a, usize n) noexcept {\r\n    usize i = 0;\r\n#if EEZ_NTT998_USE_AVX2\r\n  \
+    \  for(; i + 8 <= n; i += 8){\r\n        const vec x = load8(a + i);\r\n     \
+    \   store8(a + i, mul8(x, x));\r\n    }\r\n#endif\r\n    for(; i < n; ++i) a[i]\
+    \ = from_raw(mul(raw(a[i]), raw(a[i])));\r\n}\r\n\r\n}\r\n\r\ninline void forward(std::span<mint>\
+    \ a) noexcept {\r\n    if(a.size() <= 1) return;\r\n    assert(valid_ntt_size(a.size()));\r\
     \n    detail::forward_dif(a.data(), a.size());\r\n}\r\n\r\ninline void inverse(std::span<mint>\
-    \ a) noexcept {\r\n    if (a.size() <= 1) return;\r\n    assert(valid_ntt_size(a.size()));\r\
+    \ a) noexcept {\r\n    if(a.size() <= 1) return;\r\n    assert(valid_ntt_size(a.size()));\r\
     \n    detail::inverse_dit(a.data(), a.size());\r\n}\r\n\r\nnamespace detail{\r\
     \n\r\ninline std::vector<mint> convolution_naive(std::span<const mint> a, std::span<const\
     \ mint> b){\r\n    std::vector<mint> result(convolution_size(a.size(), b.size()));\r\
-    \n    for (usize i = 0; i < a.size(); ++i){\r\n        for (usize j = 0; j < b.size();\
-    \ ++j){\r\n            result[i + j] += a[i] * b[j];\r\n        }\r\n    }\r\n\
-    \    return result;\r\n}\r\n\r\ninline std::vector<mint> square_naive(std::span<const\
-    \ mint> a){\r\n    std::vector<mint> result(convolution_size(a.size(), a.size()));\r\
-    \n    for (usize i = 0; i < a.size(); ++i){\r\n        result[2 * i] += a[i] *\
-    \ a[i];\r\n        for (usize j = i + 1; j < a.size(); ++j){\r\n            const\
-    \ mint product = a[i] * a[j];\r\n            result[i + j] += product + product;\r\
-    \n        }\r\n    }\r\n    return result;\r\n}\r\n\r\ninline usize checked_transform_size(usize\
-    \ n, usize m){\n    const usize result = convolution_transform_size(n, m);\n \
-    \   if (n && m && !result){\n        throw std::length_error(\"eez::ntt998: convolution\
-    \ exceeds the 2^25 transform limit\");\n    }\n    return result;\n}\n\r\ninline\
-    \ void require_ntt_size(usize n){\r\n    if (!valid_ntt_size(n)){\r\n        throw\
-    \ std::invalid_argument(\"eez::ntt998: transform length must be a power of two\
-    \ in [1, 2^23]\");\r\n    }\r\n}\r\n\n}\n\n#if EEZ_NTT998_USE_AVX2\n\nusing convolution_buffer\
-    \ = detail::aligned_buffer;\n\ninline void convolution_inplace(convolution_buffer&\
-    \ a, convolution_buffer& b){\n    if (a.size() != b.size() || !valid_convolution_transform_size(a.size())){\n\
-    \        throw std::invalid_argument(\n            \"eez::ntt998::convolution_inplace:\
-    \ buffer sizes must match and be a power of two in [32, 2^25]\"\n        );\n\
-    \    }\n    detail::convolution_adaptive_inplace(a.data(), b.data(), a.size());\n\
-    }\n\n#endif\n\ninline std::vector<mint> convolution(std::span<const mint> a, std::span<const\
-    \ mint> b){\n    if (a.empty() || b.empty()) return {};\r\n    if (a.data() ==\
-    \ b.data() && a.size() == b.size()) return square(a);\r\n    if (std::min(a.size(),\
-    \ b.size()) <= naive_cutoff){\r\n        return detail::convolution_naive(a, b);\r\
-    \n    }\r\n\r\n    const usize result_size = convolution_size(a.size(), b.size());\r\
+    \n    for(usize i = 0; i < a.size(); ++i)\r\n        for(usize j = 0; j < b.size();\
+    \ ++j)\r\n            result[i + j] += a[i] * b[j];\r\n    return result;\r\n\
+    }\r\n\r\ninline std::vector<mint> square_naive(std::span<const mint> a){\r\n \
+    \   std::vector<mint> result(convolution_size(a.size(), a.size()));\r\n    for(usize\
+    \ i = 0; i < a.size(); ++i){\r\n        result[2 * i] += a[i] * a[i];\r\n    \
+    \    for(usize j = i + 1; j < a.size(); ++j){\r\n            const mint product\
+    \ = a[i] * a[j];\r\n            result[i + j] += product + product;\r\n      \
+    \  }\r\n    }\r\n    return result;\r\n}\r\n\r\ninline usize checked_transform_size(usize\
+    \ n, usize m){\r\n    const usize result = convolution_transform_size(n, m);\r\
+    \n    if(n && m && !result)\r\n        throw std::length_error(\"eez::ntt998:\
+    \ convolution exceeds the 2^25 transform limit\");\r\n    return result;\r\n}\r\
+    \n\r\ninline void require_ntt_size(usize n){\r\n    if(!valid_ntt_size(n))\r\n\
+    \        throw std::invalid_argument(\"eez::ntt998: transform length must be a\
+    \ power of two in [1, 2^23]\");\r\n}\r\n\r\n}\r\n\r\n#if EEZ_NTT998_USE_AVX2\r\
+    \n\r\nusing convolution_buffer = detail::aligned_vector;\r\n\r\ninline void convolution_inplace(convolution_buffer&\
+    \ a, convolution_buffer& b){\r\n    if(a.size() != b.size() || !valid_convolution_transform_size(a.size()))\r\
+    \n        throw std::invalid_argument(\"eez::ntt998::convolution_inplace: buffer\
+    \ sizes must match and be a power of two in [32, 2^25]\");\r\n    detail::convolution_adaptive_inplace(a.data(),\
+    \ b.data(), a.size());\r\n}\r\n\r\n#endif\r\n\r\ninline std::vector<mint> convolution(std::span<const\
+    \ mint> a, std::span<const mint> b){\r\n    if(a.empty() || b.empty()) return\
+    \ {};\r\n    if(a.data() == b.data() && a.size() == b.size()) return square(a);\r\
+    \n    if(std::min(a.size(), b.size()) <= naive_cutoff) return detail::convolution_naive(a,\
+    \ b);\r\n\r\n    const usize result_size = convolution_size(a.size(), b.size());\r\
     \n    const usize n = detail::checked_transform_size(a.size(), b.size());\r\n\
-    \    std::vector<mint> fa(n);\r\n    std::vector<mint> fb(n);\r\n    std::copy(a.begin(),\
-    \ a.end(), fa.begin());\r\n    std::copy(b.begin(), b.end(), fb.begin());\r\n\r\
-    \n    detail::forward_dif_partial(fa.data(), n);\r\n    detail::forward_dif_partial(fb.data(),\
-    \ n);\r\n    detail::block_convolution4(fa.data(), fb.data(), n);\r\n    detail::inverse_dit_partial(fa.data(),\
-    \ n);\r\n    fa.resize(result_size);\r\n    return fa;\r\n}\r\n\r\ninline std::vector<mint>\
-    \ square(std::span<const mint> a){\r\n    if (a.empty()) return {};\r\n    if\
-    \ (a.size() <= naive_cutoff) return detail::square_naive(a);\r\n\r\n    const\
-    \ usize result_size = convolution_size(a.size(), a.size());\r\n    const usize\
-    \ n = detail::checked_transform_size(a.size(), a.size());\r\n#if defined(__GNUC__)\
-    \ || defined(__clang__)\r\n    if (n < a.size()) __builtin_unreachable();\r\n\
-    #endif\r\n    std::vector<mint> fa(n);\r\n    std::copy(a.begin(), a.end(), fa.begin());\r\
-    \n\r\n    detail::forward_dif_partial(fa.data(), n);\r\n    detail::block_square4(fa.data(),\
-    \ n);\r\n    detail::inverse_dit_partial(fa.data(), n);\r\n    fa.resize(result_size);\r\
-    \n    return fa;\r\n}\r\n\r\ninline void convolution_to(std::span<const mint>\
-    \ a, std::span<const mint> b, std::span<mint> out, workspace& ws){\r\n    if (a.empty()\
-    \ || b.empty()) return;\r\n    const usize result_size = convolution_size(a.size(),\
-    \ b.size());\r\n    if (out.size() < result_size){\r\n        throw std::invalid_argument(\"\
-    eez::ntt998::convolution_to: output span is too small\");\r\n    }\r\n\r\n   \
-    \ if (a.data() == b.data() && a.size() == b.size()){\r\n        square_to(a, out,\
-    \ ws);\r\n        return;\r\n    }\r\n\r\n    if (std::min(a.size(), b.size())\
-    \ <= naive_cutoff){\r\n        std::fill_n(out.begin(), result_size, mint{});\r\
-    \n        for (usize i = 0; i < a.size(); ++i){\r\n            for (usize j =\
-    \ 0; j < b.size(); ++j){\r\n                out[i + j] += a[i] * b[j];\r\n   \
-    \         }\r\n        }\r\n        return;\r\n    }\r\n\r\n    const usize n\
-    \ = detail::checked_transform_size(a.size(), b.size());\r\n    ws.reserve(n);\r\
-    \n    std::fill_n(ws.a_.begin(), n, mint{});\r\n    std::fill_n(ws.b_.begin(),\
+    \    detail::aligned_vector fa(n), fb(n);\r\n    std::copy(a.begin(), a.end(),\
+    \ fa.begin());\r\n    std::copy(b.begin(), b.end(), fb.begin());\r\n\r\n    detail::convolution_adaptive_inplace(fa.data(),\
+    \ fb.data(), n);\r\n\r\n    std::vector<mint> result(result_size);\r\n    std::copy_n(fa.data(),\
+    \ result_size, result.data());\r\n    return result;\r\n}\r\n\r\ninline std::vector<mint>\
+    \ square(std::span<const mint> a){\r\n    if(a.empty()) return {};\r\n    if(a.size()\
+    \ <= naive_cutoff) return detail::square_naive(a);\r\n\r\n    const usize result_size\
+    \ = convolution_size(a.size(), a.size());\r\n    const usize n = detail::checked_transform_size(a.size(),\
+    \ a.size());\r\n    detail::aligned_vector fa(n);\r\n    std::copy(a.begin(),\
+    \ a.end(), fa.begin());\r\n\r\n    detail::square_adaptive_inplace(fa.data(),\
+    \ n);\r\n\r\n    std::vector<mint> result(result_size);\r\n    std::copy_n(fa.data(),\
+    \ result_size, result.data());\r\n    return result;\r\n}\r\n\r\ninline void convolution_to(std::span<const\
+    \ mint> a, std::span<const mint> b, std::span<mint> out, workspace& ws){\r\n \
+    \   if(a.empty() || b.empty()) return;\r\n    const usize result_size = convolution_size(a.size(),\
+    \ b.size());\r\n    if(out.size() < result_size)\r\n        throw std::invalid_argument(\"\
+    eez::ntt998::convolution_to: output span is too small\");\r\n\r\n    if(a.data()\
+    \ == b.data() && a.size() == b.size()){\r\n        square_to(a, out, ws);\r\n\
+    \        return;\r\n    }\r\n\r\n    if(std::min(a.size(), b.size()) <= naive_cutoff){\r\
+    \n        std::fill_n(out.begin(), result_size, mint{});\r\n        for(usize\
+    \ i = 0; i < a.size(); ++i)\r\n            for(usize j = 0; j < b.size(); ++j)\r\
+    \n                out[i + j] += a[i] * b[j];\r\n        return;\r\n    }\r\n\r\
+    \n    const usize n = detail::checked_transform_size(a.size(), b.size());\r\n\
+    \    ws.reserve(n);\r\n    std::fill_n(ws.a_.begin(), n, mint{});\r\n    std::fill_n(ws.b_.begin(),\
     \ n, mint{});\r\n    std::copy(a.begin(), a.end(), ws.a_.begin());\r\n    std::copy(b.begin(),\
-    \ b.end(), ws.b_.begin());\r\n\r\n    detail::forward_dif_partial(ws.a_.data(),\
-    \ n);\r\n    detail::forward_dif_partial(ws.b_.data(), n);\r\n    detail::block_convolution4(ws.a_.data(),\
-    \ ws.b_.data(), n);\r\n    detail::inverse_dit_partial(ws.a_.data(), n);\r\n \
-    \   std::copy_n(ws.a_.begin(), result_size, out.begin());\r\n}\r\n\r\ninline void\
-    \ square_to(std::span<const mint> a, std::span<mint> out, workspace& ws){\r\n\
-    \    if (a.empty()) return;\r\n    const usize result_size = convolution_size(a.size(),\
-    \ a.size());\r\n    if (out.size() < result_size){\r\n        throw std::invalid_argument(\"\
-    eez::ntt998::square_to: output span is too small\");\r\n    }\r\n\r\n    if (a.size()\
-    \ <= naive_cutoff){\r\n        std::fill_n(out.begin(), result_size, mint{});\r\
-    \n        for (usize i = 0; i < a.size(); ++i){\r\n            out[2 * i] += a[i]\
-    \ * a[i];\r\n            for (usize j = i + 1; j < a.size(); ++j){\r\n       \
-    \         const mint product = a[i] * a[j];\r\n                out[i + j] += product\
-    \ + product;\r\n            }\r\n        }\r\n        return;\r\n    }\r\n\r\n\
-    \    const usize n = detail::checked_transform_size(a.size(), a.size());\r\n \
-    \   ws.reserve(n);\r\n    std::fill_n(ws.a_.begin(), n, mint{});\r\n    std::copy(a.begin(),\
-    \ a.end(), ws.a_.begin());\r\n\r\n    detail::forward_dif_partial(ws.a_.data(),\
-    \ n);\r\n    detail::block_square4(ws.a_.data(), n);\r\n    detail::inverse_dit_partial(ws.a_.data(),\
+    \ b.end(), ws.b_.begin());\r\n\r\n    detail::convolution_adaptive_inplace(ws.a_.data(),\
+    \ ws.b_.data(), n);\r\n    std::copy_n(ws.a_.begin(), result_size, out.begin());\r\
+    \n}\r\n\r\ninline void square_to(std::span<const mint> a, std::span<mint> out,\
+    \ workspace& ws){\r\n    if(a.empty()) return;\r\n    const usize result_size\
+    \ = convolution_size(a.size(), a.size());\r\n    if(out.size() < result_size)\r\
+    \n        throw std::invalid_argument(\"eez::ntt998::square_to: output span is\
+    \ too small\");\r\n\r\n    if(a.size() <= naive_cutoff){\r\n        std::fill_n(out.begin(),\
+    \ result_size, mint{});\r\n        for(usize i = 0; i < a.size(); ++i){\r\n  \
+    \          out[2 * i] += a[i] * a[i];\r\n            for(usize j = i + 1; j <\
+    \ a.size(); ++j){\r\n                const mint product = a[i] * a[j];\r\n   \
+    \             out[i + j] += product + product;\r\n            }\r\n        }\r\
+    \n        return;\r\n    }\r\n\r\n    const usize n = detail::checked_transform_size(a.size(),\
+    \ a.size());\r\n    ws.reserve(n);\r\n    std::fill_n(ws.a_.begin(), n, mint{});\r\
+    \n    std::copy(a.begin(), a.end(), ws.a_.begin());\r\n\r\n    detail::square_adaptive_inplace(ws.a_.data(),\
     \ n);\r\n    std::copy_n(ws.a_.begin(), result_size, out.begin());\r\n}\r\n\r\n\
     inline void forward_to(std::span<const mint> src, frequency_buffer& dst, usize\
-    \ n){\r\n    detail::require_ntt_size(n);\r\n    if (src.size() > n){\r\n    \
-    \    throw std::invalid_argument(\"eez::ntt998::forward_to: source is longer than\
-    \ transform\");\r\n    }\r\n\r\n    dst.data_.assign(n, mint{});\r\n    std::copy(src.begin(),\
+    \ n){\r\n    detail::require_ntt_size(n);\r\n    if(src.size() > n)\r\n      \
+    \  throw std::invalid_argument(\"eez::ntt998::forward_to: source is longer than\
+    \ transform\");\r\n\r\n    dst.data_.assign(n, mint{});\r\n    std::copy(src.begin(),\
     \ src.end(), dst.data_.begin());\r\n    detail::forward_dif(dst.data_.data(),\
     \ n);\r\n}\r\n\r\ninline void pointwise_multiply(frequency_buffer& lhs, const\
-    \ frequency_buffer& rhs){\r\n    if (lhs.size() != rhs.size()){\r\n        throw\
+    \ frequency_buffer& rhs){\r\n    if(lhs.size() != rhs.size())\r\n        throw\
     \ std::invalid_argument(\"eez::ntt998::pointwise_multiply: transform sizes differ\"\
-    );\r\n    }\r\n    detail::pointwise_multiply(lhs.data_.data(), rhs.data_.data(),\
-    \ lhs.data_.size());\r\n}\r\n\r\ninline void pointwise_square(frequency_buffer&\
-    \ a){\r\n    detail::pointwise_square(a.data_.data(), a.data_.size());\r\n}\r\n\
-    \r\ninline void inverse_to(frequency_buffer& src, std::span<mint> out){\r\n  \
-    \  if (src.data_.empty()){\r\n        if (!out.empty()){\r\n            throw\
-    \ std::invalid_argument(\"eez::ntt998::inverse_to: empty transform\");\r\n   \
-    \     }\r\n        return;\r\n    }\r\n    if (out.size() > src.data_.size()){\r\
-    \n        throw std::invalid_argument(\"eez::ntt998::inverse_to: output is longer\
-    \ than transform\");\r\n    }\r\n\r\n    detail::inverse_dit(src.data_.data(),\
-    \ src.data_.size());\r\n    std::copy_n(src.data_.begin(), out.size(), out.begin());\r\
-    \n}\r\n\r\n}\r\n\r\n#undef EEZ_NTT998_ALWAYS_INLINE\r\n#undef EEZ_NTT998_RESTRICT\r\
-    \n#undef EEZ_NTT998_USE_AVX2\r\n\r\n#if defined(__clang__) && \\\r\n    (defined(__x86_64__)\
+    );\r\n    detail::pointwise_multiply(lhs.data_.data(), rhs.data_.data(), lhs.data_.size());\r\
+    \n}\r\n\r\ninline void pointwise_square(frequency_buffer& a){\r\n    detail::pointwise_square(a.data_.data(),\
+    \ a.data_.size());\r\n}\r\n\r\ninline void inverse_to(frequency_buffer& src, std::span<mint>\
+    \ out){\r\n    if(src.data_.empty()){\r\n        if(!out.empty())\r\n        \
+    \    throw std::invalid_argument(\"eez::ntt998::inverse_to: empty transform\"\
+    );\r\n        return;\r\n    }\r\n\r\n    if(out.size() > src.data_.size())\r\n\
+    \        throw std::invalid_argument(\"eez::ntt998::inverse_to: output is longer\
+    \ than transform\");\r\n\r\n    detail::inverse_dit(src.data_.data(), src.data_.size());\r\
+    \n    std::copy_n(src.data_.begin(), out.size(), out.begin());\r\n}\r\n\r\n}\r\
+    \n\r\n#undef EEZ_NTT998_ALWAYS_INLINE\r\n#undef EEZ_NTT998_RESTRICT\r\n#undef\
+    \ EEZ_NTT998_USE_AVX2\r\n\r\n#if defined(__clang__) && \\\r\n    (defined(__x86_64__)\
     \ || defined(__i386__))\r\n#pragma clang attribute pop\r\n#elif defined(__GNUC__)\
     \ && \\\r\n    (defined(__x86_64__) || defined(__i386__))\r\n#pragma GCC pop_options\r\
     \n#endif\r\n#line 12 \"verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp\"\
@@ -1477,7 +1333,7 @@ data:
   isVerificationFile: true
   path: verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp
   requiredBy: []
-  timestamp: '2026-08-15 18:26:13+09:00'
+  timestamp: '2026-08-15 21:15:52+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp
