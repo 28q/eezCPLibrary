@@ -1178,13 +1178,18 @@ data:
     \ - (16 - digits));\n        }\n    }\n    return masks;\n}\n\nconstexpr auto\
     \ make_powers_10() {\n    std::array<u64, 17> powers{};\n    powers[0] = 1;\n\
     \    for (std::size_t i = 1; i < powers.size(); ++i) {\n        powers[i] = powers[i\
-    \ - 1] * 10;\n    }\n    return powers;\n}\n\nalignas(16) inline constexpr auto\
-    \ right_align_masks = make_right_align_masks();\ninline constexpr auto powers_10\
-    \ = make_powers_10();\n\nstruct input {\n    input() {\n#ifdef __linux__\n   \
-    \     struct stat info {};\n        if (::fstat(0, &info) == 0 && S_ISREG(info.st_mode)\
-    \ && info.st_size > 0) {\n            const off_t current = ::lseek(0, 0, SEEK_CUR);\n\
-    \            const std::size_t file_size = static_cast<std::size_t>(info.st_size);\n\
-    \            const std::size_t page_size = static_cast<std::size_t>(::sysconf(_SC_PAGESIZE));\n\
+    \ - 1] * 10;\n    }\n    return powers;\n}\n\nconstexpr auto make_pair_digits()\
+    \ {\n    std::array<unsigned char, 1 << 14> table{};\n    table.fill(255);\n \
+    \   for (unsigned a = 0; a < 10; ++a) {\n        for (unsigned b = 0; b < 10;\
+    \ ++b) {\n            table[('0' + a) | (('0' + b) << 8)] =\n                static_cast<unsigned\
+    \ char>(a * 10 + b);\n        }\n    }\n    return table;\n}\n\nalignas(16) inline\
+    \ constexpr auto right_align_masks = make_right_align_masks();\ninline constexpr\
+    \ auto powers_10 = make_powers_10();\ninline constexpr auto pair_digits = make_pair_digits();\n\
+    \nstruct input {\n    input() {\n#ifdef __linux__\n        struct stat info {};\n\
+    \        if (::fstat(0, &info) == 0 && S_ISREG(info.st_mode) && info.st_size >\
+    \ 0) {\n            const off_t current = ::lseek(0, 0, SEEK_CUR);\n         \
+    \   const std::size_t file_size = static_cast<std::size_t>(info.st_size);\n  \
+    \          const std::size_t page_size = static_cast<std::size_t>(::sysconf(_SC_PAGESIZE));\n\
     \            const std::size_t rounded_size =\n                (file_size + page_size\
     \ - 1) / page_size * page_size;\n            const std::size_t reserved_size =\
     \ rounded_size + page_size;\n\n            char* region = static_cast<char*>(::mmap(\n\
@@ -1233,6 +1238,21 @@ data:
     \    const u32 mask = static_cast<u32>(_mm_movemask_epi8(digits));\n    int length;\n\
     \    const u32 value = static_cast<u32>(parse_short_digits(digits, mask, length));\n\
     \    cursor += length + 1;\n    return value;\n}\n\n__attribute__((always_inline))\
+    \ inline u32 read_u32_lt1e9(char*& cursor) noexcept {\n    const auto q0 =\n \
+    \       pair_digits[*reinterpret_cast<const std::uint16_t*>(cursor + 1)];\n  \
+    \  const auto q1 =\n        pair_digits[*reinterpret_cast<const std::uint16_t*>(cursor\
+    \ + 3)];\n    const auto q2 =\n        pair_digits[*reinterpret_cast<const std::uint16_t*>(cursor\
+    \ + 5)];\n    const auto q3 =\n        pair_digits[*reinterpret_cast<const std::uint16_t*>(cursor\
+    \ + 7)];\n\n    if (__builtin_expect((q0 | q1 | q2 | q3) < 128, 1)) {\n      \
+    \  u32 value = static_cast<unsigned char>(cursor[0]) - '0';\n        value = value\
+    \ * 100 + q0;\n        value = value * 100 + q1;\n        value = value * 100\
+    \ + q2;\n        value = value * 100 + q3;\n        cursor += 10;\n        return\
+    \ value;\n    }\n\n    u32 value = static_cast<unsigned char>(*cursor++) - '0';\n\
+    \n    for (unsigned i = 0; i < 4; ++i) {\n        const auto pair =\n        \
+    \    pair_digits[*reinterpret_cast<const std::uint16_t*>(cursor)];\n        if\
+    \ (pair > 99) break;\n        value = value * 100 + pair;\n        cursor += 2;\n\
+    \    }\n\n    if (*cursor > ' ') {\n        value = value * 10 + static_cast<unsigned>(*cursor++\
+    \ & 15);\n    }\n\n    ++cursor;\n    return value;\n}\n\n__attribute__((always_inline))\
     \ inline i32 read_i32(char*& cursor) noexcept {\n    const bool negative = *cursor\
     \ == '-';\n    cursor += static_cast<unsigned>(negative);\n    const u32 magnitude\
     \ = read_u32(cursor);\n    const u32 bits = negative ? u32{0} - magnitude : magnitude;\n\
@@ -1282,24 +1302,25 @@ data:
     \ remaining = static_cast<std::size_t>(cursor - buffer_.data());\n        const\
     \ char* data = buffer_.data();\n\n        if (first_flush_ && remaining != 0)\
     \ {\n            ++data;\n            --remaining;\n            first_flush_ =\
-    \ false;\n        }\n#ifdef __linux__\n        while (remaining != 0) {\n    \
-    \        const ssize_t count = ::write(1, data, remaining);\n            if (count\
-    \ > 0) {\n                data += count;\n                remaining -= static_cast<std::size_t>(count);\n\
-    \            } else if (count < 0 && errno == EINTR) {\n                continue;\n\
-    \            } else {\n                std::abort();\n            }\n        }\n\
-    #else\n        while (remaining != 0) {\n            const std::size_t count =\
-    \ std::fwrite(data, 1, remaining, stdout);\n            if (count == 0) std::abort();\n\
-    \            data += count;\n            remaining -= count;\n        }\n#endif\n\
-    \        return buffer_.data();\n    }\n\n    void finish(char* cursor) noexcept\
-    \ {\n        if (cursor != buffer_.data() || !first_flush_) *cursor++ = '\\n';\n\
-    \        (void)flush(cursor);\n    }\n\n    alignas(64) std::array<char, 1u <<\
-    \ 19> buffer_;\n    bool first_flush_ = true;\n};\n\n__attribute__((always_inline))\
-    \ inline void store_group(\n    char*& cursor, u32 group) noexcept {\n    std::memcpy(cursor,\
-    \ &group, sizeof(group));\n    cursor += sizeof(group);\n}\n\n__attribute__((always_inline))\
-    \ inline void emit_leading(\n    char*& cursor, u64 value) noexcept {\n    const\
-    \ unsigned skip =\n        3u\n        - static_cast<unsigned>(value >= 10)\n\
-    \        - static_cast<unsigned>(value >= 100)\n        - static_cast<unsigned>(value\
-    \ >= 1000);\n    const u32 group =\n        padded_groups[static_cast<std::size_t>(value)]\
+    \ false;\n        }\n\n#ifdef __linux__\n        while (remaining != 0) {\n  \
+    \          const ssize_t count = ::write(1, data, remaining);\n            if\
+    \ (count > 0) {\n                data += count;\n                remaining -=\
+    \ static_cast<std::size_t>(count);\n            } else if (count < 0 && errno\
+    \ == EINTR) {\n                continue;\n            } else {\n             \
+    \   std::abort();\n            }\n        }\n#else\n        while (remaining !=\
+    \ 0) {\n            const std::size_t count = std::fwrite(data, 1, remaining,\
+    \ stdout);\n            if (count == 0) std::abort();\n            data += count;\n\
+    \            remaining -= count;\n        }\n#endif\n\n        return buffer_.data();\n\
+    \    }\n\n    void finish(char* cursor) noexcept {\n        if (cursor != buffer_.data()\
+    \ || !first_flush_) *cursor++ = '\\n';\n        (void)flush(cursor);\n    }\n\n\
+    \    alignas(64) std::array<char, 1u << 19> buffer_;\n    bool first_flush_ =\
+    \ true;\n};\n\n__attribute__((always_inline)) inline void store_group(\n    char*&\
+    \ cursor, u32 group) noexcept {\n    std::memcpy(cursor, &group, sizeof(group));\n\
+    \    cursor += sizeof(group);\n}\n\n__attribute__((always_inline)) inline void\
+    \ emit_leading(\n    char*& cursor, u64 value) noexcept {\n    const unsigned\
+    \ skip =\n        3u\n        - static_cast<unsigned>(value >= 10)\n        -\
+    \ static_cast<unsigned>(value >= 100)\n        - static_cast<unsigned>(value >=\
+    \ 1000);\n    const u32 group =\n        padded_groups[static_cast<std::size_t>(value)]\
     \ >> (skip * 8);\n    std::memcpy(cursor, &group, sizeof(group));\n    cursor\
     \ += 4 - skip;\n}\n\n__attribute__((always_inline)) inline void emit_padded(\n\
     \    char*& cursor, u64 value) noexcept {\n    store_group(cursor, padded_groups[static_cast<std::size_t>(value)]);\n\
@@ -1329,14 +1350,21 @@ data:
     \    constexpr u128 u64_max = static_cast<u128>(~u64{0});\n\n    if (value <=\
     \ u64_max) {\n        emit_u64_unchecked(cursor, static_cast<u64>(value));\n \
     \       return;\n    }\n\n    const u64 low = static_cast<u64>(value % base);\n\
-    \    const u128 upper = value / base;\n    if (upper <= u64_max) {\n        emit_u64_unchecked(cursor,\
-    \ static_cast<u64>(upper));\n        emit_padded_16(cursor, low);\n        return;\n\
-    \    }\n\n    const u64 middle = static_cast<u64>(upper % base);\n    const u32\
-    \ high = static_cast<u32>(upper / base);\n    emit_u32_unchecked(cursor, high);\n\
-    \    emit_padded_16(cursor, middle);\n    emit_padded_16(cursor, low);\n}\n\n\
-    __attribute__((always_inline)) inline void write_u32(\n    output& sink, char*&\
-    \ cursor, char* end, u32 value) noexcept {\n    if (__builtin_expect(end - cursor\
-    \ < 16, 0)) cursor = sink.flush(cursor);\n    *cursor++ = ' ';\n    emit_u32_unchecked(cursor,\
+    \    const u128 upper = value / base;\n\n    if (upper <= u64_max) {\n       \
+    \ emit_u64_unchecked(cursor, static_cast<u64>(upper));\n        emit_padded_16(cursor,\
+    \ low);\n        return;\n    }\n\n    const u64 middle = static_cast<u64>(upper\
+    \ % base);\n    const u32 high = static_cast<u32>(upper / base);\n    emit_u32_unchecked(cursor,\
+    \ high);\n    emit_padded_16(cursor, middle);\n    emit_padded_16(cursor, low);\n\
+    }\n\n__attribute__((always_inline)) inline void write_u32_lt1e9(\n    output&\
+    \ sink, char*& cursor, char* end, u32 value) noexcept {\n    if (__builtin_expect(end\
+    \ - cursor < 16, 0)) cursor = sink.flush(cursor);\n\n    *cursor++ = ' ';\n\n\
+    \    if (value >= 100000000U) {\n        const u32 high = value / 100000000U;\n\
+    \        *cursor++ = static_cast<char>('0' + high);\n        value -= high * 100000000U;\n\
+    \        emit_padded(cursor, value / 10000U);\n        emit_padded(cursor, value\
+    \ % 10000U);\n    } else {\n        emit_u32_unchecked(cursor, value);\n    }\n\
+    }\n\n__attribute__((always_inline)) inline void write_u32(\n    output& sink,\
+    \ char*& cursor, char* end, u32 value) noexcept {\n    if (__builtin_expect(end\
+    \ - cursor < 16, 0)) cursor = sink.flush(cursor);\n    *cursor++ = ' ';\n    emit_u32_unchecked(cursor,\
     \ value);\n}\n\n__attribute__((always_inline)) inline void write_i32(\n    output&\
     \ sink, char*& cursor, char* end, i32 value) noexcept {\n    if (__builtin_expect(end\
     \ - cursor < 16, 0)) cursor = sink.flush(cursor);\n    const bool negative = value\
@@ -1369,27 +1397,31 @@ data:
     \ return out.begin(); }\n    char* output_end() noexcept { return out.end(); }\n\
     \    void finish(char* cursor) noexcept { out.finish(cursor); }\n\n    __attribute__((always_inline))\
     \ u32 read_u32(char*& cursor) noexcept {\n        return fastio_unsafe_impl::read_u32(cursor);\n\
-    \    }\n    __attribute__((always_inline)) i32 read_i32(char*& cursor) noexcept\
-    \ {\n        return fastio_unsafe_impl::read_i32(cursor);\n    }\n    __attribute__((always_inline))\
+    \    }\n\n    __attribute__((always_inline)) u32 read_u32_lt1e9(char*& cursor)\
+    \ noexcept {\n        return fastio_unsafe_impl::read_u32_lt1e9(cursor);\n   \
+    \ }\n\n    __attribute__((always_inline)) i32 read_i32(char*& cursor) noexcept\
+    \ {\n        return fastio_unsafe_impl::read_i32(cursor);\n    }\n\n    __attribute__((always_inline))\
     \ u64 read_u64(char*& cursor) noexcept {\n        return fastio_unsafe_impl::read_u64(cursor);\n\
-    \    }\n    __attribute__((always_inline)) i64 read_i64(char*& cursor) noexcept\
-    \ {\n        return fastio_unsafe_impl::read_i64(cursor);\n    }\n    __attribute__((always_inline))\
+    \    }\n\n    __attribute__((always_inline)) i64 read_i64(char*& cursor) noexcept\
+    \ {\n        return fastio_unsafe_impl::read_i64(cursor);\n    }\n\n    __attribute__((always_inline))\
     \ u128 read_u128(char*& cursor) noexcept {\n        return fastio_unsafe_impl::read_u128(cursor);\n\
-    \    }\n    __attribute__((always_inline)) i128 read_i128(char*& cursor) noexcept\
+    \    }\n\n    __attribute__((always_inline)) i128 read_i128(char*& cursor) noexcept\
     \ {\n        return fastio_unsafe_impl::read_i128(cursor);\n    }\n\n    __attribute__((always_inline))\
     \ void write_u32(\n        char*& cursor, char* end, u32 value) noexcept {\n \
-    \       fastio_unsafe_impl::write_u32(out, cursor, end, value);\n    }\n    __attribute__((always_inline))\
-    \ void write_i32(\n        char*& cursor, char* end, i32 value) noexcept {\n \
-    \       fastio_unsafe_impl::write_i32(out, cursor, end, value);\n    }\n    __attribute__((always_inline))\
-    \ void write_u64(\n        char*& cursor, char* end, u64 value) noexcept {\n \
-    \       fastio_unsafe_impl::write_u64(out, cursor, end, value);\n    }\n    __attribute__((always_inline))\
-    \ void write_i64(\n        char*& cursor, char* end, i64 value) noexcept {\n \
-    \       fastio_unsafe_impl::write_i64(out, cursor, end, value);\n    }\n    __attribute__((always_inline))\
-    \ void write_u128(\n        char*& cursor, char* end, u128 value) noexcept {\n\
-    \        fastio_unsafe_impl::write_u128(out, cursor, end, value);\n    }\n   \
-    \ __attribute__((always_inline)) void write_i128(\n        char*& cursor, char*\
-    \ end, i128 value) noexcept {\n        fastio_unsafe_impl::write_i128(out, cursor,\
-    \ end, value);\n    }\n\n    fastio_unsafe_impl::input in;\n    fastio_unsafe_impl::output\
+    \       fastio_unsafe_impl::write_u32(out, cursor, end, value);\n    }\n\n   \
+    \ __attribute__((always_inline)) void write_u32_lt1e9(\n        char*& cursor,\
+    \ char* end, u32 value) noexcept {\n        fastio_unsafe_impl::write_u32_lt1e9(out,\
+    \ cursor, end, value);\n    }\n\n    __attribute__((always_inline)) void write_i32(\n\
+    \        char*& cursor, char* end, i32 value) noexcept {\n        fastio_unsafe_impl::write_i32(out,\
+    \ cursor, end, value);\n    }\n\n    __attribute__((always_inline)) void write_u64(\n\
+    \        char*& cursor, char* end, u64 value) noexcept {\n        fastio_unsafe_impl::write_u64(out,\
+    \ cursor, end, value);\n    }\n\n    __attribute__((always_inline)) void write_i64(\n\
+    \        char*& cursor, char* end, i64 value) noexcept {\n        fastio_unsafe_impl::write_i64(out,\
+    \ cursor, end, value);\n    }\n\n    __attribute__((always_inline)) void write_u128(\n\
+    \        char*& cursor, char* end, u128 value) noexcept {\n        fastio_unsafe_impl::write_u128(out,\
+    \ cursor, end, value);\n    }\n\n    __attribute__((always_inline)) void write_i128(\n\
+    \        char*& cursor, char* end, i128 value) noexcept {\n        fastio_unsafe_impl::write_i128(out,\
+    \ cursor, end, value);\n    }\n\n    fastio_unsafe_impl::input in;\n    fastio_unsafe_impl::output\
     \ out;\n};\n#line 24 \"verify/verify-yosupo-convolution/yosupo-convolution-mod-ntt998.test.cpp\"\
     \n\nint main() {\n    fastio_unsafe io;\n    char* input_cursor = io.input_cursor();\n\
     \    char* output_cursor = io.output_cursor();\n    char* const output_end = io.output_end();\n\
@@ -1426,7 +1458,7 @@ data:
   isVerificationFile: true
   path: verify/verify-yosupo-convolution/yosupo-convolution-mod-ntt998.test.cpp
   requiredBy: []
-  timestamp: '2026-08-15 16:36:09+09:00'
+  timestamp: '2026-08-15 18:26:13+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: verify/verify-yosupo-convolution/yosupo-convolution-mod-ntt998.test.cpp
