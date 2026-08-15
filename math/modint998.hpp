@@ -146,15 +146,58 @@ public:
         return old;
     }
 
-    constexpr modint998 pow(u64 exponent) const {
-        modint998 result = raw(1);
-        modint998 base = *this;
-        while (exponent != 0) {
-            if (exponent & 1) result *= base;
-            base *= base;
-            exponent >>= 1;
+    constexpr modint998 pow(u64 e) const {
+        if (e == 0) return raw(1);
+        if (a == 0) return raw(0);
+    
+        if (e >= MOD - 1) e %= MOD - 1;
+        if (e == 0) return raw(1);
+    
+        const u32 n = static_cast<u32>(e);
+    
+        if (n == 1) return *this;
+    
+        const modint998 x = *this;
+        const modint998 p2 = x * x;
+    
+        if (n == 2) return p2;
+    
+        const modint998 p3 = p2 * x;
+    
+        if (n == 3) return p3;
+    
+        const modint998 p4 = p2 * p2;
+        const modint998 p5 = p4 * x;
+        const modint998 p6 = p3 * p3;
+        const modint998 p7 = p4 * p3;
+    
+        const modint998 t[8] = {
+            raw(1), x, p2, p3, p4, p5, p6, p7
+        };
+    
+        const unsigned s = ((std::bit_width(n) - 1) / 3) * 3;
+        modint998 r = t[(n >> s) & 7];
+    
+        auto step = [&](unsigned k) constexpr {
+            r *= r;
+            r *= r;
+            r *= r;
+            const u32 d = (n >> k) & 7;
+            if (d) r *= t[d];
+        };
+        switch (s) {
+            case 27: step(24); [[fallthrough]];
+            case 24: step(21); [[fallthrough]];
+            case 21: step(18); [[fallthrough]];
+            case 18: step(15); [[fallthrough]];
+            case 15: step(12); [[fallthrough]];
+            case 12: step(9);  [[fallthrough]];
+            case 9:  step(6);  [[fallthrough]];
+            case 6:  step(3);  [[fallthrough]];
+            case 3:  step(0);  [[fallthrough]];
+            default: break;
         }
-        return result;
+        return r;
     }
 
     constexpr modint998 inv() const {
