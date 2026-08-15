@@ -9,6 +9,11 @@ data:
     - icon: ':heavy_check_mark:'
       path: IO/fastio_unsafe.hpp
       title: fastio_unsafe
+  - name: convolution
+    pages:
+    - icon: ':warning:'
+      path: convolution/ntt998.hpp
+      title: convolution/ntt998.hpp
   - name: data-structure
     pages:
     - icon: ':heavy_check_mark:'

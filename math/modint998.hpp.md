@@ -1,7 +1,10 @@
 ---
 data:
   _extendedDependsOn: []
-  _extendedRequiredBy: []
+  _extendedRequiredBy:
+  - icon: ':warning:'
+    path: convolution/ntt998.hpp
+    title: convolution/ntt998.hpp
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
     path: verify/verify-yosupo-math/yosupo-aplusb-modint998.test.cpp
@@ -217,7 +220,8 @@ data:
   dependsOn: []
   isVerificationFile: false
   path: math/modint998.hpp
-  requiredBy: []
+  requiredBy:
+  - convolution/ntt998.hpp
   timestamp: '2026-08-15 14:35:57+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
