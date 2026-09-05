@@ -5,6 +5,9 @@ data:
   - icon: ':heavy_check_mark:'
     path: convolution/ntt998.hpp
     title: ntt998
+  - icon: ':warning:'
+    path: fps/fps998.hpp
+    title: fps/fps998.hpp
   _extendedVerifiedWith:
   - icon: ':heavy_check_mark:'
     path: verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp
@@ -228,6 +231,7 @@ data:
   path: math/modint998.hpp
   requiredBy:
   - convolution/ntt998.hpp
+  - fps/fps998.hpp
   timestamp: '2026-08-15 14:35:57+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
