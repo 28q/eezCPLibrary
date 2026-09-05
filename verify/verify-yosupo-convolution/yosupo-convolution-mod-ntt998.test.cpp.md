@@ -141,7 +141,7 @@ data:
     \ u32 = std::uint32_t;\r\nusing usize = std::size_t;\r\n\r\ninline constexpr u32\
     \ mod = mint::MOD;\r\ninline constexpr usize max_ntt_size = usize(1) << 23;\r\n\
     inline constexpr usize max_convolution_size = usize(1) << 25;\r\ninline constexpr\
-    \ usize max_size = max_ntt_size;\r\ninline constexpr usize naive_cutoff = 60;\r\
+    \ usize max_size = max_ntt_size;\r\ninline constexpr usize naive_cutoff = 48;\r\
     \n\r\ninline void forward(std::span<mint> a) noexcept;\r\ninline void inverse(std::span<mint>\
     \ a) noexcept;\r\ninline std::vector<mint> convolution(std::span<const mint> a,\
     \ std::span<const mint> b);\r\ninline std::vector<mint> square(std::span<const\
@@ -1030,7 +1030,7 @@ data:
   isVerificationFile: true
   path: verify/verify-yosupo-convolution/yosupo-convolution-mod-ntt998.test.cpp
   requiredBy: []
-  timestamp: '2026-08-15 21:26:43+09:00'
+  timestamp: '2026-09-05 17:27:57+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: verify/verify-yosupo-convolution/yosupo-convolution-mod-ntt998.test.cpp

@@ -19,6 +19,11 @@ data:
     - icon: ':heavy_check_mark:'
       path: data-structure/UnionFind.hpp
       title: UnionFind
+  - name: fps
+    pages:
+    - icon: ':warning:'
+      path: fps/fps998.hpp
+      title: fps/fps998.hpp
   - name: math
     pages:
     - icon: ':heavy_check_mark:'
