@@ -5,67 +5,72 @@ data:
     path: convolution/ntt998.hpp
     title: ntt998
   - icon: ':heavy_check_mark:'
+    path: fps/fps998.hpp
+    title: fps/fps998.hpp
+  - icon: ':heavy_check_mark:'
     path: math/modint998.hpp
     title: modint998
   _extendedRequiredBy: []
-  _extendedVerifiedWith:
-  - icon: ':heavy_check_mark:'
-    path: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
-    title: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
+  _extendedVerifiedWith: []
   _isVerificationFailed: false
-  _pathExtension: hpp
+  _pathExtension: cpp
   _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
-    links: []
-  bundledCode: "#line 2 \"fps/fps998.hpp\"\n\n#include <algorithm>\n#include <cstddef>\n\
-    #include <span>\n#include <stdexcept>\n#include <vector>\n\n#line 2 \"convolution/ntt998.hpp\"\
-    \n\r\n#if ((defined(__GNUC__) || defined(__clang__)) && \\\r\n     (defined(__x86_64__)\
-    \ || defined(__i386__))) || \\\r\n    defined(_M_AVX2)\r\n#define EEZ_NTT998_USE_AVX2\
-    \ 1\r\n#else\r\n#error \"eez::ntt998 requires an x86 target with AVX2 support\"\
-    \r\n#endif\r\n\r\n#line 12 \"convolution/ntt998.hpp\"\n#include <array>\r\n#include\
-    \ <bit>\r\n#include <cassert>\r\n#line 16 \"convolution/ntt998.hpp\"\n#include\
-    \ <cstdint>\r\n#include <immintrin.h>\r\n#include <new>\r\n#line 21 \"convolution/ntt998.hpp\"\
+    '*NOT_SPECIAL_COMMENTS*': ''
+    PROBLEM: https://judge.yosupo.jp/problem/inv_of_formal_power_series
+    links:
+    - https://judge.yosupo.jp/problem/inv_of_formal_power_series
+  bundledCode: "#line 1 \"verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp\"\
+    \n#define PROBLEM \"https://judge.yosupo.jp/problem/inv_of_formal_power_series\"\
+    \n\n#include <iostream>\n#include <vector>\n\n#line 2 \"fps/fps998.hpp\"\n\n#include\
+    \ <algorithm>\n#include <cstddef>\n#include <span>\n#include <stdexcept>\n#line\
+    \ 8 \"fps/fps998.hpp\"\n\n#line 2 \"convolution/ntt998.hpp\"\n\r\n#if ((defined(__GNUC__)\
+    \ || defined(__clang__)) && \\\r\n     (defined(__x86_64__) || defined(__i386__)))\
+    \ || \\\r\n    defined(_M_AVX2)\r\n#define EEZ_NTT998_USE_AVX2 1\r\n#else\r\n\
+    #error \"eez::ntt998 requires an x86 target with AVX2 support\"\r\n#endif\r\n\r\
+    \n#line 12 \"convolution/ntt998.hpp\"\n#include <array>\r\n#include <bit>\r\n\
+    #include <cassert>\r\n#line 16 \"convolution/ntt998.hpp\"\n#include <cstdint>\r\
+    \n#include <immintrin.h>\r\n#include <new>\r\n#line 21 \"convolution/ntt998.hpp\"\
     \n#include <type_traits>\r\n#line 23 \"convolution/ntt998.hpp\"\n\r\n#line 1 \"\
-    math/modint998.hpp\"\n\n\n\r\n#line 6 \"math/modint998.hpp\"\n#include <iostream>\r\
-    \n#line 8 \"math/modint998.hpp\"\n\r\nstruct modint998 {\r\n    using u32 = std::uint32_t;\r\
-    \n    using i32 = std::int32_t;\r\n    using u64 = std::uint64_t;\r\n\r\n    static\
-    \ constexpr u32 MOD = 998244353u;\r\n    static constexpr u32 MOD2 = MOD * 2;\r\
-    \n    static constexpr u32 primitive_root = 3;\r\n    static constexpr int max_power_of_two\
-    \ = 23;\r\n\r\nprivate:\r\n    static constexpr u32 R = 3296722945u;\r\n    static\
-    \ constexpr u32 N2 = 932051910u;\r\n\r\n    struct montgomery_tag {};\r\n\r\n\
-    \    constexpr modint998(u32 x, montgomery_tag) : a(x) {}\r\n\r\n    static constexpr\
-    \ u32 reduce(u64 x) {\r\n        return static_cast<u32>(\r\n            (x +\
-    \ u64(static_cast<u32>(x) * u32(-R)) * MOD) >> 32\r\n        );\r\n    }\r\n\r\
-    \npublic:\r\n    u32 a;\r\n\r\n    static_assert(MOD < (u32(1) << 30));\r\n  \
-    \  static_assert((MOD & 1) != 0);\r\n    static_assert(R * MOD == 1);\r\n\r\n\
-    \    constexpr modint998() : a(0) {}\r\n\r\n    template <class T, std::enable_if_t<std::is_integral_v<T>\
-    \ &&\r\n                                        std::is_signed_v<T>, int> = 0>\r\
-    \n    constexpr modint998(T x) : a(0) {\r\n        const std::int64_t y =\r\n\
-    \            static_cast<std::int64_t>(x) % std::int64_t(MOD) + MOD;\r\n     \
-    \   a = reduce(u64(y) * N2);\r\n    }\r\n\r\n    template <class T, std::enable_if_t<std::is_integral_v<T>\
-    \ &&\r\n                                        std::is_unsigned_v<T>, int> =\
-    \ 0>\r\n    constexpr modint998(T x)\r\n        : a(reduce(((u64(x) % MOD) + MOD)\
-    \ * N2)) {}\r\n\r\n    static constexpr modint998 raw(u32 x) {\r\n        return\
-    \ modint998(reduce(u64(x) * N2), montgomery_tag{});\r\n    }\r\n\r\n    static\
-    \ constexpr modint998 montgomery_raw(u32 x) {\r\n        return modint998(x, montgomery_tag{});\r\
-    \n    }\r\n\r\n    static constexpr u32 mod() { return MOD; }\r\n    static constexpr\
-    \ u32 get_mod() { return MOD; }\r\n\r\n    constexpr u32 val() const {\r\n   \
-    \     const u32 x = reduce(a);\r\n        return x >= MOD ? x - MOD : x;\r\n \
-    \   }\r\n\r\n    constexpr u32 get() const { return val(); }\r\n\r\n    constexpr\
-    \ modint998& operator+=(const modint998& rhs) {\r\n        a += rhs.a - MOD2;\r\
-    \n        if (i32(a) < 0) a += MOD2;\r\n        return *this;\r\n    }\r\n\r\n\
-    \    constexpr modint998& operator-=(const modint998& rhs) {\r\n        a -= rhs.a;\r\
-    \n        if (i32(a) < 0) a += MOD2;\r\n        return *this;\r\n    }\r\n\r\n\
-    \    constexpr modint998& operator*=(const modint998& rhs) {\r\n        a = reduce(u64(a)\
-    \ * rhs.a);\r\n        return *this;\r\n    }\r\n\r\n    constexpr modint998&\
-    \ operator/=(const modint998& rhs) {\r\n        return *this *= rhs.inv();\r\n\
-    \    }\r\n\r\n    constexpr modint998 operator+() const { return *this; }\r\n\
-    \    constexpr modint998 operator-() const { return modint998() - *this; }\r\n\
-    \r\n    friend constexpr modint998 operator+(modint998 lhs,\r\n              \
-    \                            const modint998& rhs) {\r\n        return lhs +=\
-    \ rhs;\r\n    }\r\n\r\n    friend constexpr modint998 operator-(modint998 lhs,\r\
-    \n                                          const modint998& rhs) {\r\n      \
-    \  return lhs -= rhs;\r\n    }\r\n\r\n    friend constexpr modint998 operator*(modint998\
+    math/modint998.hpp\"\n\n\n\r\n#line 8 \"math/modint998.hpp\"\n\r\nstruct modint998\
+    \ {\r\n    using u32 = std::uint32_t;\r\n    using i32 = std::int32_t;\r\n   \
+    \ using u64 = std::uint64_t;\r\n\r\n    static constexpr u32 MOD = 998244353u;\r\
+    \n    static constexpr u32 MOD2 = MOD * 2;\r\n    static constexpr u32 primitive_root\
+    \ = 3;\r\n    static constexpr int max_power_of_two = 23;\r\n\r\nprivate:\r\n\
+    \    static constexpr u32 R = 3296722945u;\r\n    static constexpr u32 N2 = 932051910u;\r\
+    \n\r\n    struct montgomery_tag {};\r\n\r\n    constexpr modint998(u32 x, montgomery_tag)\
+    \ : a(x) {}\r\n\r\n    static constexpr u32 reduce(u64 x) {\r\n        return\
+    \ static_cast<u32>(\r\n            (x + u64(static_cast<u32>(x) * u32(-R)) * MOD)\
+    \ >> 32\r\n        );\r\n    }\r\n\r\npublic:\r\n    u32 a;\r\n\r\n    static_assert(MOD\
+    \ < (u32(1) << 30));\r\n    static_assert((MOD & 1) != 0);\r\n    static_assert(R\
+    \ * MOD == 1);\r\n\r\n    constexpr modint998() : a(0) {}\r\n\r\n    template\
+    \ <class T, std::enable_if_t<std::is_integral_v<T> &&\r\n                    \
+    \                    std::is_signed_v<T>, int> = 0>\r\n    constexpr modint998(T\
+    \ x) : a(0) {\r\n        const std::int64_t y =\r\n            static_cast<std::int64_t>(x)\
+    \ % std::int64_t(MOD) + MOD;\r\n        a = reduce(u64(y) * N2);\r\n    }\r\n\r\
+    \n    template <class T, std::enable_if_t<std::is_integral_v<T> &&\r\n       \
+    \                                 std::is_unsigned_v<T>, int> = 0>\r\n    constexpr\
+    \ modint998(T x)\r\n        : a(reduce(((u64(x) % MOD) + MOD) * N2)) {}\r\n\r\n\
+    \    static constexpr modint998 raw(u32 x) {\r\n        return modint998(reduce(u64(x)\
+    \ * N2), montgomery_tag{});\r\n    }\r\n\r\n    static constexpr modint998 montgomery_raw(u32\
+    \ x) {\r\n        return modint998(x, montgomery_tag{});\r\n    }\r\n\r\n    static\
+    \ constexpr u32 mod() { return MOD; }\r\n    static constexpr u32 get_mod() {\
+    \ return MOD; }\r\n\r\n    constexpr u32 val() const {\r\n        const u32 x\
+    \ = reduce(a);\r\n        return x >= MOD ? x - MOD : x;\r\n    }\r\n\r\n    constexpr\
+    \ u32 get() const { return val(); }\r\n\r\n    constexpr modint998& operator+=(const\
+    \ modint998& rhs) {\r\n        a += rhs.a - MOD2;\r\n        if (i32(a) < 0) a\
+    \ += MOD2;\r\n        return *this;\r\n    }\r\n\r\n    constexpr modint998& operator-=(const\
+    \ modint998& rhs) {\r\n        a -= rhs.a;\r\n        if (i32(a) < 0) a += MOD2;\r\
+    \n        return *this;\r\n    }\r\n\r\n    constexpr modint998& operator*=(const\
+    \ modint998& rhs) {\r\n        a = reduce(u64(a) * rhs.a);\r\n        return *this;\r\
+    \n    }\r\n\r\n    constexpr modint998& operator/=(const modint998& rhs) {\r\n\
+    \        return *this *= rhs.inv();\r\n    }\r\n\r\n    constexpr modint998 operator+()\
+    \ const { return *this; }\r\n    constexpr modint998 operator-() const { return\
+    \ modint998() - *this; }\r\n\r\n    friend constexpr modint998 operator+(modint998\
+    \ lhs,\r\n                                          const modint998& rhs) {\r\n\
+    \        return lhs += rhs;\r\n    }\r\n\r\n    friend constexpr modint998 operator-(modint998\
+    \ lhs,\r\n                                          const modint998& rhs) {\r\n\
+    \        return lhs -= rhs;\r\n    }\r\n\r\n    friend constexpr modint998 operator*(modint998\
     \ lhs,\r\n                                          const modint998& rhs) {\r\n\
     \        return lhs *= rhs;\r\n    }\r\n\r\n    friend constexpr modint998 operator/(modint998\
     \ lhs,\r\n                                          const modint998& rhs) {\r\n\
@@ -1043,57 +1048,33 @@ data:
     \ mint> f,usize n){\n    workspace ws;\n    return inv(f,n,ws);\n}\n\ninline poly\
     \ inv(std::span<const mint> f,workspace& ws){\n    return inv(f,f.size(),ws);\n\
     }\n\ninline poly inv(std::span<const mint> f){\n    workspace ws;\n    return\
-    \ inv(f,f.size(),ws);\n}\n\n}\n"
-  code: "#pragma once\n\n#include <algorithm>\n#include <cstddef>\n#include <span>\n\
-    #include <stdexcept>\n#include <vector>\n\n#include \"../convolution/ntt998.hpp\"\
-    \n\nnamespace eez::fps998{\n\nusing mint=ntt998::mint;\nusing usize=std::size_t;\n\
-    using poly=std::vector<mint>;\n\ninline constexpr usize naive_cutoff=64;\n\nclass\
-    \ workspace{\npublic:\n    workspace()=default;\n\nprivate:\n    friend void inv_to(std::span<const\
-    \ mint>,std::span<mint>,workspace&);\n\n    ntt998::frequency_buffer a_;\n   \
-    \ ntt998::frequency_buffer b_;\n    std::vector<mint> tmp_;\n};\n\nnamespace detail{\n\
-    \ninline void inv_naive_prefix(std::span<const mint> f,std::span<mint> g){\n \
-    \   if(g.empty()) return;\n    g[0]=f[0].inv();\n    const mint g0=g[0];\n\n \
-    \   for(usize i=1;i<g.size();++i){\n        mint s{};\n        const usize r=std::min(i,f.size()-1);\n\
-    \        for(usize j=1;j<=r;++j) s+=f[j]*g[i-j];\n        g[i]=-s*g0;\n    }\n\
-    }\n\n}\n\ninline void inv_to(std::span<const mint> f,std::span<mint> out,workspace&\
-    \ ws){\n    const usize target=out.size();\n    if(target==0) return;\n\n    if(f.empty())\n\
-    \        throw std::invalid_argument(\"eez::fps998::inv_to: input is empty\");\n\
-    \n    if(f[0]==mint{})\n        throw std::invalid_argument(\"eez::fps998::inv_to:\
-    \ constant term must be nonzero\");\n\n    if(target>ntt998::max_ntt_size)\n \
-    \       throw std::length_error(\"eez::fps998::inv_to: result exceeds the 2^23\
-    \ NTT limit\");\n\n    const usize base=std::min(target,naive_cutoff);\n    detail::inv_naive_prefix(f,out.first(base));\n\
-    \n    if(target<=naive_cutoff) return;\n\n    for(usize m=naive_cutoff;m<target;m<<=1){\n\
-    \        const usize n=m<<1;\n        const usize fn=std::min(f.size(),n);\n\n\
-    \        ntt998::forward_to(f.first(fn),ws.a_,n);\n        ntt998::forward_to(\n\
-    \            std::span<const mint>(out.data(),m),\n            ws.b_,\n      \
-    \      n\n        );\n\n        ntt998::pointwise_multiply(ws.a_,ws.b_);\n\n \
-    \       if(ws.tmp_.size()<n) ws.tmp_.resize(n);\n        std::span<mint> tmp(ws.tmp_.data(),n);\n\
-    \n        ntt998::inverse_to(ws.a_,tmp);\n\n        std::fill_n(tmp.begin(),m,mint{});\n\
-    \n        ntt998::forward_to(\n            std::span<const mint>(tmp.data(),n),\n\
-    \            ws.a_,\n            n\n        );\n\n        ntt998::pointwise_multiply(ws.a_,ws.b_);\n\
-    \        ntt998::inverse_to(ws.a_,tmp);\n\n        const usize r=std::min(n,target);\n\
-    \        for(usize i=m;i<r;++i) out[i]=-tmp[i];\n    }\n}\n\ninline void inv_to(std::span<const\
-    \ mint> f,std::span<mint> out){\n    workspace ws;\n    inv_to(f,out,ws);\n}\n\
-    \ninline poly inv(std::span<const mint> f,usize n,workspace& ws){\n    poly result(n);\n\
-    \    inv_to(f,result,ws);\n    return result;\n}\n\ninline poly inv(std::span<const\
-    \ mint> f,usize n){\n    workspace ws;\n    return inv(f,n,ws);\n}\n\ninline poly\
-    \ inv(std::span<const mint> f,workspace& ws){\n    return inv(f,f.size(),ws);\n\
-    }\n\ninline poly inv(std::span<const mint> f){\n    workspace ws;\n    return\
-    \ inv(f,f.size(),ws);\n}\n\n}\n"
+    \ inv(f,f.size(),ws);\n}\n\n}\n#line 7 \"verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp\"\
+    \n\nint main(){\n    std::cin.tie(nullptr);\n    std::ios::sync_with_stdio(false);\n\
+    \n    std::size_t n;\n    std::cin>>n;\n\n    using mint=eez::fps998::mint;\n\n\
+    \    std::vector<mint> f(n);\n    for(auto& x:f) std::cin>>x;\n\n    const auto\
+    \ g=eez::fps998::inv(f);\n\n    for(std::size_t i=0;i<n;++i){\n        if(i) std::cout<<'\
+    \ ';\n        std::cout<<g[i];\n    }\n    std::cout<<'\\n';\n}\n"
+  code: "#define PROBLEM \"https://judge.yosupo.jp/problem/inv_of_formal_power_series\"\
+    \n\n#include <iostream>\n#include <vector>\n\n#include \"../../fps/fps998.hpp\"\
+    \n\nint main(){\n    std::cin.tie(nullptr);\n    std::ios::sync_with_stdio(false);\n\
+    \n    std::size_t n;\n    std::cin>>n;\n\n    using mint=eez::fps998::mint;\n\n\
+    \    std::vector<mint> f(n);\n    for(auto& x:f) std::cin>>x;\n\n    const auto\
+    \ g=eez::fps998::inv(f);\n\n    for(std::size_t i=0;i<n;++i){\n        if(i) std::cout<<'\
+    \ ';\n        std::cout<<g[i];\n    }\n    std::cout<<'\\n';\n}\n"
   dependsOn:
+  - fps/fps998.hpp
   - convolution/ntt998.hpp
   - math/modint998.hpp
-  isVerificationFile: false
-  path: fps/fps998.hpp
+  isVerificationFile: true
+  path: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
   requiredBy: []
-  timestamp: '2026-09-05 18:26:37+09:00'
-  verificationStatus: LIBRARY_ALL_AC
-  verifiedWith:
-  - verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
-documentation_of: fps/fps998.hpp
+  timestamp: '2026-09-05 18:27:28+09:00'
+  verificationStatus: TEST_ACCEPTED
+  verifiedWith: []
+documentation_of: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
 layout: document
 redirect_from:
-- /library/fps/fps998.hpp
-- /library/fps/fps998.hpp.html
-title: fps/fps998.hpp
+- /verify/verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
+- /verify/verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp.html
+title: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
 ---

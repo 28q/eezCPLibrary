@@ -21,7 +21,7 @@ data:
       title: UnionFind
   - name: fps
     pages:
-    - icon: ':warning:'
+    - icon: ':heavy_check_mark:'
       path: fps/fps998.hpp
       title: fps/fps998.hpp
   - name: math
@@ -48,6 +48,11 @@ data:
     - icon: ':heavy_check_mark:'
       path: verify/verify-yosupo-ds/yosupo-unionfind.test.cpp
       title: verify/verify-yosupo-ds/yosupo-unionfind.test.cpp
+  - name: verify/verify-yosupo-fps
+    pages:
+    - icon: ':heavy_check_mark:'
+      path: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
+      title: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
   - name: verify/verify-yosupo-io
     pages:
     - icon: ':heavy_check_mark:'
