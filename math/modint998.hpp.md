@@ -5,6 +5,9 @@ data:
   - icon: ':heavy_check_mark:'
     path: convolution/ntt998.hpp
     title: ntt998
+  - icon: ':warning:'
+    path: fps/detail/fps998_inv.hpp
+    title: fps/detail/fps998_inv.hpp
   - icon: ':heavy_check_mark:'
     path: fps/fps998.hpp
     title: fps/fps998.hpp
@@ -235,6 +238,7 @@ data:
   requiredBy:
   - convolution/ntt998.hpp
   - fps/fps998.hpp
+  - fps/detail/fps998_inv.hpp
   timestamp: '2026-08-15 14:35:57+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
