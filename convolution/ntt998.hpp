@@ -56,7 +56,7 @@ inline constexpr u32 mod = mint::MOD;
 inline constexpr usize max_ntt_size = usize(1) << 23;
 inline constexpr usize max_convolution_size = usize(1) << 25;
 inline constexpr usize max_size = max_ntt_size;
-inline constexpr usize naive_cutoff = 60;
+inline constexpr usize naive_cutoff = 48;
 
 inline void forward(std::span<mint> a) noexcept;
 inline void inverse(std::span<mint> a) noexcept;
