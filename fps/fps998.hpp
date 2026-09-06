@@ -14,6 +14,8 @@ using mint=ntt998::mint;
 using usize=std::size_t;
 using poly=std::vector<mint>;
 
+inline constexpr usize max_size=ntt998::max_convolution_size;
+
 class workspace{
 public:
     workspace()=default;
@@ -24,10 +26,12 @@ public:
 
     void reserve(usize n){
         if(n==0) return;
-        if(n>ntt998::max_ntt_size)
+
+        if(n>max_size)
             throw std::length_error(
-                "eez::fps998::workspace: size exceeds 2^23"
+                "eez::fps998::workspace: size exceeds 2^25"
             );
+
         inv_.reserve(std::bit_ceil(n));
     }
 
@@ -62,9 +66,9 @@ inline void inv_to(
             "eez::fps998::inv_to: constant term must be nonzero"
         );
 
-    if(out.size()>ntt998::max_ntt_size)
+    if(out.size()>max_size)
         throw std::length_error(
-            "eez::fps998::inv_to: result exceeds the 2^23 NTT limit"
+            "eez::fps998::inv_to: result exceeds the 2^25 limit"
         );
 
     detail::inv_to_impl(f,out,ws.inv_);
