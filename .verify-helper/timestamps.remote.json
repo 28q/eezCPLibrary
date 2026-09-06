@@ -3,6 +3,7 @@
 "verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp": "2026-09-05 17:27:57 +0900",
 "verify/verify-yosupo-convolution/yosupo-convolution-mod-ntt998.test.cpp": "2026-09-05 17:27:57 +0900",
 "verify/verify-yosupo-ds/yosupo-unionfind.test.cpp": "2026-08-14 15:23:31 +0900",
+"verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp": "2026-09-07 02:49:04 +0900",
 "verify/verify-yosupo-io/yosupo-aplusb-fastio-safe.test.cpp": "2026-08-12 21:41:52 +0900",
 "verify/verify-yosupo-io/yosupo-many-aplusb-128bit-fastio-safe.test.cpp": "2026-08-12 21:41:52 +0900",
 "verify/verify-yosupo-io/yosupo-many-aplusb-128bit.test.cpp": "2026-08-15 18:26:13 +0900",
