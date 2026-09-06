@@ -1,10 +1,10 @@
 ---
 data:
   _extendedDependsOn:
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: convolution/ntt998.hpp
     title: ntt998
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: math/modint998.hpp
     title: modint998
   _extendedRequiredBy: []

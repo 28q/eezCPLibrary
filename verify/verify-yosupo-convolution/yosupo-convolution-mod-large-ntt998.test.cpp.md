@@ -4,10 +4,10 @@ data:
   - icon: ':heavy_check_mark:'
     path: IO/fastio_unsafe.hpp
     title: fastio_unsafe
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: convolution/ntt998.hpp
     title: ntt998
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: math/modint998.hpp
     title: modint998
   _extendedRequiredBy: []

@@ -1,75 +1,78 @@
 ---
 data:
   _extendedDependsOn:
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
     path: convolution/ntt998.hpp
     title: ntt998
-  - icon: ':question:'
+  - icon: ':heavy_check_mark:'
+    path: fps/detail/fps998_inv_ntt.hpp
+    title: fps/detail/fps998_inv_ntt.hpp
+  - icon: ':heavy_check_mark:'
     path: math/modint998.hpp
     title: modint998
   _extendedRequiredBy:
-  - icon: ':x:'
+  - icon: ':heavy_check_mark:'
     path: fps/fps998.hpp
     title: fps/fps998.hpp
   _extendedVerifiedWith:
-  - icon: ':x:'
+  - icon: ':heavy_check_mark:'
     path: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
     title: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
-  _isVerificationFailed: true
+  _isVerificationFailed: false
   _pathExtension: hpp
-  _verificationStatusIcon: ':x:'
+  _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
     links: []
-  bundledCode: "#line 2 \"fps/detail/fps998_inv.hpp\"\n\n#include <algorithm>\n#include\
-    \ <bit>\n#include <cstddef>\n#include <cstring>\n#include <span>\n\n#line 2 \"\
-    convolution/ntt998.hpp\"\n\r\n#if ((defined(__GNUC__) || defined(__clang__)) &&\
-    \ \\\r\n     (defined(__x86_64__) || defined(__i386__))) || \\\r\n    defined(_M_AVX2)\r\
+  bundledCode: "#line 2 \"fps/detail/fps998_inv.hpp\"\n#include <algorithm>\n#include\
+    \ <bit>\n#include <cstddef>\n#include <cstdint>\n#include <span>\n#include <type_traits>\n\
+    #line 3 \"fps/detail/fps998_inv_ntt.hpp\"\n#include <array>\n#line 5 \"fps/detail/fps998_inv_ntt.hpp\"\
+    \n#include <cassert>\n#line 8 \"fps/detail/fps998_inv_ntt.hpp\"\n#include <cstring>\n\
+    #line 2 \"convolution/ntt998.hpp\"\n\r\n#if ((defined(__GNUC__) || defined(__clang__))\
+    \ && \\\r\n     (defined(__x86_64__) || defined(__i386__))) || \\\r\n    defined(_M_AVX2)\r\
     \n#define EEZ_NTT998_USE_AVX2 1\r\n#else\r\n#error \"eez::ntt998 requires an x86\
-    \ target with AVX2 support\"\r\n#endif\r\n\r\n#line 12 \"convolution/ntt998.hpp\"\
-    \n#include <array>\r\n#line 14 \"convolution/ntt998.hpp\"\n#include <cassert>\r\
-    \n#line 16 \"convolution/ntt998.hpp\"\n#include <cstdint>\r\n#include <immintrin.h>\r\
-    \n#include <new>\r\n#line 20 \"convolution/ntt998.hpp\"\n#include <stdexcept>\r\
-    \n#include <type_traits>\r\n#include <vector>\r\n\r\n#line 1 \"math/modint998.hpp\"\
-    \n\n\n\r\n#line 6 \"math/modint998.hpp\"\n#include <iostream>\r\n#line 8 \"math/modint998.hpp\"\
-    \n\r\nstruct modint998 {\r\n    using u32 = std::uint32_t;\r\n    using i32 =\
-    \ std::int32_t;\r\n    using u64 = std::uint64_t;\r\n\r\n    static constexpr\
-    \ u32 MOD = 998244353u;\r\n    static constexpr u32 MOD2 = MOD * 2;\r\n    static\
-    \ constexpr u32 primitive_root = 3;\r\n    static constexpr int max_power_of_two\
-    \ = 23;\r\n\r\nprivate:\r\n    static constexpr u32 R = 3296722945u;\r\n    static\
-    \ constexpr u32 N2 = 932051910u;\r\n\r\n    struct montgomery_tag {};\r\n\r\n\
-    \    constexpr modint998(u32 x, montgomery_tag) : a(x) {}\r\n\r\n    static constexpr\
-    \ u32 reduce(u64 x) {\r\n        return static_cast<u32>(\r\n            (x +\
-    \ u64(static_cast<u32>(x) * u32(-R)) * MOD) >> 32\r\n        );\r\n    }\r\n\r\
-    \npublic:\r\n    u32 a;\r\n\r\n    static_assert(MOD < (u32(1) << 30));\r\n  \
-    \  static_assert((MOD & 1) != 0);\r\n    static_assert(R * MOD == 1);\r\n\r\n\
-    \    constexpr modint998() : a(0) {}\r\n\r\n    template <class T, std::enable_if_t<std::is_integral_v<T>\
-    \ &&\r\n                                        std::is_signed_v<T>, int> = 0>\r\
-    \n    constexpr modint998(T x) : a(0) {\r\n        const std::int64_t y =\r\n\
-    \            static_cast<std::int64_t>(x) % std::int64_t(MOD) + MOD;\r\n     \
-    \   a = reduce(u64(y) * N2);\r\n    }\r\n\r\n    template <class T, std::enable_if_t<std::is_integral_v<T>\
-    \ &&\r\n                                        std::is_unsigned_v<T>, int> =\
-    \ 0>\r\n    constexpr modint998(T x)\r\n        : a(reduce(((u64(x) % MOD) + MOD)\
-    \ * N2)) {}\r\n\r\n    static constexpr modint998 raw(u32 x) {\r\n        return\
-    \ modint998(reduce(u64(x) * N2), montgomery_tag{});\r\n    }\r\n\r\n    static\
-    \ constexpr modint998 montgomery_raw(u32 x) {\r\n        return modint998(x, montgomery_tag{});\r\
-    \n    }\r\n\r\n    static constexpr u32 mod() { return MOD; }\r\n    static constexpr\
-    \ u32 get_mod() { return MOD; }\r\n\r\n    constexpr u32 val() const {\r\n   \
-    \     const u32 x = reduce(a);\r\n        return x >= MOD ? x - MOD : x;\r\n \
-    \   }\r\n\r\n    constexpr u32 get() const { return val(); }\r\n\r\n    constexpr\
-    \ modint998& operator+=(const modint998& rhs) {\r\n        a += rhs.a - MOD2;\r\
-    \n        if (i32(a) < 0) a += MOD2;\r\n        return *this;\r\n    }\r\n\r\n\
-    \    constexpr modint998& operator-=(const modint998& rhs) {\r\n        a -= rhs.a;\r\
-    \n        if (i32(a) < 0) a += MOD2;\r\n        return *this;\r\n    }\r\n\r\n\
-    \    constexpr modint998& operator*=(const modint998& rhs) {\r\n        a = reduce(u64(a)\
-    \ * rhs.a);\r\n        return *this;\r\n    }\r\n\r\n    constexpr modint998&\
-    \ operator/=(const modint998& rhs) {\r\n        return *this *= rhs.inv();\r\n\
-    \    }\r\n\r\n    constexpr modint998 operator+() const { return *this; }\r\n\
-    \    constexpr modint998 operator-() const { return modint998() - *this; }\r\n\
-    \r\n    friend constexpr modint998 operator+(modint998 lhs,\r\n              \
-    \                            const modint998& rhs) {\r\n        return lhs +=\
-    \ rhs;\r\n    }\r\n\r\n    friend constexpr modint998 operator-(modint998 lhs,\r\
-    \n                                          const modint998& rhs) {\r\n      \
-    \  return lhs -= rhs;\r\n    }\r\n\r\n    friend constexpr modint998 operator*(modint998\
+    \ target with AVX2 support\"\r\n#endif\r\n\r\n#line 17 \"convolution/ntt998.hpp\"\
+    \n#include <immintrin.h>\r\n#include <new>\r\n#line 20 \"convolution/ntt998.hpp\"\
+    \n#include <stdexcept>\r\n#line 22 \"convolution/ntt998.hpp\"\n#include <vector>\r\
+    \n\r\n#line 1 \"math/modint998.hpp\"\n\n\n\r\n#line 6 \"math/modint998.hpp\"\n\
+    #include <iostream>\r\n#line 8 \"math/modint998.hpp\"\n\r\nstruct modint998 {\r\
+    \n    using u32 = std::uint32_t;\r\n    using i32 = std::int32_t;\r\n    using\
+    \ u64 = std::uint64_t;\r\n\r\n    static constexpr u32 MOD = 998244353u;\r\n \
+    \   static constexpr u32 MOD2 = MOD * 2;\r\n    static constexpr u32 primitive_root\
+    \ = 3;\r\n    static constexpr int max_power_of_two = 23;\r\n\r\nprivate:\r\n\
+    \    static constexpr u32 R = 3296722945u;\r\n    static constexpr u32 N2 = 932051910u;\r\
+    \n\r\n    struct montgomery_tag {};\r\n\r\n    constexpr modint998(u32 x, montgomery_tag)\
+    \ : a(x) {}\r\n\r\n    static constexpr u32 reduce(u64 x) {\r\n        return\
+    \ static_cast<u32>(\r\n            (x + u64(static_cast<u32>(x) * u32(-R)) * MOD)\
+    \ >> 32\r\n        );\r\n    }\r\n\r\npublic:\r\n    u32 a;\r\n\r\n    static_assert(MOD\
+    \ < (u32(1) << 30));\r\n    static_assert((MOD & 1) != 0);\r\n    static_assert(R\
+    \ * MOD == 1);\r\n\r\n    constexpr modint998() : a(0) {}\r\n\r\n    template\
+    \ <class T, std::enable_if_t<std::is_integral_v<T> &&\r\n                    \
+    \                    std::is_signed_v<T>, int> = 0>\r\n    constexpr modint998(T\
+    \ x) : a(0) {\r\n        const std::int64_t y =\r\n            static_cast<std::int64_t>(x)\
+    \ % std::int64_t(MOD) + MOD;\r\n        a = reduce(u64(y) * N2);\r\n    }\r\n\r\
+    \n    template <class T, std::enable_if_t<std::is_integral_v<T> &&\r\n       \
+    \                                 std::is_unsigned_v<T>, int> = 0>\r\n    constexpr\
+    \ modint998(T x)\r\n        : a(reduce(((u64(x) % MOD) + MOD) * N2)) {}\r\n\r\n\
+    \    static constexpr modint998 raw(u32 x) {\r\n        return modint998(reduce(u64(x)\
+    \ * N2), montgomery_tag{});\r\n    }\r\n\r\n    static constexpr modint998 montgomery_raw(u32\
+    \ x) {\r\n        return modint998(x, montgomery_tag{});\r\n    }\r\n\r\n    static\
+    \ constexpr u32 mod() { return MOD; }\r\n    static constexpr u32 get_mod() {\
+    \ return MOD; }\r\n\r\n    constexpr u32 val() const {\r\n        const u32 x\
+    \ = reduce(a);\r\n        return x >= MOD ? x - MOD : x;\r\n    }\r\n\r\n    constexpr\
+    \ u32 get() const { return val(); }\r\n\r\n    constexpr modint998& operator+=(const\
+    \ modint998& rhs) {\r\n        a += rhs.a - MOD2;\r\n        if (i32(a) < 0) a\
+    \ += MOD2;\r\n        return *this;\r\n    }\r\n\r\n    constexpr modint998& operator-=(const\
+    \ modint998& rhs) {\r\n        a -= rhs.a;\r\n        if (i32(a) < 0) a += MOD2;\r\
+    \n        return *this;\r\n    }\r\n\r\n    constexpr modint998& operator*=(const\
+    \ modint998& rhs) {\r\n        a = reduce(u64(a) * rhs.a);\r\n        return *this;\r\
+    \n    }\r\n\r\n    constexpr modint998& operator/=(const modint998& rhs) {\r\n\
+    \        return *this *= rhs.inv();\r\n    }\r\n\r\n    constexpr modint998 operator+()\
+    \ const { return *this; }\r\n    constexpr modint998 operator-() const { return\
+    \ modint998() - *this; }\r\n\r\n    friend constexpr modint998 operator+(modint998\
+    \ lhs,\r\n                                          const modint998& rhs) {\r\n\
+    \        return lhs += rhs;\r\n    }\r\n\r\n    friend constexpr modint998 operator-(modint998\
+    \ lhs,\r\n                                          const modint998& rhs) {\r\n\
+    \        return lhs -= rhs;\r\n    }\r\n\r\n    friend constexpr modint998 operator*(modint998\
     \ lhs,\r\n                                          const modint998& rhs) {\r\n\
     \        return lhs *= rhs;\r\n    }\r\n\r\n    friend constexpr modint998 operator/(modint998\
     \ lhs,\r\n                                          const modint998& rhs) {\r\n\
@@ -1013,80 +1016,168 @@ data:
     \ EEZ_NTT998_USE_AVX2\r\n\r\n#if defined(__clang__) && \\\r\n    (defined(__x86_64__)\
     \ || defined(__i386__))\r\n#pragma clang attribute pop\r\n#elif defined(__GNUC__)\
     \ && \\\r\n    (defined(__x86_64__) || defined(__i386__))\r\n#pragma GCC pop_options\r\
-    \n#endif\r\n#line 10 \"fps/detail/fps998_inv.hpp\"\n\nnamespace eez::fps998::detail{\n\
-    \nusing mint=ntt998::mint;\nusing usize=std::size_t;\n\ninline constexpr usize\
-    \ inv_naive_cutoff=64;\nstatic_assert(std::has_single_bit(inv_naive_cutoff));\n\
-    \nstruct inv_workspace{\n    ntt998::detail::aligned_vector a;\n    ntt998::detail::aligned_vector\
-    \ b;\n\n    void reserve(usize n){\n        a.reserve(n);\n        b.reserve(n);\n\
-    \    }\n\n    void ensure(usize n){\n        if(a.size()<n) a.resize(n);\n   \
-    \     if(b.size()<n) b.resize(n);\n    }\n\n    [[nodiscard]] usize capacity()\
-    \ const noexcept{\n        return std::min(a.capacity(),b.capacity());\n    }\n\
-    };\n\ninline void zero_n(mint* p,usize n) noexcept{\n    if(n) std::memset(p,0,n*sizeof(mint));\n\
-    }\n\ninline void copy_n(mint* dst,const mint* src,usize n) noexcept{\n    if(n)\
-    \ std::memcpy(dst,src,n*sizeof(mint));\n}\n\ninline void copy_negated(mint* dst,const\
-    \ mint* src,usize n) noexcept{\n    usize i=0;\n    const auto zero=_mm256_setzero_si256();\n\
-    \    for(;i+8<=n;i+=8){\n        const auto x=ntt998::detail::load8_aligned(src+i);\n\
-    \        ntt998::detail::store8(\n            dst+i,\n            ntt998::detail::sub8(zero,x)\n\
-    \        );\n    }\n    for(;i<n;++i) dst[i]=-src[i];\n}\n\ninline void inv_naive_prefix(std::span<const\
-    \ mint> f,std::span<mint> g){\n    if(g.empty()) return;\n    const mint g0=f[0].inv();\n\
-    \    g[0]=g0;\n    for(usize i=1;i<g.size();++i){\n        mint s{};\n       \
-    \ const usize r=std::min(i,f.size()-1);\n        for(usize j=1;j<=r;++j) s+=f[j]*g[i-j];\n\
-    \        g[i]=-s*g0;\n    }\n}\n\ninline void inv_to_impl(\n    std::span<const\
-    \ mint> f,\n    std::span<mint> out,\n    inv_workspace& ws\n){\n    const usize\
-    \ target=out.size();\n    const usize base=std::min(target,inv_naive_cutoff);\n\
-    \n    inv_naive_prefix(f,out.first(base));\n    if(target<=inv_naive_cutoff) return;\n\
-    \n    ws.reserve(std::bit_ceil(target));\n\n    for(usize m=inv_naive_cutoff;m<target;m<<=1){\n\
-    \        const usize n=m<<1;\n        ws.ensure(n);\n\n        mint* const a=ws.a.data();\n\
-    \        mint* const b=ws.b.data();\n\n        const usize fn=std::min(f.size(),n);\n\
-    \n        copy_n(a,f.data(),fn);\n        zero_n(a+fn,n-fn);\n\n        copy_n(b,out.data(),m);\n\
-    \        zero_n(b+m,m);\n\n        ntt998::detail::forward_dif(a,n);\n       \
-    \ ntt998::detail::forward_dif(b,n);\n\n        ntt998::detail::pointwise_multiply(a,b,n);\n\
-    \n        ntt998::detail::inverse_dit(a,n);\n\n        zero_n(a,m);\n\n      \
-    \  ntt998::detail::forward_dif(a,n);\n\n        ntt998::detail::pointwise_multiply(a,b,n);\n\
-    \n        ntt998::detail::inverse_dit(a,n);\n\n        const usize len=std::min(m,target-m);\n\
-    \        copy_negated(out.data()+m,a+m,len);\n    }\n}\n\n}\n"
-  code: "#pragma once\n\n#include <algorithm>\n#include <bit>\n#include <cstddef>\n\
-    #include <cstring>\n#include <span>\n\n#include \"../../convolution/ntt998.hpp\"\
-    \n\nnamespace eez::fps998::detail{\n\nusing mint=ntt998::mint;\nusing usize=std::size_t;\n\
-    \ninline constexpr usize inv_naive_cutoff=64;\nstatic_assert(std::has_single_bit(inv_naive_cutoff));\n\
-    \nstruct inv_workspace{\n    ntt998::detail::aligned_vector a;\n    ntt998::detail::aligned_vector\
-    \ b;\n\n    void reserve(usize n){\n        a.reserve(n);\n        b.reserve(n);\n\
-    \    }\n\n    void ensure(usize n){\n        if(a.size()<n) a.resize(n);\n   \
-    \     if(b.size()<n) b.resize(n);\n    }\n\n    [[nodiscard]] usize capacity()\
-    \ const noexcept{\n        return std::min(a.capacity(),b.capacity());\n    }\n\
-    };\n\ninline void zero_n(mint* p,usize n) noexcept{\n    if(n) std::memset(p,0,n*sizeof(mint));\n\
-    }\n\ninline void copy_n(mint* dst,const mint* src,usize n) noexcept{\n    if(n)\
-    \ std::memcpy(dst,src,n*sizeof(mint));\n}\n\ninline void copy_negated(mint* dst,const\
-    \ mint* src,usize n) noexcept{\n    usize i=0;\n    const auto zero=_mm256_setzero_si256();\n\
-    \    for(;i+8<=n;i+=8){\n        const auto x=ntt998::detail::load8_aligned(src+i);\n\
-    \        ntt998::detail::store8(\n            dst+i,\n            ntt998::detail::sub8(zero,x)\n\
-    \        );\n    }\n    for(;i<n;++i) dst[i]=-src[i];\n}\n\ninline void inv_naive_prefix(std::span<const\
-    \ mint> f,std::span<mint> g){\n    if(g.empty()) return;\n    const mint g0=f[0].inv();\n\
-    \    g[0]=g0;\n    for(usize i=1;i<g.size();++i){\n        mint s{};\n       \
-    \ const usize r=std::min(i,f.size()-1);\n        for(usize j=1;j<=r;++j) s+=f[j]*g[i-j];\n\
-    \        g[i]=-s*g0;\n    }\n}\n\ninline void inv_to_impl(\n    std::span<const\
-    \ mint> f,\n    std::span<mint> out,\n    inv_workspace& ws\n){\n    const usize\
-    \ target=out.size();\n    const usize base=std::min(target,inv_naive_cutoff);\n\
-    \n    inv_naive_prefix(f,out.first(base));\n    if(target<=inv_naive_cutoff) return;\n\
-    \n    ws.reserve(std::bit_ceil(target));\n\n    for(usize m=inv_naive_cutoff;m<target;m<<=1){\n\
-    \        const usize n=m<<1;\n        ws.ensure(n);\n\n        mint* const a=ws.a.data();\n\
-    \        mint* const b=ws.b.data();\n\n        const usize fn=std::min(f.size(),n);\n\
-    \n        copy_n(a,f.data(),fn);\n        zero_n(a+fn,n-fn);\n\n        copy_n(b,out.data(),m);\n\
-    \        zero_n(b+m,m);\n\n        ntt998::detail::forward_dif(a,n);\n       \
-    \ ntt998::detail::forward_dif(b,n);\n\n        ntt998::detail::pointwise_multiply(a,b,n);\n\
-    \n        ntt998::detail::inverse_dit(a,n);\n\n        zero_n(a,m);\n\n      \
-    \  ntt998::detail::forward_dif(a,n);\n\n        ntt998::detail::pointwise_multiply(a,b,n);\n\
-    \n        ntt998::detail::inverse_dit(a,n);\n\n        const usize len=std::min(m,target-m);\n\
-    \        copy_negated(out.data()+m,a+m,len);\n    }\n}\n\n}\n"
+    \n#endif\r\n#line 11 \"fps/detail/fps998_inv_ntt.hpp\"\n\n#if defined(__GNUC__)\
+    \ && !defined(__clang__) && (defined(__x86_64__) || defined(__i386__))\n#pragma\
+    \ GCC push_options\n#pragma GCC optimize(\"O3,unroll-loops\")\n#pragma GCC target(\"\
+    avx2,bmi,bmi2,lzcnt,popcnt\")\n#define EEZ_FPS998_ALWAYS_INLINE inline __attribute__((always_inline))\n\
+    #define EEZ_FPS998_RESTRICT __restrict__\n#elif defined(__clang__) && (defined(__x86_64__)\
+    \ || defined(__i386__))\n#pragma clang attribute push(__attribute__((target(\"\
+    avx2,bmi,bmi2,lzcnt,popcnt,ssse3\"))),apply_to=function)\n#define EEZ_FPS998_ALWAYS_INLINE\
+    \ inline __attribute__((always_inline))\n#define EEZ_FPS998_RESTRICT __restrict__\n\
+    #else\n#define EEZ_FPS998_ALWAYS_INLINE inline\n#define EEZ_FPS998_RESTRICT\n\
+    #endif\n\nnamespace eez::fps998::detail::inv_ntt{\nusing mint=ntt998::mint;\n\
+    using usize=std::size_t;\nnamespace nd=ntt998::detail;\n\ninline constexpr std::uint32_t\
+    \ inv2_value=(mint::MOD+1u)>>1;\ninline constexpr nd::word inv2_mont=nd::canonicalize(mint::raw(inv2_value).a);\n\
+    \nEEZ_FPS998_ALWAYS_INLINE nd::word shrink4_scalar(nd::word x) noexcept{\n   \
+    \ return x>=nd::mod2?x-nd::mod2:x;\n}\nEEZ_FPS998_ALWAYS_INLINE nd::vec neg8(nd::vec\
+    \ x) noexcept{\n    return nd::sub8(_mm256_setzero_si256(),x);\n}\nEEZ_FPS998_ALWAYS_INLINE\
+    \ void zero_n(mint* p,usize n) noexcept{\n    if(n) std::memset(p,0,n*sizeof(mint));\n\
+    }\nEEZ_FPS998_ALWAYS_INLINE void copy_n(mint* dst,const mint* src,usize n) noexcept{\n\
+    \    if(n) std::memcpy(dst,src,n*sizeof(mint));\n}\n\ninline void copy_shrink4_to2(mint*\
+    \ EEZ_FPS998_RESTRICT dst,const mint* EEZ_FPS998_RESTRICT src,usize n) noexcept{\n\
+    \    usize i=0;\n    for(;i+8<=n;i+=8) nd::store8(dst+i,nd::shrink4_to_2(nd::load8(src+i)));\n\
+    \    for(;i<n;++i) dst[i]=nd::from_raw(shrink4_scalar(nd::raw(src[i])));\n}\n\n\
+    inline void sub_inplace(mint* EEZ_FPS998_RESTRICT a,const mint* EEZ_FPS998_RESTRICT\
+    \ b,usize n) noexcept{\n    usize i=0;\n    for(;i+8<=n;i+=8){\n        const\
+    \ nd::vec x=nd::shrink4_to_2(nd::load8_aligned(a+i));\n        const nd::vec y=nd::shrink4_to_2(nd::load8_aligned(b+i));\n\
+    \        nd::store8_aligned(a+i,nd::sub8(x,y));\n    }\n    for(;i<n;++i){\n \
+    \       const nd::word x=shrink4_scalar(nd::raw(a[i]));\n        const nd::word\
+    \ y=shrink4_scalar(nd::raw(b[i]));\n        a[i]=nd::from_raw(nd::sub(x,y));\n\
+    \    }\n}\n\ntemplate<unsigned leaf_size,unsigned parallel_blocks>\ninline void\
+    \ leaf_products_shifted(mint* EEZ_FPS998_RESTRICT a,mint* EEZ_FPS998_RESTRICT\
+    \ b,usize n,nd::word shift) noexcept{\n    const usize blocks=n/leaf_size;\n \
+    \   assert(blocks%parallel_blocks==0);\n    nd::word w=nd::canonicalize(shift);\n\
+    \    for(usize s=0;s<blocks;s+=parallel_blocks){\n        std::array<nd::word,parallel_blocks>\
+    \ modulus{};\n        for(unsigned k=0;k<parallel_blocks;++k){\n            modulus[k]=w;\n\
+    \            const usize block=s+k;\n            if(block+1<blocks)\n        \
+    \        w=nd::canonicalize(nd::mul(w,nd::forward_rate1(nd::twiddle_index(static_cast<ntt998::u32>(block)))));\n\
+    \        }\n        if constexpr(leaf_size==8) nd::leaf_product8x4(a,b,s,modulus);\n\
+    \        else{\n            static_assert(leaf_size==16&&parallel_blocks==2);\n\
+    \            nd::leaf_product16x2_karatsuba(a,b,s,modulus);\n        }\n    }\n\
+    }\n\ntemplate<unsigned leaf_size>\ninline void block_twist(mint* EEZ_FPS998_RESTRICT\
+    \ a,usize n,nd::word ratio) noexcept{\n    static_assert(leaf_size==8||leaf_size==16);\n\
+    \    ratio=nd::canonicalize(ratio);\n    nd::word w=nd::canonicalize(nd::montgomery_one);\n\
+    \    const usize blocks=n/leaf_size;\n    for(usize s=0;s<blocks;++s){\n     \
+    \   const nd::word c=nd::canonicalize(w);\n        const nd::vec vc=nd::broadcast(c);\n\
+    \        const nd::vec vcn=nd::broadcast(c*nd::montgomery_ninv);\n        mint*\
+    \ const p=a+s*leaf_size;\n        if constexpr(leaf_size==8){\n            nd::store8_aligned(p,nd::mul8_fixed(nd::load8_aligned(p),vc,vcn));\n\
+    \        }else{\n            nd::store8_aligned(p,nd::mul8_fixed(nd::load8_aligned(p),vc,vcn));\n\
+    \            nd::store8_aligned(p+8,nd::mul8_fixed(nd::load8_aligned(p+8),vc,vcn));\n\
+    \        }\n        if(s+1<blocks) w=nd::canonicalize(nd::mul(w,ratio));\n   \
+    \ }\n}\n\ntemplate<unsigned leaf_size,unsigned parallel_blocks>\ninline void cubic_leaf(mint*\
+    \ EEZ_FPS998_RESTRICT a,mint* EEZ_FPS998_RESTRICT b,usize n,nd::word shift) noexcept{\n\
+    \    leaf_products_shifted<leaf_size,parallel_blocks>(a,b,n,shift);\n    leaf_products_shifted<leaf_size,parallel_blocks>(a,b,n,shift);\n\
+    \    sub_inplace(a,b,n);\n}\n\ninline void cubic_cyclic(mint* EEZ_FPS998_RESTRICT\
+    \ a,mint* EEZ_FPS998_RESTRICT b,usize n) noexcept{\n    assert(n>=16);\n    assert(std::has_single_bit(n));\n\
+    \    assert(n<=ntt998::max_convolution_size);\n    const unsigned leaf_log=nd::adaptive_leaf_log(n);\n\
+    \    nd::forward_adaptive_pair(a,b,n,leaf_log);\n    if(leaf_log==3) cubic_leaf<8,4>(a,b,n,nd::montgomery_one);\n\
+    \    else{\n        assert(leaf_log==4);\n        cubic_leaf<16,2>(a,b,n,nd::montgomery_one);\n\
+    \    }\n    nd::inverse_adaptive(a,n,leaf_log);\n}\n\ninline void cubic_negacyclic(mint*\
+    \ EEZ_FPS998_RESTRICT a,mint* EEZ_FPS998_RESTRICT b,usize n) noexcept{\n    assert(n>=16);\n\
+    \    assert(std::has_single_bit(n));\n    assert(n<=ntt998::max_convolution_size);\n\
+    \    const unsigned leaf_log=nd::adaptive_leaf_log(n);\n    const usize blocks=n>>leaf_log;\n\
+    \    const unsigned block_log=static_cast<unsigned>(std::countr_zero(blocks));\n\
+    \    assert(block_log+1<=nd::max_log);\n    const nd::word psi=nd::canonicalize(nd::twiddles.root[block_log+1]);\n\
+    \    const nd::word ipsi=nd::canonicalize(nd::twiddles.iroot[block_log+1]);\n\n\
+    \    if(leaf_log==3){\n        block_twist<8>(a,n,psi);\n        block_twist<8>(b,n,psi);\n\
+    \    }else{\n        assert(leaf_log==4);\n        block_twist<16>(a,n,psi);\n\
+    \        block_twist<16>(b,n,psi);\n    }\n\n    nd::forward_adaptive_pair(a,b,n,leaf_log);\n\
+    \    if(leaf_log==3) cubic_leaf<8,4>(a,b,n,psi);\n    else cubic_leaf<16,2>(a,b,n,psi);\n\
+    \    nd::inverse_adaptive(a,n,leaf_log);\n\n    if(leaf_log==3) block_twist<8>(a,n,ipsi);\n\
+    \    else block_twist<16>(a,n,ipsi);\n}\n\ninline void fold_f_cyclic(std::span<const\
+    \ mint> f,mint* EEZ_FPS998_RESTRICT a,usize m) noexcept{\n    const usize lo=std::min(f.size(),m);\n\
+    \    copy_n(a,f.data(),lo);\n    zero_n(a+lo,m-lo);\n    if(f.size()<=m) return;\n\
+    \    const usize hi=std::min(f.size()-m,m);\n    usize i=0;\n    for(;i+8<=hi;i+=8){\n\
+    \        const nd::vec x=nd::shrink4_to_2(nd::load8_aligned(a+i));\n        const\
+    \ nd::vec y=nd::shrink4_to_2(nd::load8(f.data()+m+i));\n        nd::store8_aligned(a+i,nd::add8(x,y));\n\
+    \    }\n    for(;i<hi;++i){\n        const nd::word x=shrink4_scalar(nd::raw(a[i]));\n\
+    \        const nd::word y=shrink4_scalar(nd::raw(f[m+i]));\n        a[i]=nd::from_raw(nd::add(x,y));\n\
+    \    }\n}\n\ninline void recover_high(const mint* EEZ_FPS998_RESTRICT a,mint*\
+    \ out,usize m,usize len) noexcept{\n    const nd::vec vhalf=nd::broadcast(inv2_mont);\n\
+    \    const nd::vec vhalfn=nd::broadcast(inv2_mont*nd::montgomery_ninv);\n    usize\
+    \ i=0;\n    for(;i+8<=len;i+=8){\n        const nd::vec a0=nd::shrink4_to_2(nd::load8(a+i));\n\
+    \        const nd::vec a1=nd::shrink4_to_2(nd::load8(a+m+i));\n        const nd::vec\
+    \ b=nd::shrink4_to_2(nd::load8(out+i));\n        nd::vec x=nd::add8(a0,a1);\n\
+    \        x=nd::add8(x,b);\n        x=nd::mul8_fixed(x,vhalf,vhalfn);\n       \
+    \ nd::store8(out+i,neg8(x));\n    }\n    for(;i<len;++i){\n        const nd::word\
+    \ a0=shrink4_scalar(nd::raw(a[i]));\n        const nd::word a1=shrink4_scalar(nd::raw(a[m+i]));\n\
+    \        const nd::word b=shrink4_scalar(nd::raw(out[i]));\n        nd::word x=nd::add(a0,a1);\n\
+    \        x=nd::add(x,b);\n        x=nd::mul(x,inv2_mont);\n        out[i]=nd::from_raw(nd::sub(0,x));\n\
+    \    }\n}\n\ninline void step_3half(std::span<const mint> f,std::span<mint> out,mint*\
+    \ EEZ_FPS998_RESTRICT a,mint* EEZ_FPS998_RESTRICT b,usize m) noexcept{\n    const\
+    \ usize n=m<<1;\n    assert(m>=16);\n    assert(std::has_single_bit(m));\n   \
+    \ assert(n<=ntt998::max_convolution_size);\n    assert(out.size()>m);\n\n    const\
+    \ usize len=std::min(m,out.size()-m);\n    if(!len) return;\n\n    fold_f_cyclic(f,a,m);\n\
+    \    copy_n(b,out.data(),m);\n    cubic_cyclic(a,b,m);\n\n    copy_shrink4_to2(out.data()+m,a,len);\n\
+    \n    const usize fn=std::min(f.size(),n);\n    copy_n(a,f.data(),fn);\n    zero_n(a+fn,n-fn);\n\
+    \n    copy_n(b,out.data(),m);\n    zero_n(b+m,m);\n\n    cubic_negacyclic(a,b,n);\n\
+    \    recover_high(a,out.data()+m,m,len);\n}\n}\n\n#undef EEZ_FPS998_RESTRICT\n\
+    #undef EEZ_FPS998_ALWAYS_INLINE\n\n#if defined(__clang__) && (defined(__x86_64__)\
+    \ || defined(__i386__))\n#pragma clang attribute pop\n#elif defined(__GNUC__)\
+    \ && !defined(__clang__) && (defined(__x86_64__) || defined(__i386__))\n#pragma\
+    \ GCC pop_options\n#endif\n#line 9 \"fps/detail/fps998_inv.hpp\"\n\n#if defined(__GNUC__)\
+    \ && !defined(__clang__) && (defined(__x86_64__) || defined(__i386__))\n#pragma\
+    \ GCC push_options\n#pragma GCC optimize(\"O3,unroll-loops\")\n#pragma GCC target(\"\
+    avx2,bmi,bmi2,lzcnt,popcnt\")\n#elif defined(__clang__) && (defined(__x86_64__)\
+    \ || defined(__i386__))\n#pragma clang attribute push(__attribute__((target(\"\
+    avx2,bmi,bmi2,lzcnt,popcnt,ssse3\"))),apply_to=function)\n#endif\n\nnamespace\
+    \ eez::fps998::detail{\nusing mint=ntt998::mint;\nusing usize=std::size_t;\nnamespace\
+    \ nd=ntt998::detail;\n\ninline constexpr usize inv_naive_cutoff=64;\nstatic_assert(std::has_single_bit(inv_naive_cutoff));\n\
+    static_assert(std::is_trivially_copyable_v<mint>);\nstatic_assert(sizeof(mint)==sizeof(std::uint32_t));\n\
+    \nstruct inv_workspace{\n    nd::aligned_vector a,b;\n    void reserve(usize n){a.reserve(n);b.reserve(n);}\n\
+    \    void ensure(usize n){if(a.size()<n)a.resize(n);if(b.size()<n)b.resize(n);}\n\
+    \    [[nodiscard]] usize capacity() const noexcept{return std::min(a.capacity(),b.capacity());}\n\
+    };\n\ninline void inv_naive_prefix(std::span<const mint> f,std::span<mint> g){\n\
+    \    if(g.empty()) return;\n    const mint g0=f[0].inv();\n    g[0]=g0;\n    for(usize\
+    \ i=1;i<g.size();++i){\n        mint s{};\n        const usize r=std::min(i,f.size()-1);\n\
+    \        for(usize j=1;j<=r;++j) s+=f[j]*g[i-j];\n        g[i]=-s*g0;\n    }\n\
+    }\n\ninline void inv_step_3half(std::span<const mint> f,std::span<mint> out,inv_workspace&\
+    \ ws,usize m){\n    const usize n=m<<1;\n    ws.ensure(n);\n    inv_ntt::step_3half(f,out,ws.a.data(),ws.b.data(),m);\n\
+    }\n\ninline void inv_to_impl(std::span<const mint> f,std::span<mint> out,inv_workspace&\
+    \ ws){\n    const usize target=out.size();\n    const usize base=std::min(target,inv_naive_cutoff);\n\
+    \    inv_naive_prefix(f,out.first(base));\n    if(target<=inv_naive_cutoff) return;\n\
+    \    ws.reserve(std::bit_ceil(target));\n    for(usize m=inv_naive_cutoff;m<target;m<<=1)\n\
+    \        inv_step_3half(f,out,ws,m);\n}\n}\n\n#if defined(__clang__) && (defined(__x86_64__)\
+    \ || defined(__i386__))\n#pragma clang attribute pop\n#elif defined(__GNUC__)\
+    \ && !defined(__clang__) && (defined(__x86_64__) || defined(__i386__))\n#pragma\
+    \ GCC pop_options\n#endif\n"
+  code: "#pragma once\n#include <algorithm>\n#include <bit>\n#include <cstddef>\n\
+    #include <cstdint>\n#include <span>\n#include <type_traits>\n#include \"fps998_inv_ntt.hpp\"\
+    \n\n#if defined(__GNUC__) && !defined(__clang__) && (defined(__x86_64__) || defined(__i386__))\n\
+    #pragma GCC push_options\n#pragma GCC optimize(\"O3,unroll-loops\")\n#pragma GCC\
+    \ target(\"avx2,bmi,bmi2,lzcnt,popcnt\")\n#elif defined(__clang__) && (defined(__x86_64__)\
+    \ || defined(__i386__))\n#pragma clang attribute push(__attribute__((target(\"\
+    avx2,bmi,bmi2,lzcnt,popcnt,ssse3\"))),apply_to=function)\n#endif\n\nnamespace\
+    \ eez::fps998::detail{\nusing mint=ntt998::mint;\nusing usize=std::size_t;\nnamespace\
+    \ nd=ntt998::detail;\n\ninline constexpr usize inv_naive_cutoff=64;\nstatic_assert(std::has_single_bit(inv_naive_cutoff));\n\
+    static_assert(std::is_trivially_copyable_v<mint>);\nstatic_assert(sizeof(mint)==sizeof(std::uint32_t));\n\
+    \nstruct inv_workspace{\n    nd::aligned_vector a,b;\n    void reserve(usize n){a.reserve(n);b.reserve(n);}\n\
+    \    void ensure(usize n){if(a.size()<n)a.resize(n);if(b.size()<n)b.resize(n);}\n\
+    \    [[nodiscard]] usize capacity() const noexcept{return std::min(a.capacity(),b.capacity());}\n\
+    };\n\ninline void inv_naive_prefix(std::span<const mint> f,std::span<mint> g){\n\
+    \    if(g.empty()) return;\n    const mint g0=f[0].inv();\n    g[0]=g0;\n    for(usize\
+    \ i=1;i<g.size();++i){\n        mint s{};\n        const usize r=std::min(i,f.size()-1);\n\
+    \        for(usize j=1;j<=r;++j) s+=f[j]*g[i-j];\n        g[i]=-s*g0;\n    }\n\
+    }\n\ninline void inv_step_3half(std::span<const mint> f,std::span<mint> out,inv_workspace&\
+    \ ws,usize m){\n    const usize n=m<<1;\n    ws.ensure(n);\n    inv_ntt::step_3half(f,out,ws.a.data(),ws.b.data(),m);\n\
+    }\n\ninline void inv_to_impl(std::span<const mint> f,std::span<mint> out,inv_workspace&\
+    \ ws){\n    const usize target=out.size();\n    const usize base=std::min(target,inv_naive_cutoff);\n\
+    \    inv_naive_prefix(f,out.first(base));\n    if(target<=inv_naive_cutoff) return;\n\
+    \    ws.reserve(std::bit_ceil(target));\n    for(usize m=inv_naive_cutoff;m<target;m<<=1)\n\
+    \        inv_step_3half(f,out,ws,m);\n}\n}\n\n#if defined(__clang__) && (defined(__x86_64__)\
+    \ || defined(__i386__))\n#pragma clang attribute pop\n#elif defined(__GNUC__)\
+    \ && !defined(__clang__) && (defined(__x86_64__) || defined(__i386__))\n#pragma\
+    \ GCC pop_options\n#endif\n"
   dependsOn:
+  - fps/detail/fps998_inv_ntt.hpp
   - convolution/ntt998.hpp
   - math/modint998.hpp
   isVerificationFile: false
   path: fps/detail/fps998_inv.hpp
   requiredBy:
   - fps/fps998.hpp
-  timestamp: '2026-09-05 19:00:05+09:00'
-  verificationStatus: LIBRARY_ALL_WA
+  timestamp: '2026-09-07 02:49:04+09:00'
+  verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
 documentation_of: fps/detail/fps998_inv.hpp
