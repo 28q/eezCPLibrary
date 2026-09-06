@@ -2,13 +2,13 @@
 data:
   _extendedDependsOn: []
   _extendedRequiredBy:
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: convolution/ntt998.hpp
     title: ntt998
-  - icon: ':warning:'
+  - icon: ':x:'
     path: fps/detail/fps998_inv.hpp
     title: fps/detail/fps998_inv.hpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':x:'
     path: fps/fps998.hpp
     title: fps/fps998.hpp
   _extendedVerifiedWith:
@@ -18,15 +18,15 @@ data:
   - icon: ':heavy_check_mark:'
     path: verify/verify-yosupo-convolution/yosupo-convolution-mod-ntt998.test.cpp
     title: verify/verify-yosupo-convolution/yosupo-convolution-mod-ntt998.test.cpp
-  - icon: ':heavy_check_mark:'
+  - icon: ':x:'
     path: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
     title: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
   - icon: ':heavy_check_mark:'
     path: verify/verify-yosupo-math/yosupo-aplusb-modint998.test.cpp
     title: verify/verify-yosupo-math/yosupo-aplusb-modint998.test.cpp
-  _isVerificationFailed: false
+  _isVerificationFailed: true
   _pathExtension: hpp
-  _verificationStatusIcon: ':heavy_check_mark:'
+  _verificationStatusIcon: ':question:'
   attributes:
     links: []
   bundledCode: "#line 1 \"math/modint998.hpp\"\n\n\n\r\n#include <cassert>\r\n#include\
@@ -240,7 +240,7 @@ data:
   - fps/fps998.hpp
   - fps/detail/fps998_inv.hpp
   timestamp: '2026-08-15 14:35:57+09:00'
-  verificationStatus: LIBRARY_ALL_AC
+  verificationStatus: LIBRARY_SOME_WA
   verifiedWith:
   - verify/verify-yosupo-math/yosupo-aplusb-modint998.test.cpp
   - verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp

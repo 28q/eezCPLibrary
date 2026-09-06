@@ -1,17 +1,23 @@
 ---
 data:
   _extendedDependsOn:
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: convolution/ntt998.hpp
     title: ntt998
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: math/modint998.hpp
     title: modint998
-  _extendedRequiredBy: []
-  _extendedVerifiedWith: []
-  _isVerificationFailed: false
+  _extendedRequiredBy:
+  - icon: ':x:'
+    path: fps/fps998.hpp
+    title: fps/fps998.hpp
+  _extendedVerifiedWith:
+  - icon: ':x:'
+    path: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
+    title: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
+  _isVerificationFailed: true
   _pathExtension: hpp
-  _verificationStatusIcon: ':warning:'
+  _verificationStatusIcon: ':x:'
   attributes:
     links: []
   bundledCode: "#line 2 \"fps/detail/fps998_inv.hpp\"\n\n#include <algorithm>\n#include\
@@ -1077,10 +1083,12 @@ data:
   - math/modint998.hpp
   isVerificationFile: false
   path: fps/detail/fps998_inv.hpp
-  requiredBy: []
+  requiredBy:
+  - fps/fps998.hpp
   timestamp: '2026-09-05 19:00:05+09:00'
-  verificationStatus: LIBRARY_NO_TESTS
-  verifiedWith: []
+  verificationStatus: LIBRARY_ALL_WA
+  verifiedWith:
+  - verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
 documentation_of: fps/detail/fps998_inv.hpp
 layout: document
 redirect_from:
