@@ -6,15 +6,18 @@ data:
   - icon: ':heavy_check_mark:'
     path: verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp
     title: verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp
+  - icon: ':x:'
+    path: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
+    title: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
   - icon: ':heavy_check_mark:'
     path: verify/verify-yosupo-io/yosupo-many-aplusb-128bit.test.cpp
     title: verify/verify-yosupo-io/yosupo-many-aplusb-128bit.test.cpp
   - icon: ':heavy_check_mark:'
     path: verify/verify-yosupo-io/yosupo-many-aplusb.test.cpp
     title: verify/verify-yosupo-io/yosupo-many-aplusb.test.cpp
-  _isVerificationFailed: false
+  _isVerificationFailed: true
   _pathExtension: hpp
-  _verificationStatusIcon: ':heavy_check_mark:'
+  _verificationStatusIcon: ':question:'
   attributes:
     links: []
   bundledCode: "#line 2 \"IO/fastio_unsafe.hpp\"\n\n#include <algorithm>\n#include\
@@ -540,10 +543,11 @@ data:
   path: IO/fastio_unsafe.hpp
   requiredBy: []
   timestamp: '2026-08-15 18:26:13+09:00'
-  verificationStatus: LIBRARY_ALL_AC
+  verificationStatus: LIBRARY_SOME_WA
   verifiedWith:
   - verify/verify-yosupo-io/yosupo-many-aplusb-128bit.test.cpp
   - verify/verify-yosupo-io/yosupo-many-aplusb.test.cpp
+  - verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
   - verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp
 documentation_of: IO/fastio_unsafe.hpp
 layout: document

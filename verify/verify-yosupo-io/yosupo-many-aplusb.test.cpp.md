@@ -1,7 +1,7 @@
 ---
 data:
   _extendedDependsOn:
-  - icon: ':heavy_check_mark:'
+  - icon: ':question:'
     path: IO/fastio_unsafe.hpp
     title: fastio_unsafe
   _extendedRequiredBy: []
