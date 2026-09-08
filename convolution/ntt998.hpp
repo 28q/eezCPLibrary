@@ -3,6 +3,7 @@
 #error "Compile with -mavx2 (see README.md)."
 #endif
 #line 2 "ntt998.hpp"
+
 #if defined(__GNUC__) && !defined(__clang__) && \
     (defined(__x86_64__) || defined(__i386__))
 #pragma GCC optimize("O3,unroll-loops")
@@ -13,34 +14,47 @@
     __attribute__((target("avx2,bmi,bmi2,lzcnt,popcnt,ssse3"))), \
     apply_to = function)
 #endif
+
 #include <bits/stdc++.h>
 #include <immintrin.h>
+
 #line 1 "math/modint998.hpp"
+
 #include <type_traits>
+
 struct modint998 {
     using u32 = std::uint32_t;
     using i32 = std::int32_t;
     using u64 = std::uint64_t;
+
     static constexpr u32 MOD = 998244353u;
     static constexpr u32 MOD2 = MOD * 2;
     static constexpr u32 primitive_root = 3;
     static constexpr int max_power_of_two = 23;
+
 private:
     static constexpr u32 R = 3296722945u;
     static constexpr u32 N2 = 932051910u;
+
     struct montgomery_tag {};
+
     constexpr modint998(u32 x, montgomery_tag) : a(x) {}
+
     static constexpr u32 reduce(u64 x) {
         return static_cast<u32>(
             (x + u64(static_cast<u32>(x) * u32(-R)) * MOD) >> 32
         );
     }
+
 public:
     u32 a;
+
     static_assert(MOD < (u32(1) << 30));
     static_assert((MOD & 1) != 0);
     static_assert(R * MOD == 1);
+
     constexpr modint998() : a(0) {}
+
     template <class T, std::enable_if_t<std::is_integral_v<T> &&
                                         std::is_signed_v<T>, int> = 0>
     constexpr modint998(T x) : a(0) {
@@ -48,78 +62,100 @@ public:
             static_cast<std::int64_t>(x) % std::int64_t(MOD) + MOD;
         a = reduce(u64(y) * N2);
     }
+
     template <class T, std::enable_if_t<std::is_integral_v<T> &&
                                         std::is_unsigned_v<T>, int> = 0>
     constexpr modint998(T x)
         : a(reduce(((u64(x) % MOD) + MOD) * N2)) {}
+
     static constexpr modint998 raw(u32 x) {
         return modint998(reduce(u64(x) * N2), montgomery_tag{});
     }
+
     static constexpr modint998 montgomery_raw(u32 x) {
         return modint998(x, montgomery_tag{});
     }
+
     static constexpr u32 mod() { return MOD; }
     static constexpr u32 get_mod() { return MOD; }
+
     constexpr u32 val() const {
         const u32 x = reduce(a);
         return x >= MOD ? x - MOD : x;
     }
+
     constexpr u32 get() const { return val(); }
+
     constexpr modint998& operator+=(const modint998& rhs) {
         a += rhs.a - MOD2;
         if (i32(a) < 0) a += MOD2;
         return *this;
     }
+
     constexpr modint998& operator-=(const modint998& rhs) {
         a -= rhs.a;
         if (i32(a) < 0) a += MOD2;
         return *this;
     }
+
     constexpr modint998& operator*=(const modint998& rhs) {
         a = reduce(u64(a) * rhs.a);
         return *this;
     }
+
     constexpr modint998& operator/=(const modint998& rhs) {
         return *this *= rhs.inv();
     }
+
     constexpr modint998 operator+() const { return *this; }
     constexpr modint998 operator-() const { return modint998() - *this; }
+
     friend constexpr modint998 operator+(modint998 lhs, const modint998& rhs) {
         return lhs += rhs;
     }
+
     friend constexpr modint998 operator-(modint998 lhs, const modint998& rhs) {
         return lhs -= rhs;
     }
+
     friend constexpr modint998 operator*(modint998 lhs, const modint998& rhs) {
         return lhs *= rhs;
     }
+
     friend constexpr modint998 operator/(modint998 lhs, const modint998& rhs) {
         return lhs /= rhs;
     }
+
     friend constexpr bool operator==(const modint998& lhs, const modint998& rhs) {
         const u32 x = lhs.a >= MOD ? lhs.a - MOD : lhs.a;
         const u32 y = rhs.a >= MOD ? rhs.a - MOD : rhs.a;
         return x == y;
     }
+
     friend constexpr bool operator!=(const modint998& lhs, const modint998& rhs) {
         return !(lhs == rhs);
     }
+
     constexpr modint998& operator++() {
         return *this += raw(1);
     }
+
     constexpr modint998 operator++(int) {
         modint998 old = *this;
         ++*this;
         return old;
     }
+
     constexpr modint998& operator--() {
         return *this -= raw(1);
     }
+
     constexpr modint998 operator--(int) {
         modint998 old = *this;
         --*this;
         return old;
     }
+
     constexpr modint998 pow(u64 exponent) const {
         modint998 result = raw(1);
         modint998 base = *this;
@@ -130,8 +166,10 @@ public:
         }
         return result;
     }
+
     constexpr modint998 inv() const {
         assert(val() != 0);
+
         const modint998 x = *this;
         modint998 a2 = x * x;
         modint998 a4 = a2 * a2;
@@ -144,12 +182,14 @@ public:
         modint998 a164 = a82 * a82;
         modint998 a328 = a164 * a164;
         modint998 r = a328 * a49;
+
         a2 = r * r;
         a4 = a2 * a2;
         a8 = a4 * a4;
         modint998 a9 = a8 * r;
         modint998 a18 = a9 * a9;
         r = a18 * a9;
+
         a2 = r * r;
         a4 = a2 * a2;
         a8 = a4 * a4;
@@ -160,6 +200,7 @@ public:
         modint998 a132 = a66 * a66;
         modint998 a264 = a132 * a132;
         r = a264 * a17;
+
         a2 = r * r;
         a4 = a2 * a2;
         a8 = a4 * a4;
@@ -172,10 +213,13 @@ public:
         modint998 a276 = a138 * a138;
         return a276 * a73;
     }
+
     constexpr modint998 inverse() const { return inv(); }
+
     friend std::ostream& operator<<(std::ostream& os, const modint998& x) {
         return os << x.val();
     }
+
     friend std::istream& operator>>(std::istream& is, modint998& x) {
         std::int64_t value;
         is >> value;
@@ -183,10 +227,14 @@ public:
         return is;
     }
 };
+
 static_assert(sizeof(modint998) == 4);
 static_assert(std::is_trivially_copyable_v<modint998>);
+
 using mint998 = modint998;
+
 #line 18 "ntt998.hpp"
+
 #if defined(_MSC_VER)
 #define EEZ_NTT998_ALWAYS_INLINE __forceinline
 #define EEZ_NTT998_RESTRICT __restrict
@@ -197,26 +245,34 @@ using mint998 = modint998;
 #define EEZ_NTT998_ALWAYS_INLINE inline
 #define EEZ_NTT998_RESTRICT
 #endif
+
 namespace eez::ntt998{
+
 using mint=modint998;
 using u32=std::uint32_t;
 using usize=std::size_t;
+
 inline constexpr u32 mod=mint::MOD;
 inline constexpr usize max_ntt_size=usize(1)<<23;
 inline constexpr usize max_convolution_size=usize(1)<<25;
 inline constexpr usize max_size=max_ntt_size;
 inline constexpr usize naive_cutoff=60;
+
 inline void forward(std::span<mint> a) noexcept;
 inline void inverse(std::span<mint> a) noexcept;
 inline std::vector<mint> convolution(std::span<const mint> a,std::span<const mint> b);
 inline std::vector<mint> square(std::span<const mint> a);
+
 inline std::vector<mint> convolution(const std::vector<mint>& a,const std::vector<mint>& b){
     return convolution(std::span<const mint>(a.data(),a.size()),std::span<const mint>(b.data(),b.size()));
 }
+
 inline std::vector<mint> square(const std::vector<mint>& a){
     return square(std::span<const mint>(a.data(),a.size()));
 }
+
 namespace detail{
+
 template<class T>
 class aligned_allocator{
 public:
@@ -232,12 +288,17 @@ public:
     }
     template<class U> struct rebind{using other=aligned_allocator<U>;};
 };
+
 template<class T,class U>
 constexpr bool operator==(const aligned_allocator<T>&,const aligned_allocator<U>&) noexcept{return true;}
+
 template<class T,class U>
 constexpr bool operator!=(const aligned_allocator<T>&,const aligned_allocator<U>&) noexcept{return false;}
+
 using aligned_vector=std::vector<mint,aligned_allocator<mint>>;
+
 }
+
 class workspace{
 public:
     workspace()=default;
@@ -253,8 +314,10 @@ private:
     detail::aligned_vector a_;
     detail::aligned_vector b_;
 };
+
 inline void convolution_to(std::span<const mint> a,std::span<const mint> b,std::span<mint> out,workspace& ws);
 inline void square_to(std::span<const mint> a,std::span<mint> out,workspace& ws);
+
 class frequency_buffer{
 public:
     frequency_buffer()=default;
@@ -266,13 +329,16 @@ private:
     friend void inverse_to(frequency_buffer&,std::span<mint>);
     std::vector<mint> data_;
 };
+
 inline void forward_to(std::span<const mint> src,frequency_buffer& dst,usize n);
 inline void pointwise_multiply(frequency_buffer& lhs,const frequency_buffer& rhs);
 inline void pointwise_square(frequency_buffer& a);
 inline void inverse_to(frequency_buffer& src,std::span<mint> out);
+
 constexpr usize convolution_size(usize n,usize m) noexcept{
     return n&&m?n+m-1:0;
 }
+
 constexpr usize transform_size(usize n,usize m) noexcept{
     if(!n||!m)return 0;
     if(n>max_ntt_size||m>max_ntt_size)return 0;
@@ -282,6 +348,7 @@ constexpr usize transform_size(usize n,usize m) noexcept{
     while(x<z)x<<=1;
     return x;
 }
+
 constexpr usize convolution_transform_size(usize n,usize m) noexcept{
     if(!n||!m)return 0;
     if(n>max_convolution_size||m>max_convolution_size)return 0;
@@ -291,46 +358,59 @@ constexpr usize convolution_transform_size(usize n,usize m) noexcept{
     while(x<z)x<<=1;
     return x;
 }
+
 constexpr bool valid_ntt_size(usize n) noexcept{
     return n!=0&&(n&(n-1))==0&&n<=max_ntt_size;
 }
+
 constexpr bool valid_convolution_transform_size(usize n) noexcept{
     return n>=32&&(n&(n-1))==0&&n<=max_convolution_size;
 }
+
 namespace detail{
+
 using word=u32;
 using u64=std::uint64_t;
+
 inline constexpr word mod=mint::MOD;
 inline constexpr word mod2=2*mod;
 inline constexpr unsigned max_log=23;
 inline constexpr word montgomery_ninv=998244351u;
 inline constexpr word montgomery_one=mint::raw(1).a;
+
 static_assert(mod<(word(1)<<30));
 static_assert(word(mod*montgomery_ninv)==~word(0));
 static_assert(sizeof(mint)==sizeof(word));
+
 EEZ_NTT998_ALWAYS_INLINE constexpr word raw(const mint& x) noexcept{return x.a;}
 EEZ_NTT998_ALWAYS_INLINE constexpr mint from_raw(word x) noexcept{return mint::montgomery_raw(x);}
+
 EEZ_NTT998_ALWAYS_INLINE constexpr word mul(word a,word b) noexcept{
     const u64 x=u64(a)*b;
     const word q=static_cast<word>(x)*montgomery_ninv;
     return static_cast<word>((x+u64(q)*mod)>>32);
 }
+
 EEZ_NTT998_ALWAYS_INLINE constexpr word add(word a,word b) noexcept{
     const word x=a+b;
     return x>=mod2?x-mod2:x;
 }
+
 EEZ_NTT998_ALWAYS_INLINE constexpr word sub(word a,word b) noexcept{
     return a>=b?a-b:a+mod2-b;
 }
+
 EEZ_NTT998_ALWAYS_INLINE constexpr word canonicalize(word a) noexcept{
     return a>=mod?a-mod:a;
 }
+
 struct twiddle_table{
     std::array<word,max_log+1> root{};
     std::array<word,max_log+1> iroot{};
     std::array<word,max_log+1> rate1{};
     std::array<word,max_log+1> rate3{};
     std::array<word,max_log+1> irate3{};
+
     constexpr twiddle_table(){
         root[max_log]=mint::raw(mint::primitive_root).pow((mod-1)>>max_log).a;
         iroot[max_log]=mint::montgomery_raw(root[max_log]).inv().a;
@@ -353,34 +433,45 @@ struct twiddle_table{
         }
     }
 };
+
 inline constexpr twiddle_table twiddles{};
+
 EEZ_NTT998_ALWAYS_INLINE word forward_rate1(unsigned i) noexcept{return twiddles.rate1[i];}
 EEZ_NTT998_ALWAYS_INLINE word forward_rate3(unsigned i) noexcept{return twiddles.rate3[i];}
 EEZ_NTT998_ALWAYS_INLINE word inverse_rate3(unsigned i) noexcept{return twiddles.irate3[i];}
+
 EEZ_NTT998_ALWAYS_INLINE unsigned twiddle_index(u32 block) noexcept{
     return static_cast<unsigned>(std::countr_zero(~block));
 }
+
 #if defined(__AVX2__) || defined(_M_AVX2)
+
 using vec=__m256i;
+
 EEZ_NTT998_ALWAYS_INLINE vec load8(const mint* p) noexcept{
     return _mm256_loadu_si256(reinterpret_cast<const __m256i*>(static_cast<const void*>(p)));
 }
+
 EEZ_NTT998_ALWAYS_INLINE void store8(mint* p,vec x) noexcept{
     _mm256_storeu_si256(reinterpret_cast<__m256i*>(static_cast<void*>(p)),x);
 }
+
 EEZ_NTT998_ALWAYS_INLINE vec broadcast(word x) noexcept{
     return _mm256_set1_epi32(static_cast<int>(x));
 }
+
 EEZ_NTT998_ALWAYS_INLINE vec add8(vec a,vec b) noexcept{
     const vec two_p=broadcast(mod2);
     vec x=_mm256_sub_epi32(_mm256_add_epi32(a,b),two_p);
     return _mm256_add_epi32(x,_mm256_and_si256(_mm256_srai_epi32(x,31),two_p));
 }
+
 EEZ_NTT998_ALWAYS_INLINE vec sub8(vec a,vec b) noexcept{
     const vec two_p=broadcast(mod2);
     vec x=_mm256_sub_epi32(a,b);
     return _mm256_add_epi32(x,_mm256_and_si256(_mm256_srai_epi32(x,31),two_p));
 }
+
 EEZ_NTT998_ALWAYS_INLINE vec mul8(vec a,vec b) noexcept{
     const vec ninv=broadcast(montgomery_ninv);
     const vec prime=broadcast(mod);
@@ -392,6 +483,7 @@ EEZ_NTT998_ALWAYS_INLINE vec mul8(vec a,vec b) noexcept{
     const vec ro=_mm256_add_epi64(po,_mm256_mul_epu32(qo,prime));
     return _mm256_or_si256(_mm256_bsrli_epi128(re,4),ro);
 }
+
 EEZ_NTT998_ALWAYS_INLINE vec mul8_fixed(vec a,vec b,vec bninv) noexcept{
     const vec prime=broadcast(mod);
     const vec oa=_mm256_bsrli_epi128(a,4);
@@ -403,26 +495,31 @@ EEZ_NTT998_ALWAYS_INLINE vec mul8_fixed(vec a,vec b,vec bninv) noexcept{
     const vec ro=_mm256_add_epi64(po,_mm256_mul_epu32(qo,prime));
     return _mm256_or_si256(_mm256_bsrli_epi128(re,4),ro);
 }
+
 EEZ_NTT998_ALWAYS_INLINE vec canonicalize8(vec x) noexcept{
     const vec prime=broadcast(mod);
     vec y=_mm256_sub_epi32(x,prime);
     return _mm256_add_epi32(y,_mm256_and_si256(_mm256_srai_epi32(y,31),prime));
 }
+
 EEZ_NTT998_ALWAYS_INLINE vec pack_four(word x0,word x1) noexcept{
     return _mm256_setr_epi32(
         static_cast<int>(x0),static_cast<int>(x0),static_cast<int>(x0),static_cast<int>(x0),
         static_cast<int>(x1),static_cast<int>(x1),static_cast<int>(x1),static_cast<int>(x1)
     );
 }
+
 EEZ_NTT998_ALWAYS_INLINE vec load2x4(const mint* p0,const mint* p1) noexcept{
     const __m128i lo=_mm_loadu_si128(reinterpret_cast<const __m128i*>(static_cast<const void*>(p0)));
     const __m128i hi=_mm_loadu_si128(reinterpret_cast<const __m128i*>(static_cast<const void*>(p1)));
     return _mm256_set_m128i(hi,lo);
 }
+
 EEZ_NTT998_ALWAYS_INLINE void store2x4(mint* p0,mint* p1,vec x) noexcept{
     _mm_storeu_si128(reinterpret_cast<__m128i*>(static_cast<void*>(p0)),_mm256_castsi256_si128(x));
     _mm_storeu_si128(reinterpret_cast<__m128i*>(static_cast<void*>(p1)),_mm256_extracti128_si256(x,1));
 }
+
 EEZ_NTT998_ALWAYS_INLINE void transpose_8x4_to_4x8(vec v0,vec v1,vec v2,vec v3,vec& x0,vec& x1,vec& x2,vec& x3) noexcept{
     const vec t0=_mm256_unpacklo_epi32(v0,v1);
     const vec t1=_mm256_unpackhi_epi32(v0,v1);
@@ -434,6 +531,7 @@ EEZ_NTT998_ALWAYS_INLINE void transpose_8x4_to_4x8(vec v0,vec v1,vec v2,vec v3,v
     x2=_mm256_permutevar8x32_epi32(_mm256_unpacklo_epi64(t1,t3),perm);
     x3=_mm256_permutevar8x32_epi32(_mm256_unpackhi_epi64(t1,t3),perm);
 }
+
 EEZ_NTT998_ALWAYS_INLINE void transpose_4x8_to_8x4(vec x0,vec x1,vec x2,vec x3,vec& v0,vec& v1,vec& v2,vec& v3) noexcept{
     const vec perm=_mm256_setr_epi32(0,2,4,6,1,3,5,7);
     const vec q0=_mm256_permutevar8x32_epi32(x0,perm);
@@ -449,7 +547,9 @@ EEZ_NTT998_ALWAYS_INLINE void transpose_4x8_to_8x4(vec x0,vec x1,vec x2,vec x3,v
     v2=_mm256_castps_si256(_mm256_shuffle_ps(_mm256_castsi256_ps(t2),_mm256_castsi256_ps(t3),_MM_SHUFFLE(2,0,2,0)));
     v3=_mm256_castps_si256(_mm256_shuffle_ps(_mm256_castsi256_ps(t2),_mm256_castsi256_ps(t3),_MM_SHUFFLE(3,1,3,1)));
 }
+
 #endif
+
 EEZ_NTT998_ALWAYS_INLINE void forward_butterfly(mint* b,usize stride,usize i,word r1,word r2,word r3) noexcept{
     const word x0=raw(b[i]);
     const word x1=mul(raw(b[stride+i]),r1);
@@ -464,6 +564,7 @@ EEZ_NTT998_ALWAYS_INLINE void forward_butterfly(mint* b,usize stride,usize i,wor
     b[2*stride+i]=from_raw(add(d02,t));
     b[3*stride+i]=from_raw(sub(d02,t));
 }
+
 EEZ_NTT998_ALWAYS_INLINE void inverse_butterfly(mint* b,usize stride,usize i,word r1,word r2,word r3) noexcept{
     const word x0=raw(b[i]);
     const word x1=raw(b[stride+i]);
@@ -478,6 +579,7 @@ EEZ_NTT998_ALWAYS_INLINE void inverse_butterfly(mint* b,usize stride,usize i,wor
     b[2*stride+i]=from_raw(mul(sub(s01,s23),r2));
     b[3*stride+i]=from_raw(mul(sub(d01,t),r3));
 }
+
 inline void forward_radix4_scalar(mint* EEZ_NTT998_RESTRICT a,usize blocks,usize stride) noexcept{
     {
         mint* const b=a;
@@ -506,6 +608,7 @@ inline void forward_radix4_scalar(mint* EEZ_NTT998_RESTRICT a,usize blocks,usize
         if(s+1<blocks)rot=mul(rot,forward_rate3(twiddle_index(static_cast<u32>(s))));
     }
 }
+
 inline void inverse_radix4_scalar(mint* EEZ_NTT998_RESTRICT a,usize blocks,usize stride) noexcept{
     {
         mint* const b=a;
@@ -534,7 +637,9 @@ inline void inverse_radix4_scalar(mint* EEZ_NTT998_RESTRICT a,usize blocks,usize
         if(s+1<blocks)rot=mul(rot,inverse_rate3(twiddle_index(static_cast<u32>(s))));
     }
 }
+
 #if defined(__AVX2__) || defined(_M_AVX2)
+
 EEZ_NTT998_ALWAYS_INLINE void forward_radix4_large_block(mint* EEZ_NTT998_RESTRICT b,usize stride,vec imag,word r1,word r2,word r3) noexcept{
     const vec w1=broadcast(r1);
     const vec w2=broadcast(r2);
@@ -554,6 +659,7 @@ EEZ_NTT998_ALWAYS_INLINE void forward_radix4_large_block(mint* EEZ_NTT998_RESTRI
         store8(b+3*stride+i,sub8(d02,t));
     }
 }
+
 EEZ_NTT998_ALWAYS_INLINE void inverse_radix4_large_block(mint* EEZ_NTT998_RESTRICT b,usize stride,vec iimag,word r1,word r2,word r3) noexcept{
     const vec w1=broadcast(r1);
     const vec w2=broadcast(r2);
@@ -573,6 +679,7 @@ EEZ_NTT998_ALWAYS_INLINE void inverse_radix4_large_block(mint* EEZ_NTT998_RESTRI
         store8(b+3*stride+i,mul8(sub8(d01,t),w3));
     }
 }
+
 inline void forward_radix4_large(mint* EEZ_NTT998_RESTRICT a,usize blocks,usize stride) noexcept{
     const vec imag=broadcast(twiddles.root[2]);
     {
@@ -615,6 +722,7 @@ inline void forward_radix4_large(mint* EEZ_NTT998_RESTRICT a,usize blocks,usize 
         if(s+1<blocks)rot=mul(rot,forward_rate3(twiddle_index(static_cast<u32>(s))));
     }
 }
+
 inline void inverse_radix4_large(mint* EEZ_NTT998_RESTRICT a,usize blocks,usize stride) noexcept{
     const vec iimag=broadcast(twiddles.iroot[2]);
     {
@@ -657,6 +765,7 @@ inline void inverse_radix4_large(mint* EEZ_NTT998_RESTRICT a,usize blocks,usize 
         if(s+1<blocks)rot=mul(rot,inverse_rate3(twiddle_index(static_cast<u32>(s))));
     }
 }
+
 inline void forward_radix4_p4(mint* EEZ_NTT998_RESTRICT a,usize blocks) noexcept{
     if(blocks<2){
         forward_radix4_scalar(a,blocks,4);
@@ -688,6 +797,7 @@ inline void forward_radix4_p4(mint* EEZ_NTT998_RESTRICT a,usize blocks) noexcept
         if(s+2<blocks)rot=mul(rot,forward_rate3(twiddle_index(static_cast<u32>(s+1))));
     }
 }
+
 inline void inverse_radix4_p4(mint* EEZ_NTT998_RESTRICT a,usize blocks) noexcept{
     if(blocks<2){
         inverse_radix4_scalar(a,blocks,4);
@@ -719,6 +829,7 @@ inline void inverse_radix4_p4(mint* EEZ_NTT998_RESTRICT a,usize blocks) noexcept
         if(s+2<blocks)rot=mul(rot,inverse_rate3(twiddle_index(static_cast<u32>(s+1))));
     }
 }
+
 inline void forward_radix4_p1(mint* EEZ_NTT998_RESTRICT a,usize blocks) noexcept{
     const vec imag=broadcast(twiddles.root[2]);
     word rot=montgomery_one;
@@ -756,6 +867,7 @@ inline void forward_radix4_p1(mint* EEZ_NTT998_RESTRICT a,usize blocks) noexcept
         if(s+1<blocks)rot=mul(rot,forward_rate3(twiddle_index(static_cast<u32>(s))));
     }
 }
+
 inline void inverse_radix4_p1(mint* EEZ_NTT998_RESTRICT a,usize blocks) noexcept{
     const vec iimag=broadcast(twiddles.iroot[2]);
     word rot=montgomery_one;
@@ -790,7 +902,9 @@ inline void inverse_radix4_p1(mint* EEZ_NTT998_RESTRICT a,usize blocks) noexcept
         if(s+1<blocks)rot=mul(rot,inverse_rate3(twiddle_index(static_cast<u32>(s))));
     }
 }
+
 #endif
+
 inline void forward_radix2_first(mint* EEZ_NTT998_RESTRICT a,usize n) noexcept{
     const usize half=n>>1;
     usize i=0;
@@ -809,6 +923,7 @@ inline void forward_radix2_first(mint* EEZ_NTT998_RESTRICT a,usize n) noexcept{
         a[half+i]=from_raw(sub(x,y));
     }
 }
+
 inline void forward_radix4_stage(mint* EEZ_NTT998_RESTRICT a,usize n,int stage) noexcept{
     const int h=static_cast<int>(std::countr_zero(n));
     assert(stage>=0&&stage+2<=h);
@@ -823,6 +938,7 @@ inline void forward_radix4_stage(mint* EEZ_NTT998_RESTRICT a,usize n,int stage) 
     forward_radix4_scalar(a,blocks,stride);
 #endif
 }
+
 inline void inverse_radix4_stage(mint* EEZ_NTT998_RESTRICT a,usize n,int stage) noexcept{
     const int h=static_cast<int>(std::countr_zero(n));
     assert(stage>=0&&stage+2<=h);
@@ -837,6 +953,7 @@ inline void inverse_radix4_stage(mint* EEZ_NTT998_RESTRICT a,usize n,int stage) 
     inverse_radix4_scalar(a,blocks,stride);
 #endif
 }
+
 inline void final_radix2_scale(mint* EEZ_NTT998_RESTRICT a,usize n,word scale_mont) noexcept{
     const usize half=n>>1;
     usize i=0;
@@ -856,6 +973,7 @@ inline void final_radix2_scale(mint* EEZ_NTT998_RESTRICT a,usize n,word scale_mo
         a[half+i]=from_raw(mul(sub(x,y),scale_mont));
     }
 }
+
 inline void final_radix4_scale(mint* EEZ_NTT998_RESTRICT a,usize n,word scale_mont) noexcept{
     const usize stride=n>>2;
     usize i=0;
@@ -892,6 +1010,7 @@ inline void final_radix4_scale(mint* EEZ_NTT998_RESTRICT a,usize n,word scale_mo
         a[3*stride+i]=from_raw(mul(sub(d01,t),scale_mont));
     }
 }
+
 inline void forward_dif(mint* EEZ_NTT998_RESTRICT a,usize n) noexcept{
     if(n<=1)return;
     const int h=static_cast<int>(std::countr_zero(n));
@@ -902,6 +1021,7 @@ inline void forward_dif(mint* EEZ_NTT998_RESTRICT a,usize n) noexcept{
     }
     for(;stage<h;stage+=2)forward_radix4_stage(a,n,stage);
 }
+
 inline void inverse_dit(mint* EEZ_NTT998_RESTRICT a,usize n) noexcept{
     if(n<=1)return;
     const int h=static_cast<int>(std::countr_zero(n));
@@ -914,7 +1034,9 @@ inline void inverse_dit(mint* EEZ_NTT998_RESTRICT a,usize n) noexcept{
         final_radix4_scale(a,n,scale);
     }
 }
+
 #if defined(__AVX2__) || defined(_M_AVX2)
+
 class aligned_uninitialized_buffer{
     static_assert(std::is_trivially_destructible_v<mint>);
     mint* data_=nullptr;
@@ -929,19 +1051,25 @@ public:
     mint* data() noexcept{return data_;}
     const mint* data()const noexcept{return data_;}
 };
+
 EEZ_NTT998_ALWAYS_INLINE vec load8_aligned(const mint* p) noexcept{
     return _mm256_load_si256(reinterpret_cast<const __m256i*>(static_cast<const void*>(p)));
 }
+
 EEZ_NTT998_ALWAYS_INLINE void store8_aligned(mint* p,vec x) noexcept{
     _mm256_store_si256(reinterpret_cast<__m256i*>(static_cast<void*>(p)),x);
 }
+
 EEZ_NTT998_ALWAYS_INLINE vec shrink4_to_2(vec x) noexcept{
     return _mm256_min_epu32(x,_mm256_sub_epi32(x,broadcast(mod2)));
 }
+
 EEZ_NTT998_ALWAYS_INLINE vec lazy_add8(vec a,vec b) noexcept{return _mm256_add_epi32(a,b);}
+
 EEZ_NTT998_ALWAYS_INLINE vec lazy_sub8(vec a,vec b) noexcept{
     return _mm256_add_epi32(a,_mm256_sub_epi32(broadcast(mod2),b));
 }
+
 template<bool trivial_twiddle,bool convert_input=false>
 inline void forward_radix4_block_lazy(mint* b,usize stride,word r1) noexcept{
     const word imag=canonicalize(twiddles.root[2]);
@@ -955,6 +1083,7 @@ inline void forward_radix4_block_lazy(mint* b,usize stride,word r1) noexcept{
     const word r3=canonicalize(mul(r2,r1));
     const vec vr3=broadcast(r3);
     const vec vr3_ninv=broadcast(r3*montgomery_ninv);
+
     for(usize i=0;i<stride;i+=8){
         vec x0=shrink4_to_2(load8_aligned(b+i));
         vec x1=load8_aligned(b+stride+i);
@@ -995,11 +1124,13 @@ inline void forward_radix4_block_lazy(mint* b,usize stride,word r1) noexcept{
         store8_aligned(b+3*stride+i,y3);
     }
 }
+
 template<bool trivial_twiddle,bool convert_input=false>
 EEZ_NTT998_ALWAYS_INLINE void forward_radix4_block_pair_lazy(mint* EEZ_NTT998_RESTRICT a,mint* EEZ_NTT998_RESTRICT b,usize stride,word r1) noexcept{
     forward_radix4_block_lazy<trivial_twiddle,convert_input>(a,stride,r1);
     forward_radix4_block_lazy<trivial_twiddle,convert_input>(b,stride,r1);
 }
+
 template<bool trivial_twiddle,bool apply_scale,bool convert_output=false,bool direct_output=false>
 inline void inverse_radix4_block_lazy(mint* b,usize stride,word r1,word scale) noexcept{
     const word iimag=canonicalize(twiddles.iroot[2]);
@@ -1014,6 +1145,7 @@ inline void inverse_radix4_block_lazy(mint* b,usize stride,word r1,word scale) n
     const vec vr3=broadcast(r3);
     const vec vr3_ninv=broadcast(r3*montgomery_ninv);
     const word sc=canonicalize(scale);
+
     for(usize i=0;i<stride;i+=8){
         const vec x0=shrink4_to_2(load8_aligned(b+i));
         const vec x1=shrink4_to_2(load8_aligned(b+stride+i));
@@ -1063,10 +1195,12 @@ inline void inverse_radix4_block_lazy(mint* b,usize stride,word r1,word scale) n
         store8_aligned(b+3*stride+i,y3);
     }
 }
+
 inline unsigned adaptive_leaf_log(usize n) noexcept{
     const unsigned h=static_cast<unsigned>(std::countr_zero(n));
     return(h&1u)?3u:4u;
 }
+
 template<bool convert_input=false>
 EEZ_NTT998_ALWAYS_INLINE void forward_cache_node(mint* EEZ_NTT998_RESTRICT base,usize block_size,unsigned layer,usize block,usize blocks_at_layer,std::array<word,max_log/2+1>& rotation) noexcept{
     const usize stride=block_size>>2;
@@ -1075,6 +1209,7 @@ EEZ_NTT998_ALWAYS_INLINE void forward_cache_node(mint* EEZ_NTT998_RESTRICT base,
     else forward_radix4_block_lazy<false>(base,stride,rotation[layer]);
     if(block+1<blocks_at_layer)rotation[layer]=canonicalize(mul(rotation[layer],forward_rate3(twiddle_index(static_cast<u32>(block)))));
 }
+
 template<bool convert_input=false>
 inline void forward_cache_block(mint* EEZ_NTT998_RESTRICT base,usize block_size,unsigned layer,usize block,usize blocks_at_layer,std::array<word,max_log/2+1>& rotation) noexcept{
     forward_cache_node<convert_input>(base,block_size,layer,block,blocks_at_layer,rotation);
@@ -1087,6 +1222,7 @@ inline void forward_cache_block(mint* EEZ_NTT998_RESTRICT base,usize block_size,
         for(usize g=0;g<4;++g)forward_cache_node(p+g*gsize,gsize,layer+2,cb*4+g,blocks_at_layer*16,rotation);
     }
 }
+
 template<bool convert_input=false>
 inline void forward_cache_dfs(mint* EEZ_NTT998_RESTRICT base,usize block_size,usize leaf_size,unsigned layer,usize block,usize blocks_at_layer,std::array<word,max_log/2+1>& rotation) noexcept{
     if(block_size==leaf_size*64){
@@ -1102,6 +1238,7 @@ inline void forward_cache_dfs(mint* EEZ_NTT998_RESTRICT base,usize block_size,us
     if(child_size==leaf_size)return;
     for(usize child=0;child<4;++child)forward_cache_dfs<false>(base+child*child_size,child_size,leaf_size,layer+1,block*4+child,blocks_at_layer*4,rotation);
 }
+
 template<bool convert_input=false>
 EEZ_NTT998_ALWAYS_INLINE void forward_cache_pair_node(mint* EEZ_NTT998_RESTRICT a,mint* EEZ_NTT998_RESTRICT b,usize block_size,unsigned layer,usize block,usize blocks_at_layer,std::array<word,max_log/2+1>& rotation) noexcept{
     const usize stride=block_size>>2;
@@ -1110,6 +1247,7 @@ EEZ_NTT998_ALWAYS_INLINE void forward_cache_pair_node(mint* EEZ_NTT998_RESTRICT 
     else forward_radix4_block_pair_lazy<false>(a,b,stride,rotation[layer]);
     if(block+1<blocks_at_layer)rotation[layer]=canonicalize(mul(rotation[layer],forward_rate3(twiddle_index(static_cast<u32>(block)))));
 }
+
 template<bool convert_input=false>
 inline void forward_cache_pair_block(mint* EEZ_NTT998_RESTRICT a,mint* EEZ_NTT998_RESTRICT b,usize block_size,unsigned layer,usize block,usize blocks_at_layer,std::array<word,max_log/2+1>& rotation) noexcept{
     forward_cache_pair_node<convert_input>(a,b,block_size,layer,block,blocks_at_layer,rotation);
@@ -1123,6 +1261,7 @@ inline void forward_cache_pair_block(mint* EEZ_NTT998_RESTRICT a,mint* EEZ_NTT99
         for(usize g=0;g<4;++g)forward_cache_pair_node(pa+g*gsize,pb+g*gsize,gsize,layer+2,cb*4+g,blocks_at_layer*16,rotation);
     }
 }
+
 template<bool convert_input=false>
 inline void forward_cache_pair_dfs(mint* EEZ_NTT998_RESTRICT a,mint* EEZ_NTT998_RESTRICT b,usize block_size,usize leaf_size,unsigned layer,usize block,usize blocks_at_layer,std::array<word,max_log/2+1>& rotation) noexcept{
     if(block_size==leaf_size*64){
@@ -1134,6 +1273,7 @@ inline void forward_cache_pair_dfs(mint* EEZ_NTT998_RESTRICT a,mint* EEZ_NTT998_
     if(child_size==leaf_size)return;
     for(usize child=0;child<4;++child)forward_cache_pair_dfs<false>(a+child*child_size,b+child*child_size,child_size,leaf_size,layer+1,block*4+child,blocks_at_layer*4,rotation);
 }
+
 template<bool apply_scale,bool convert_output=false,bool direct_output=false>
 EEZ_NTT998_ALWAYS_INLINE void inverse_cache_node(mint* EEZ_NTT998_RESTRICT base,usize block_size,unsigned layer,usize block,usize blocks_at_layer,word scale,std::array<word,max_log/2+1>& rotation) noexcept{
     const usize stride=block_size>>2;
@@ -1141,6 +1281,7 @@ EEZ_NTT998_ALWAYS_INLINE void inverse_cache_node(mint* EEZ_NTT998_RESTRICT base,
     else inverse_radix4_block_lazy<false,apply_scale,convert_output,direct_output>(base,stride,rotation[layer],scale);
     if(block+1<blocks_at_layer)rotation[layer]=canonicalize(mul(rotation[layer],inverse_rate3(twiddle_index(static_cast<u32>(block)))));
 }
+
 template<bool scale_leaf,bool convert_output=false,bool direct_output=false>
 inline void inverse_cache_block(mint* EEZ_NTT998_RESTRICT base,usize block_size,unsigned layer,usize block,usize blocks_at_layer,word scale,std::array<word,max_log/2+1>& rotation) noexcept{
     const usize child_size=block_size>>2;
@@ -1153,6 +1294,7 @@ inline void inverse_cache_block(mint* EEZ_NTT998_RESTRICT base,usize block_size,
     }
     inverse_cache_node<false,convert_output,direct_output>(base,block_size,layer,block,blocks_at_layer,scale,rotation);
 }
+
 template<bool scale_leaf,bool convert_output=false,bool direct_output=false>
 inline void inverse_cache_dfs(mint* EEZ_NTT998_RESTRICT base,usize block_size,usize leaf_size,unsigned layer,usize block,usize blocks_at_layer,word scale,std::array<word,max_log/2+1>& rotation) noexcept{
     if(block_size==leaf_size*64){
@@ -1174,17 +1316,20 @@ inline void inverse_cache_dfs(mint* EEZ_NTT998_RESTRICT base,usize block_size,us
     else inverse_radix4_block_lazy<false,false,convert_output,direct_output>(base,stride,rotation[layer],scale);
     if(block+1<blocks_at_layer)rotation[layer]=canonicalize(mul(rotation[layer],inverse_rate3(twiddle_index(static_cast<u32>(block)))));
 }
+
 EEZ_NTT998_ALWAYS_INLINE void convert_to_montgomery(mint* a,usize n) noexcept{
     constexpr word r2=932051910u;
     const vec vr2=broadcast(r2);
     const vec vn=broadcast(r2*montgomery_ninv);
     for(usize i=0;i<n;i+=8)store8_aligned(a+i,mul8_fixed(load8_aligned(a+i),vr2,vn));
 }
+
 EEZ_NTT998_ALWAYS_INLINE void convert_from_montgomery(mint* a,usize n) noexcept{
     const vec one=broadcast(1);
     const vec ninv=broadcast(montgomery_ninv);
     for(usize i=0;i<n;i+=8)store8_aligned(a+i,canonicalize8(mul8_fixed(load8_aligned(a+i),one,ninv)));
 }
+
 template<bool convert_input=false>
 inline void forward_adaptive(mint* a,usize n,unsigned leaf_log) noexcept{
     const usize leaf_size=usize(1)<<leaf_log;
@@ -1203,6 +1348,7 @@ inline void forward_adaptive(mint* a,usize n,unsigned leaf_log) noexcept{
     }
     forward_cache_dfs<convert_input>(a,n,leaf_size,0,0,1,rotation);
 }
+
 template<bool convert_input=false>
 inline void forward_adaptive_pair(mint* EEZ_NTT998_RESTRICT a,mint* EEZ_NTT998_RESTRICT b,usize n,unsigned leaf_log) noexcept{
     const usize leaf_size=usize(1)<<leaf_log;
@@ -1228,6 +1374,7 @@ inline void forward_adaptive_pair(mint* EEZ_NTT998_RESTRICT a,mint* EEZ_NTT998_R
     }
     forward_cache_pair_dfs<convert_input>(a,b,n,leaf_size,0,0,1,rotation);
 }
+
 template<bool convert_output=false,bool direct_output=false>
 inline void inverse_adaptive(mint* a,usize n,unsigned leaf_log) noexcept{
     const usize leaf_size=usize(1)<<leaf_log;
@@ -1263,6 +1410,7 @@ inline void inverse_adaptive(mint* a,usize n,unsigned leaf_log) noexcept{
     }
     inverse_cache_dfs<true,convert_output,direct_output>(a,n,leaf_size,0,0,1,scale,rotation);
 }
+
 EEZ_NTT998_ALWAYS_INLINE __m128i reduce_four_accumulators(vec x) noexcept{
     const vec ninv=broadcast(montgomery_ninv);
     const vec prime=broadcast(mod);
@@ -1272,6 +1420,7 @@ EEZ_NTT998_ALWAYS_INLINE __m128i reduce_four_accumulators(vec x) noexcept{
     const vec packed=_mm256_permutevar8x32_epi32(high,_mm256_setr_epi32(0,2,4,6,0,0,0,0));
     return _mm256_castsi256_si128(packed);
 }
+
 EEZ_NTT998_ALWAYS_INLINE vec reduce_eight_accumulators(vec even,vec odd) noexcept{
     const vec ninv=broadcast(montgomery_ninv);
     const vec prime=broadcast(mod);
@@ -1281,6 +1430,7 @@ EEZ_NTT998_ALWAYS_INLINE vec reduce_eight_accumulators(vec even,vec odd) noexcep
     const vec ro=_mm256_add_epi64(odd,_mm256_mul_epu32(qo,prime));
     return shrink4_to_2(_mm256_or_si256(_mm256_bsrli_epi128(re,4),ro));
 }
+
 EEZ_NTT998_ALWAYS_INLINE void leaf_product8x4(mint* EEZ_NTT998_RESTRICT a,mint* EEZ_NTT998_RESTRICT b,usize first_block,const std::array<word,4>& modulus) noexcept{
     alignas(64) word lhs[4][16];
     alignas(64) vec even[4]{};
@@ -1305,6 +1455,7 @@ EEZ_NTT998_ALWAYS_INLINE void leaf_product8x4(mint* EEZ_NTT998_RESTRICT a,mint* 
     }
     for(unsigned k=0;k<4;++k)store8_aligned(a+(first_block+k)*8,reduce_eight_accumulators(even[k],odd[k]));
 }
+
 EEZ_NTT998_ALWAYS_INLINE void leaf_product16x2_karatsuba(mint* EEZ_NTT998_RESTRICT a,const mint* EEZ_NTT998_RESTRICT b,usize first_block,const std::array<word,2>& modulus) noexcept{
     const vec split=_mm256_setr_epi32(0,2,4,6,1,3,5,7);
     alignas(64) word lhs[6][16];
@@ -1357,24 +1508,30 @@ EEZ_NTT998_ALWAYS_INLINE void leaf_product16x2_karatsuba(mint* EEZ_NTT998_RESTRI
         store8_aligned(a+off+8,_mm256_permute2x128_si256(lo,hi,0x31));
     }
 }
+
 EEZ_NTT998_ALWAYS_INLINE word twice(word x) noexcept{return x+x;}
+
 EEZ_NTT998_ALWAYS_INLINE vec pack4_u32(word x0,word x1,word x2,word x3) noexcept{
     return _mm256_cvtepu32_epi64(_mm_setr_epi32(static_cast<int>(x0),static_cast<int>(x1),static_cast<int>(x2),static_cast<int>(x3)));
 }
+
 EEZ_NTT998_ALWAYS_INLINE vec mul4_u32(word a0,word b0,word a1,word b1,word a2,word b2,word a3,word b3) noexcept{
     return _mm256_mul_epu32(pack4_u32(a0,a1,a2,a3),pack4_u32(b0,b1,b2,b3));
 }
+
 EEZ_NTT998_ALWAYS_INLINE u64 hsum4_u64(vec x) noexcept{
     __m128i s=_mm_add_epi64(_mm256_castsi256_si128(x),_mm256_extracti128_si256(x,1));
     s=_mm_add_epi64(s,_mm_srli_si128(s,8));
     return static_cast<u64>(_mm_cvtsi128_si64(s));
 }
+
 EEZ_NTT998_ALWAYS_INLINE vec square8_packed(vec vx,word w) noexcept{
     alignas(32) word x[8],xw[8];
     vx=canonicalize8(shrink4_to_2(vx));
     w=canonicalize(w);
     _mm256_store_si256(reinterpret_cast<vec*>(x),vx);
     _mm256_store_si256(reinterpret_cast<vec*>(xw),mul8_fixed(vx,broadcast(w),broadcast(w*montgomery_ninv)));
+
     u64 a0=hsum4_u64(mul4_u32(x[0],x[0],twice(xw[1]),x[7],twice(xw[2]),x[6],twice(xw[3]),x[5]));
     const u64 a1=hsum4_u64(mul4_u32(twice(x[0]),x[1],twice(xw[2]),x[7],twice(xw[3]),x[6],twice(xw[4]),x[5]));
     u64 a2=hsum4_u64(mul4_u32(twice(x[0]),x[2],x[1],x[1],twice(xw[3]),x[7],twice(xw[4]),x[6]));
@@ -1383,6 +1540,7 @@ EEZ_NTT998_ALWAYS_INLINE vec square8_packed(vec vx,word w) noexcept{
     const u64 a5=hsum4_u64(mul4_u32(twice(x[0]),x[5],twice(x[1]),x[4],twice(x[2]),x[3],twice(xw[6]),x[7]));
     u64 a6=hsum4_u64(mul4_u32(twice(x[0]),x[6],twice(x[1]),x[5],twice(x[2]),x[4],x[3],x[3]));
     const u64 a7=hsum4_u64(mul4_u32(twice(x[0]),x[7],twice(x[1]),x[6],twice(x[2]),x[5],twice(x[3]),x[4]));
+
     const vec extra=mul4_u32(xw[4],x[4],xw[5],x[5],xw[6],x[6],xw[7],x[7]);
     alignas(32) u64 e[4];
     _mm256_store_si256(reinterpret_cast<vec*>(e),extra);
@@ -1390,16 +1548,19 @@ EEZ_NTT998_ALWAYS_INLINE vec square8_packed(vec vx,word w) noexcept{
     a2+=e[1];
     a4+=e[2];
     a6+=e[3];
+
     const vec lo=_mm256_setr_epi64x(static_cast<long long>(a0),static_cast<long long>(a1),static_cast<long long>(a2),static_cast<long long>(a3));
     const vec hi=_mm256_setr_epi64x(static_cast<long long>(a4),static_cast<long long>(a5),static_cast<long long>(a6),static_cast<long long>(a7));
     return shrink4_to_2(_mm256_set_m128i(reduce_four_accumulators(hi),reduce_four_accumulators(lo)));
 }
+
 EEZ_NTT998_ALWAYS_INLINE void leaf_square8x4(mint* EEZ_NTT998_RESTRICT a,usize first_block,const std::array<word,4>& modulus) noexcept{
     for(unsigned k=0;k<4;++k){
         const usize off=(first_block+k)*8;
         store8_aligned(a+off,square8_packed(load8_aligned(a+off),modulus[k]));
     }
 }
+
 EEZ_NTT998_ALWAYS_INLINE void leaf_square16x2_karatsuba(mint* EEZ_NTT998_RESTRICT a,usize first_block,const std::array<word,2>& modulus) noexcept{
     const vec split=_mm256_setr_epi32(0,2,4,6,1,3,5,7);
     for(unsigned k=0;k<2;++k){
@@ -1423,6 +1584,7 @@ EEZ_NTT998_ALWAYS_INLINE void leaf_square16x2_karatsuba(mint* EEZ_NTT998_RESTRIC
         store8_aligned(a+off+8,_mm256_permute2x128_si256(lo,hi,0x31));
     }
 }
+
 template<unsigned leaf_size,unsigned parallel_blocks>
 inline void leaf_products(mint* a,mint* b,usize n) noexcept{
     const usize blocks=n/leaf_size;
@@ -1438,6 +1600,7 @@ inline void leaf_products(mint* a,mint* b,usize n) noexcept{
         else leaf_product16x2_karatsuba(a,b,s,modulus);
     }
 }
+
 template<unsigned leaf_size,unsigned parallel_blocks>
 inline void leaf_squares(mint* a,usize n) noexcept{
     const usize blocks=n/leaf_size;
@@ -1453,6 +1616,7 @@ inline void leaf_squares(mint* a,usize n) noexcept{
         else leaf_square16x2_karatsuba(a,s,modulus);
     }
 }
+
 inline void convolution_adaptive_inplace(mint* a,mint* b,usize n) noexcept{
     const unsigned leaf_log=adaptive_leaf_log(n);
     forward_adaptive_pair(a,b,n,leaf_log);
@@ -1460,6 +1624,7 @@ inline void convolution_adaptive_inplace(mint* a,mint* b,usize n) noexcept{
     else leaf_products<16,2>(a,b,n);
     inverse_adaptive(a,n,leaf_log);
 }
+
 inline void square_adaptive_inplace(mint* a,usize n) noexcept{
     const unsigned leaf_log=adaptive_leaf_log(n);
     forward_adaptive(a,n,leaf_log);
@@ -1467,6 +1632,7 @@ inline void square_adaptive_inplace(mint* a,usize n) noexcept{
     else leaf_squares<16,2>(a,n);
     inverse_adaptive(a,n,leaf_log);
 }
+
 inline void convolution_adaptive_normal_inplace(mint* a,mint* b,usize n) noexcept{
     const unsigned leaf_log=adaptive_leaf_log(n);
     forward_adaptive_pair<true>(a,b,n,leaf_log);
@@ -1474,6 +1640,7 @@ inline void convolution_adaptive_normal_inplace(mint* a,mint* b,usize n) noexcep
     else leaf_products<16,2>(a,b,n);
     inverse_adaptive<true>(a,n,leaf_log);
 }
+
 inline void convolution_adaptive_mixed_normal_inplace(mint* a,mint* b,usize n) noexcept{
     const unsigned leaf_log=adaptive_leaf_log(n);
     forward_adaptive_pair(a,b,n,leaf_log);
@@ -1481,7 +1648,9 @@ inline void convolution_adaptive_mixed_normal_inplace(mint* a,mint* b,usize n) n
     else leaf_products<16,2>(a,b,n);
     inverse_adaptive<false,true>(a,n,leaf_log);
 }
+
 #endif
+
 inline void pointwise_multiply(mint* EEZ_NTT998_RESTRICT a,const mint* EEZ_NTT998_RESTRICT b,usize n) noexcept{
     usize i=0;
 #if defined(__AVX2__) || defined(_M_AVX2)
@@ -1489,6 +1658,7 @@ inline void pointwise_multiply(mint* EEZ_NTT998_RESTRICT a,const mint* EEZ_NTT99
 #endif
     for(;i<n;++i)a[i]=from_raw(mul(raw(a[i]),raw(b[i])));
 }
+
 inline void pointwise_square(mint* EEZ_NTT998_RESTRICT a,usize n) noexcept{
     usize i=0;
 #if defined(__AVX2__) || defined(_M_AVX2)
@@ -1499,18 +1669,23 @@ inline void pointwise_square(mint* EEZ_NTT998_RESTRICT a,usize n) noexcept{
 #endif
     for(;i<n;++i)a[i]=from_raw(mul(raw(a[i]),raw(a[i])));
 }
+
 }
+
 inline void forward(std::span<mint> a) noexcept{
     if(a.size()<=1)return;
     assert(valid_ntt_size(a.size()));
     detail::forward_dif(a.data(),a.size());
 }
+
 inline void inverse(std::span<mint> a) noexcept{
     if(a.size()<=1)return;
     assert(valid_ntt_size(a.size()));
     detail::inverse_dit(a.data(),a.size());
 }
+
 namespace detail{
+
 inline std::vector<mint> convolution_naive(std::span<const mint> a,std::span<const mint> b){
     std::vector<mint> result(convolution_size(a.size(),b.size()));
     for(usize i=0;i<a.size();++i)
@@ -1518,6 +1693,7 @@ inline std::vector<mint> convolution_naive(std::span<const mint> a,std::span<con
             result[i+j]+=a[i]*b[j];
     return result;
 }
+
 inline std::vector<mint> square_naive(std::span<const mint> a){
     std::vector<mint> result(convolution_size(a.size(),a.size()));
     for(usize i=0;i<a.size();++i){
@@ -1529,57 +1705,73 @@ inline std::vector<mint> square_naive(std::span<const mint> a){
     }
     return result;
 }
+
 inline usize checked_transform_size(usize n,usize m){
     const usize result=convolution_transform_size(n,m);
     if(n&&m&&!result)throw std::length_error("eez::ntt998: convolution exceeds the 2^25 transform limit");
     return result;
 }
+
 inline void require_ntt_size(usize n){
     if(!valid_ntt_size(n))throw std::invalid_argument("eez::ntt998: transform length must be a power of two in [1, 2^23]");
 }
+
 }
+
 #if defined(__AVX2__) || defined(_M_AVX2)
+
 using convolution_buffer=detail::aligned_vector;
+
 inline void convolution_inplace(convolution_buffer& a,convolution_buffer& b){
     if(a.size()!=b.size()||!valid_convolution_transform_size(a.size()))
         throw std::invalid_argument("eez::ntt998::convolution_inplace: buffer sizes must match and be a power of two in [32, 2^25]");
     detail::convolution_adaptive_inplace(a.data(),b.data(),a.size());
 }
+
 #endif
+
 inline std::vector<mint> convolution(std::span<const mint> a,std::span<const mint> b){
     if(a.empty()||b.empty())return {};
     if(a.data()==b.data()&&a.size()==b.size())return square(a);
     if(std::min(a.size(),b.size())<=naive_cutoff)return detail::convolution_naive(a,b);
+
     const usize result_size=convolution_size(a.size(),b.size());
     const usize n=detail::checked_transform_size(a.size(),b.size());
     detail::aligned_vector fa(n),fb(n);
     std::copy(a.begin(),a.end(),fa.begin());
     std::copy(b.begin(),b.end(),fb.begin());
     detail::convolution_adaptive_inplace(fa.data(),fb.data(),n);
+
     std::vector<mint> result(result_size);
     std::copy_n(fa.data(),result_size,result.data());
     return result;
 }
+
 inline std::vector<mint> square(std::span<const mint> a){
     if(a.empty())return {};
     if(a.size()<=naive_cutoff)return detail::square_naive(a);
+
     const usize result_size=convolution_size(a.size(),a.size());
     const usize n=detail::checked_transform_size(a.size(),a.size());
     detail::aligned_vector fa(n);
     std::copy(a.begin(),a.end(),fa.begin());
     detail::square_adaptive_inplace(fa.data(),n);
+
     std::vector<mint> result(result_size);
     std::copy_n(fa.data(),result_size,result.data());
     return result;
 }
+
 inline void convolution_to(std::span<const mint> a,std::span<const mint> b,std::span<mint> out,workspace& ws){
     if(a.empty()||b.empty())return;
     const usize result_size=convolution_size(a.size(),b.size());
     if(out.size()<result_size)throw std::invalid_argument("eez::ntt998::convolution_to: output span is too small");
+
     if(a.data()==b.data()&&a.size()==b.size()){
         square_to(a,out,ws);
         return;
     }
+
     if(std::min(a.size(),b.size())<=naive_cutoff){
         std::fill_n(out.begin(),result_size,mint{});
         for(usize i=0;i<a.size();++i)
@@ -1587,6 +1779,7 @@ inline void convolution_to(std::span<const mint> a,std::span<const mint> b,std::
                 out[i+j]+=a[i]*b[j];
         return;
     }
+
     const usize n=detail::checked_transform_size(a.size(),b.size());
     ws.reserve(n);
     std::fill_n(ws.a_.begin(),n,mint{});
@@ -1596,10 +1789,12 @@ inline void convolution_to(std::span<const mint> a,std::span<const mint> b,std::
     detail::convolution_adaptive_inplace(ws.a_.data(),ws.b_.data(),n);
     std::copy_n(ws.a_.begin(),result_size,out.begin());
 }
+
 inline void square_to(std::span<const mint> a,std::span<mint> out,workspace& ws){
     if(a.empty())return;
     const usize result_size=convolution_size(a.size(),a.size());
     if(out.size()<result_size)throw std::invalid_argument("eez::ntt998::square_to: output span is too small");
+
     if(a.size()<=naive_cutoff){
         std::fill_n(out.begin(),result_size,mint{});
         for(usize i=0;i<a.size();++i){
@@ -1611,6 +1806,7 @@ inline void square_to(std::span<const mint> a,std::span<mint> out,workspace& ws)
         }
         return;
     }
+
     const usize n=detail::checked_transform_size(a.size(),a.size());
     ws.reserve(n);
     std::fill_n(ws.a_.begin(),n,mint{});
@@ -1618,6 +1814,7 @@ inline void square_to(std::span<const mint> a,std::span<mint> out,workspace& ws)
     detail::square_adaptive_inplace(ws.a_.data(),n);
     std::copy_n(ws.a_.begin(),result_size,out.begin());
 }
+
 inline void forward_to(std::span<const mint> src,frequency_buffer& dst,usize n){
     detail::require_ntt_size(n);
     if(src.size()>n)throw std::invalid_argument("eez::ntt998::forward_to: source is longer than transform");
@@ -1625,13 +1822,16 @@ inline void forward_to(std::span<const mint> src,frequency_buffer& dst,usize n){
     std::copy(src.begin(),src.end(),dst.data_.begin());
     detail::forward_dif(dst.data_.data(),n);
 }
+
 inline void pointwise_multiply(frequency_buffer& lhs,const frequency_buffer& rhs){
     if(lhs.size()!=rhs.size())throw std::invalid_argument("eez::ntt998::pointwise_multiply: transform sizes differ");
     detail::pointwise_multiply(lhs.data_.data(),rhs.data_.data(),lhs.data_.size());
 }
+
 inline void pointwise_square(frequency_buffer& a){
     detail::pointwise_square(a.data_.data(),a.data_.size());
 }
+
 inline void inverse_to(frequency_buffer& src,std::span<mint> out){
     if(src.data_.empty()){
         if(!out.empty())throw std::invalid_argument("eez::ntt998::inverse_to: empty transform");
@@ -1641,6 +1841,42 @@ inline void inverse_to(frequency_buffer& src,std::span<mint> out){
     detail::inverse_dit(src.data_.data(),src.data_.size());
     std::copy_n(src.data_.begin(),out.size(),out.begin());
 }
+
 }
+
 #undef EEZ_NTT998_ALWAYS_INLINE
 #undef EEZ_NTT998_RESTRICT
+
+
+// Public streaming API preserving submission #393594's mixed-normal path.
+// read(): next coefficient in [0, mod); called for n values, then m values.
+// write(u32): receives n+m-1 canonical coefficients, or none for an empty input.
+// This API never exposes normal-representation data as ordinary modint values.
+namespace eez::ntt998{
+template<class Reader,class Writer>
+inline void convolution_normal_io(usize n,usize m,Reader&& read,Writer&& write){
+    if(std::min(n,m)<=naive_cutoff){
+        std::vector<mint> a(n),b(m);
+        for(auto& x:a)x=read();
+        for(auto& x:b)x=read();
+        const auto c=convolution(a,b);
+        for(const auto& x:c)write(x.get());
+        return;
+    }
+    const usize z=detail::checked_transform_size(n,m);
+    const usize result_size=n+m-1;
+    detail::aligned_uninitialized_buffer a(z),b(z);
+    mint* const first=n<m?b.data():a.data();
+    mint* const second=n<m?a.data():b.data();
+    for(usize i=0;i<n;++i)
+        std::construct_at(first+i,mint::montgomery_raw(read()));
+    for(usize i=0;i<m;++i)
+        std::construct_at(second+i,mint::montgomery_raw(read()));
+    const usize a_size=std::max(n,m),b_size=std::min(n,m);
+    std::uninitialized_value_construct_n(a.data()+a_size,z-a_size);
+    std::uninitialized_value_construct_n(b.data()+b_size,z-b_size);
+    detail::convert_to_montgomery(b.data(),(b_size+7)&~usize(7));
+    detail::convolution_adaptive_mixed_normal_inplace(a.data(),b.data(),z);
+    for(usize i=0;i<result_size;++i)write(a.data()[i].a);
+}
+}
