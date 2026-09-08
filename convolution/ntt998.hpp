@@ -277,6 +277,26 @@ EEZ_NTT998_ALWAYS_INLINE void transpose_4x8_to_8x4(vec x0,vec x1,vec x2,vec x3,v
 }
 #endif
 
+// Standalone forward NTT kernels use the tuned arithmetic helpers below.
+// Inverse NTT and convolution keep their original arithmetic.
+EEZ_NTT998_ALWAYS_INLINE vec ntt_add8(vec a,vec b) noexcept{
+    const vec x=_mm256_add_epi32(a,b);
+    return _mm256_min_epu32(x,_mm256_sub_epi32(x,broadcast(mod2)));
+}
+EEZ_NTT998_ALWAYS_INLINE vec ntt_sub8(vec a,vec b) noexcept{
+    const vec x=_mm256_sub_epi32(a,b);
+    return _mm256_min_epu32(x,_mm256_add_epi32(x,broadcast(mod2)));
+}
+EEZ_NTT998_ALWAYS_INLINE vec ntt_mul8(vec a,vec b) noexcept{
+    const vec ninv=broadcast(montgomery_ninv),prime=broadcast(mod);
+    const vec product_even=_mm256_mul_epu32(a,b);
+    const vec product_odd=_mm256_mul_epu32(_mm256_srli_epi64(a,32),_mm256_srli_epi64(b,32));
+    const vec q_even=_mm256_mul_epu32(product_even,ninv);
+    const vec q_odd=_mm256_mul_epu32(product_odd,ninv);
+    const vec reduced_even=_mm256_add_epi64(product_even,_mm256_mul_epu32(q_even,prime));
+    const vec reduced_odd=_mm256_add_epi64(product_odd,_mm256_mul_epu32(q_odd,prime));
+    return _mm256_or_si256(_mm256_srli_epi64(reduced_even,32),reduced_odd);
+}
 EEZ_NTT998_ALWAYS_INLINE void forward_butterfly(mint* b,usize stride,usize i,word r1,word r2,word r3) noexcept{
     const word x0=raw(b[i]),x1=mul(raw(b[stride+i]),r1),x2=mul(raw(b[2*stride+i]),r2),x3=mul(raw(b[3*stride+i]),r3);
     const word s02=add(x0,x2),d02=sub(x0,x2),s13=add(x1,x3),t=mul(sub(x1,x3),twiddles.root[2]);
@@ -341,12 +361,12 @@ inline void inverse_radix4_scalar(mint* EEZ_NTT998_RESTRICT a,usize blocks,usize
 EEZ_NTT998_ALWAYS_INLINE void forward_radix4_large_block(mint* EEZ_NTT998_RESTRICT b,usize stride,vec imag,word r1,word r2,word r3) noexcept{
     const vec w1=broadcast(r1),w2=broadcast(r2),w3=broadcast(r3);
     for(usize i=0;i<stride;i+=8){
-        const vec x0=load8(b+i),x1=mul8(load8(b+stride+i),w1),x2=mul8(load8(b+2*stride+i),w2),x3=mul8(load8(b+3*stride+i),w3);
-        const vec s02=add8(x0,x2),d02=sub8(x0,x2),s13=add8(x1,x3),t=mul8(sub8(x1,x3),imag);
-        store8(b+i,add8(s02,s13));
-        store8(b+stride+i,sub8(s02,s13));
-        store8(b+2*stride+i,add8(d02,t));
-        store8(b+3*stride+i,sub8(d02,t));
+        const vec x0=load8(b+i),x1=ntt_mul8(load8(b+stride+i),w1),x2=ntt_mul8(load8(b+2*stride+i),w2),x3=ntt_mul8(load8(b+3*stride+i),w3);
+        const vec s02=ntt_add8(x0,x2),d02=ntt_sub8(x0,x2),s13=ntt_add8(x1,x3),t=ntt_mul8(ntt_sub8(x1,x3),imag);
+        store8(b+i,ntt_add8(s02,s13));
+        store8(b+stride+i,ntt_sub8(s02,s13));
+        store8(b+2*stride+i,ntt_add8(d02,t));
+        store8(b+3*stride+i,ntt_sub8(d02,t));
     }
 }
 EEZ_NTT998_ALWAYS_INLINE void inverse_radix4_large_block(mint* EEZ_NTT998_RESTRICT b,usize stride,vec iimag,word r1,word r2,word r3) noexcept{
@@ -366,11 +386,11 @@ inline void forward_radix4_large(mint* EEZ_NTT998_RESTRICT a,usize blocks,usize 
         mint* const b=a;
         for(usize i=0;i<stride;i+=8){
             const vec x0=load8(b+i),x1=load8(b+stride+i),x2=load8(b+2*stride+i),x3=load8(b+3*stride+i);
-            const vec s02=add8(x0,x2),d02=sub8(x0,x2),s13=add8(x1,x3),t=mul8(sub8(x1,x3),imag);
-            store8(b+i,add8(s02,s13));
-            store8(b+stride+i,sub8(s02,s13));
-            store8(b+2*stride+i,add8(d02,t));
-            store8(b+3*stride+i,sub8(d02,t));
+            const vec s02=ntt_add8(x0,x2),d02=ntt_sub8(x0,x2),s13=ntt_add8(x1,x3),t=ntt_mul8(ntt_sub8(x1,x3),imag);
+            store8(b+i,ntt_add8(s02,s13));
+            store8(b+stride+i,ntt_sub8(s02,s13));
+            store8(b+2*stride+i,ntt_add8(d02,t));
+            store8(b+3*stride+i,ntt_sub8(d02,t));
         }
     }
     if(blocks==1)return;
@@ -383,7 +403,7 @@ inline void forward_radix4_large(mint* EEZ_NTT998_RESTRICT a,usize blocks,usize 
             if(s+lane+1<blocks)rot=mul(rot,forward_rate3(twiddle_index(static_cast<u32>(s+lane))));
         }
         const vec w1=_mm256_load_si256(reinterpret_cast<const vec*>(r1));
-        const vec w2=mul8(w1,w1),w3=mul8(w2,w1);
+        const vec w2=ntt_mul8(w1,w1),w3=ntt_mul8(w2,w1);
         _mm256_store_si256(reinterpret_cast<vec*>(r2),w2);
         _mm256_store_si256(reinterpret_cast<vec*>(r3),w3);
         for(unsigned lane=0;lane<8;++lane)forward_radix4_large_block(a+(s+lane)*4*stride,stride,imag,r1[lane],r2[lane],r3[lane]);
@@ -436,15 +456,15 @@ inline void forward_radix4_p4(mint* EEZ_NTT998_RESTRICT a,usize blocks) noexcept
         const word r10=rot;
         rot=mul(rot,forward_rate3(twiddle_index(static_cast<u32>(s))));
         const word r11=rot;
-        const vec w1=pack_four(r10,r11),w2=mul8(w1,w1),w3=mul8(w2,w1);
+        const vec w1=pack_four(r10,r11),w2=ntt_mul8(w1,w1),w3=ntt_mul8(w2,w1);
         mint* const b0=a+s*16;
         mint* const b1=b0+16;
-        const vec x0=load2x4(b0,b1),x1=mul8(load2x4(b0+4,b1+4),w1),x2=mul8(load2x4(b0+8,b1+8),w2),x3=mul8(load2x4(b0+12,b1+12),w3);
-        const vec s02=add8(x0,x2),d02=sub8(x0,x2),s13=add8(x1,x3),t=mul8(sub8(x1,x3),imag);
-        store2x4(b0,b1,add8(s02,s13));
-        store2x4(b0+4,b1+4,sub8(s02,s13));
-        store2x4(b0+8,b1+8,add8(d02,t));
-        store2x4(b0+12,b1+12,sub8(d02,t));
+        const vec x0=load2x4(b0,b1),x1=ntt_mul8(load2x4(b0+4,b1+4),w1),x2=ntt_mul8(load2x4(b0+8,b1+8),w2),x3=ntt_mul8(load2x4(b0+12,b1+12),w3);
+        const vec s02=ntt_add8(x0,x2),d02=ntt_sub8(x0,x2),s13=ntt_add8(x1,x3),t=ntt_mul8(ntt_sub8(x1,x3),imag);
+        store2x4(b0,b1,ntt_add8(s02,s13));
+        store2x4(b0+4,b1+4,ntt_sub8(s02,s13));
+        store2x4(b0+8,b1+8,ntt_add8(d02,t));
+        store2x4(b0+12,b1+12,ntt_sub8(d02,t));
         if(s+2<blocks)rot=mul(rot,forward_rate3(twiddle_index(static_cast<u32>(s+1))));
     }
 }
@@ -478,14 +498,14 @@ inline void forward_radix4_p1(mint* EEZ_NTT998_RESTRICT a,usize blocks) noexcept
             r1[lane]=rot;
             if(s+lane+1<blocks)rot=mul(rot,forward_rate3(twiddle_index(static_cast<u32>(s+lane))));
         }
-        const vec w1=_mm256_load_si256(reinterpret_cast<const vec*>(r1)),w2=mul8(w1,w1),w3=mul8(w2,w1);
+        const vec w1=_mm256_load_si256(reinterpret_cast<const vec*>(r1)),w2=ntt_mul8(w1,w1),w3=ntt_mul8(w2,w1);
         mint* const b=a+4*s;
         vec x0,x1,x2,x3;
         transpose_8x4_to_4x8(load8(b),load8(b+8),load8(b+16),load8(b+24),x0,x1,x2,x3);
-        x1=mul8(x1,w1);x2=mul8(x2,w2);x3=mul8(x3,w3);
-        const vec s02=add8(x0,x2),d02=sub8(x0,x2),s13=add8(x1,x3),t=mul8(sub8(x1,x3),imag);
+        x1=ntt_mul8(x1,w1);x2=ntt_mul8(x2,w2);x3=ntt_mul8(x3,w3);
+        const vec s02=ntt_add8(x0,x2),d02=ntt_sub8(x0,x2),s13=ntt_add8(x1,x3),t=ntt_mul8(ntt_sub8(x1,x3),imag);
         vec v0,v1,v2,v3;
-        transpose_4x8_to_8x4(add8(s02,s13),sub8(s02,s13),add8(d02,t),sub8(d02,t),v0,v1,v2,v3);
+        transpose_4x8_to_8x4(ntt_add8(s02,s13),ntt_sub8(s02,s13),ntt_add8(d02,t),ntt_sub8(d02,t),v0,v1,v2,v3);
         store8(b,v0);store8(b+8,v1);store8(b+16,v2);store8(b+24,v3);
     }
     for(;s<blocks;++s){
