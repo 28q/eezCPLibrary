@@ -1,29 +1,8 @@
 ---
 data:
   _extendedDependsOn: []
-  _extendedRequiredBy:
-  - icon: ':heavy_check_mark:'
-    path: convolution/ntt998.hpp
-    title: ntt998
-  - icon: ':heavy_check_mark:'
-    path: fps/detail/fps998_inv.hpp
-    title: fps/detail/fps998_inv.hpp
-  - icon: ':heavy_check_mark:'
-    path: fps/detail/fps998_inv_ntt.hpp
-    title: fps/detail/fps998_inv_ntt.hpp
-  - icon: ':heavy_check_mark:'
-    path: fps/fps998.hpp
-    title: fps/fps998.hpp
+  _extendedRequiredBy: []
   _extendedVerifiedWith:
-  - icon: ':heavy_check_mark:'
-    path: verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp
-    title: verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp
-  - icon: ':heavy_check_mark:'
-    path: verify/verify-yosupo-convolution/yosupo-convolution-mod-ntt998.test.cpp
-    title: verify/verify-yosupo-convolution/yosupo-convolution-mod-ntt998.test.cpp
-  - icon: ':heavy_check_mark:'
-    path: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
-    title: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
   - icon: ':heavy_check_mark:'
     path: verify/verify-yosupo-math/yosupo-aplusb-modint998.test.cpp
     title: verify/verify-yosupo-math/yosupo-aplusb-modint998.test.cpp
@@ -238,18 +217,11 @@ data:
   dependsOn: []
   isVerificationFile: false
   path: math/modint998.hpp
-  requiredBy:
-  - convolution/ntt998.hpp
-  - fps/fps998.hpp
-  - fps/detail/fps998_inv.hpp
-  - fps/detail/fps998_inv_ntt.hpp
+  requiredBy: []
   timestamp: '2026-08-15 14:35:57+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - verify/verify-yosupo-math/yosupo-aplusb-modint998.test.cpp
-  - verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
-  - verify/verify-yosupo-convolution/yosupo-convolution-mod-ntt998.test.cpp
-  - verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp
 documentation_of: math/modint998.hpp
 layout: document
 title: modint998

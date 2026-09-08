@@ -11,7 +11,7 @@ data:
       title: fastio_unsafe
   - name: convolution
     pages:
-    - icon: ':heavy_check_mark:'
+    - icon: ':warning:'
       path: convolution/ntt998.hpp
       title: ntt998
   - name: data-structure
@@ -21,15 +21,15 @@ data:
       title: UnionFind
   - name: fps/detail
     pages:
-    - icon: ':heavy_check_mark:'
+    - icon: ':warning:'
       path: fps/detail/fps998_inv.hpp
       title: fps/detail/fps998_inv.hpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':warning:'
       path: fps/detail/fps998_inv_ntt.hpp
       title: fps/detail/fps998_inv_ntt.hpp
   - name: fps
     pages:
-    - icon: ':heavy_check_mark:'
+    - icon: ':warning:'
       path: fps/fps998.hpp
       title: fps/fps998.hpp
   - name: math
@@ -45,10 +45,10 @@ data:
       title: example.test.cpp
   - name: verify/verify-yosupo-convolution
     pages:
-    - icon: ':heavy_check_mark:'
+    - icon: ':x:'
       path: verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp
       title: verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':x:'
       path: verify/verify-yosupo-convolution/yosupo-convolution-mod-ntt998.test.cpp
       title: verify/verify-yosupo-convolution/yosupo-convolution-mod-ntt998.test.cpp
   - name: verify/verify-yosupo-ds
@@ -58,7 +58,7 @@ data:
       title: verify/verify-yosupo-ds/yosupo-unionfind.test.cpp
   - name: verify/verify-yosupo-fps
     pages:
-    - icon: ':heavy_check_mark:'
+    - icon: ':x:'
       path: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
       title: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
   - name: verify/verify-yosupo-io
