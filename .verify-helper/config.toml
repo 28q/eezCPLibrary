@@ -1,3 +1,11 @@
 [[languages.cpp.environments]]
 CXX = "g++"
-CXXFLAGS = ["-std=gnu++23"]
+CXXFLAGS = [
+    "-std=gnu++23",
+    "-O2",
+    "-mavx2",
+    "-mbmi",
+    "-mbmi2",
+    "-mlzcnt",
+    "-mpopcnt",
+]
