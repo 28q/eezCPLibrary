@@ -1,12 +1,28 @@
 ---
 data:
-  _extendedDependsOn: []
+  _extendedDependsOn:
+  - icon: ':heavy_check_mark:'
+    path: convolution/ntt998.hpp
+    title: ntt998
+  - icon: ':heavy_check_mark:'
+    path: fps/detail/fps998_inv.hpp
+    title: fps/detail/fps998_inv.hpp
+  - icon: ':heavy_check_mark:'
+    path: fps/detail/fps998_inv_ntt.hpp
+    title: fps/detail/fps998_inv_ntt.hpp
+  - icon: ':heavy_check_mark:'
+    path: fps/fps998.hpp
+    title: fps/fps998.hpp
   _extendedRequiredBy: []
   _extendedVerifiedWith: []
-  _isVerificationFailed: true
+  _isVerificationFailed: false
   _pathExtension: cpp
-  _verificationStatusIcon: ':x:'
-  attributes: {}
+  _verificationStatusIcon: ':heavy_check_mark:'
+  attributes:
+    '*NOT_SPECIAL_COMMENTS*': ''
+    PROBLEM: https://judge.yosupo.jp/problem/inv_of_formal_power_series
+    links:
+    - https://judge.yosupo.jp/problem/inv_of_formal_power_series
   bundledCode: "#line 1 \"verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp\"\
     \n#define PROBLEM \"https://judge.yosupo.jp/problem/inv_of_formal_power_series\"\
     \n\n#include <iostream>\n#include <vector>\n\n#line 2 \"fps/fps998.hpp\"\n\n#include\
@@ -1059,12 +1075,16 @@ data:
     \    std::vector<mint> f(n);\n    for(auto& x:f) std::cin>>x;\n\n    const auto\
     \ g=eez::fps998::inv(f);\n\n    for(std::size_t i=0;i<n;++i){\n        if(i) std::cout<<'\
     \ ';\n        std::cout<<g[i];\n    }\n    std::cout<<'\\n';\n}\n"
-  dependsOn: []
+  dependsOn:
+  - fps/fps998.hpp
+  - fps/detail/fps998_inv.hpp
+  - fps/detail/fps998_inv_ntt.hpp
+  - convolution/ntt998.hpp
   isVerificationFile: true
   path: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
   requiredBy: []
-  timestamp: '1970-01-01 00:00:00+00:00'
-  verificationStatus: TEST_WRONG_ANSWER
+  timestamp: '2026-09-08 14:12:33+09:00'
+  verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
 layout: document

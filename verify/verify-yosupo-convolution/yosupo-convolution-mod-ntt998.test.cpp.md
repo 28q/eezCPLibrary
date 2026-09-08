@@ -1,12 +1,19 @@
 ---
 data:
-  _extendedDependsOn: []
+  _extendedDependsOn:
+  - icon: ':heavy_check_mark:'
+    path: convolution/ntt998.hpp
+    title: ntt998
   _extendedRequiredBy: []
   _extendedVerifiedWith: []
-  _isVerificationFailed: true
+  _isVerificationFailed: false
   _pathExtension: cpp
-  _verificationStatusIcon: ':x:'
-  attributes: {}
+  _verificationStatusIcon: ':heavy_check_mark:'
+  attributes:
+    '*NOT_SPECIAL_COMMENTS*': ''
+    PROBLEM: https://judge.yosupo.jp/problem/convolution_mod
+    links:
+    - https://judge.yosupo.jp/problem/convolution_mod
   bundledCode: "#line 1 \"verify/verify-yosupo-convolution/yosupo-convolution-mod-ntt998.test.cpp\"\
     \n#define PROBLEM \"https://judge.yosupo.jp/problem/convolution_mod\"\n\n#include\
     \ <iostream>\n#include <vector>\n\n#line 2 \"convolution/ntt998.hpp\"\n#if !defined(__AVX2__)\
@@ -907,12 +914,13 @@ data:
     \  for(auto& x : b) std::cin >> x;\n\n    const auto c = eez::ntt998::convolution(a,\
     \ b);\n\n    for(std::size_t i = 0; i < c.size(); ++i){\n        if(i) std::cout\
     \ << ' ';\n        std::cout << c[i];\n    }\n    std::cout << '\\n';\n}\n"
-  dependsOn: []
+  dependsOn:
+  - convolution/ntt998.hpp
   isVerificationFile: true
   path: verify/verify-yosupo-convolution/yosupo-convolution-mod-ntt998.test.cpp
   requiredBy: []
-  timestamp: '1970-01-01 00:00:00+00:00'
-  verificationStatus: TEST_WRONG_ANSWER
+  timestamp: '2026-09-08 14:12:33+09:00'
+  verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: verify/verify-yosupo-convolution/yosupo-convolution-mod-ntt998.test.cpp
 layout: document

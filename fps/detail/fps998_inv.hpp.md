@@ -1,11 +1,23 @@
 ---
 data:
-  _extendedDependsOn: []
-  _extendedRequiredBy: []
-  _extendedVerifiedWith: []
+  _extendedDependsOn:
+  - icon: ':heavy_check_mark:'
+    path: convolution/ntt998.hpp
+    title: ntt998
+  - icon: ':heavy_check_mark:'
+    path: fps/detail/fps998_inv_ntt.hpp
+    title: fps/detail/fps998_inv_ntt.hpp
+  _extendedRequiredBy:
+  - icon: ':heavy_check_mark:'
+    path: fps/fps998.hpp
+    title: fps/fps998.hpp
+  _extendedVerifiedWith:
+  - icon: ':heavy_check_mark:'
+    path: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
+    title: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
   _isVerificationFailed: false
   _pathExtension: hpp
-  _verificationStatusIcon: ':warning:'
+  _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
     links: []
   bundledCode: "#line 2 \"fps/detail/fps998_inv.hpp\"\n#include <algorithm>\n#include\
@@ -1047,13 +1059,17 @@ data:
     \ || defined(__i386__))\n#pragma clang attribute pop\n#elif defined(__GNUC__)\
     \ && !defined(__clang__) && (defined(__x86_64__) || defined(__i386__))\n#pragma\
     \ GCC pop_options\n#endif\n"
-  dependsOn: []
+  dependsOn:
+  - fps/detail/fps998_inv_ntt.hpp
+  - convolution/ntt998.hpp
   isVerificationFile: false
   path: fps/detail/fps998_inv.hpp
-  requiredBy: []
-  timestamp: '1970-01-01 00:00:00+00:00'
-  verificationStatus: LIBRARY_NO_TESTS
-  verifiedWith: []
+  requiredBy:
+  - fps/fps998.hpp
+  timestamp: '2026-09-08 14:12:33+09:00'
+  verificationStatus: LIBRARY_ALL_AC
+  verifiedWith:
+  - verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
 documentation_of: fps/detail/fps998_inv.hpp
 layout: document
 redirect_from:

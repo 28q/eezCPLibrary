@@ -1,12 +1,22 @@
 ---
 data:
-  _extendedDependsOn: []
+  _extendedDependsOn:
+  - icon: ':heavy_check_mark:'
+    path: IO/fastio_unsafe.hpp
+    title: fastio_unsafe
+  - icon: ':heavy_check_mark:'
+    path: convolution/ntt998.hpp
+    title: ntt998
   _extendedRequiredBy: []
   _extendedVerifiedWith: []
-  _isVerificationFailed: true
+  _isVerificationFailed: false
   _pathExtension: cpp
-  _verificationStatusIcon: ':x:'
-  attributes: {}
+  _verificationStatusIcon: ':heavy_check_mark:'
+  attributes:
+    '*NOT_SPECIAL_COMMENTS*': ''
+    PROBLEM: https://judge.yosupo.jp/problem/convolution_mod_large
+    links:
+    - https://judge.yosupo.jp/problem/convolution_mod_large
   bundledCode: "#line 1 \"verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp\"\
     \n#define PROBLEM \"https://judge.yosupo.jp/problem/convolution_mod_large\"\n\n\
     #ifndef FASTIO_UNSAFE_BLOCK_LOG\n#define FASTIO_UNSAFE_BLOCK_LOG 12\n#endif\n\n\
@@ -1184,12 +1194,14 @@ data:
     \ output_end, value);\n        }\n    );\n\n    io.finish(output_cursor);\n  \
     \  return 0;\n}\n\n#if defined(__clang__) && \\\n    (defined(__x86_64__) || defined(__i386__))\n\
     #pragma clang attribute pop\n#endif\n"
-  dependsOn: []
+  dependsOn:
+  - convolution/ntt998.hpp
+  - IO/fastio_unsafe.hpp
   isVerificationFile: true
   path: verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp
   requiredBy: []
-  timestamp: '1970-01-01 00:00:00+00:00'
-  verificationStatus: TEST_WRONG_ANSWER
+  timestamp: '2026-09-08 14:21:35+09:00'
+  verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp
 layout: document
