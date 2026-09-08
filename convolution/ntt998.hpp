@@ -1131,7 +1131,7 @@ EEZ_NTT998_ALWAYS_INLINE void forward_radix4_block_pair_lazy(mint* EEZ_NTT998_RE
     forward_radix4_block_lazy<trivial_twiddle,convert_input>(b,stride,r1);
 }
 
-template<bool trivial_twiddle,bool apply_scale,bool convert_output=false,bool direct_output=false>
+template<bool trivial_twiddle,bool apply_scale,bool convert_output=false,bool direct_output=false,bool shrink_output=false>
 inline void inverse_radix4_block_lazy(mint* b,usize stride,word r1,word scale) noexcept{
     const word iimag=canonicalize(twiddles.iroot[2]);
     const vec viimag=broadcast(iimag);
@@ -1188,6 +1188,13 @@ inline void inverse_radix4_block_lazy(mint* b,usize stride,word r1,word scale) n
             y1=canonicalize8(shrink4_to_2(y1));
             y2=canonicalize8(shrink4_to_2(y2));
             y3=canonicalize8(shrink4_to_2(y3));
+        }else if constexpr(shrink_output && !apply_scale){
+            // Only the final stage must expose Montgomery values in [0, 2p).
+            // apply_scale already reduces each product to this range.
+            y0=shrink4_to_2(y0);
+            y1=shrink4_to_2(y1);
+            y2=shrink4_to_2(y2);
+            y3=shrink4_to_2(y3);
         }
         store8_aligned(b+i,y0);
         store8_aligned(b+stride+i,y1);
@@ -1274,15 +1281,15 @@ inline void forward_cache_pair_dfs(mint* EEZ_NTT998_RESTRICT a,mint* EEZ_NTT998_
     for(usize child=0;child<4;++child)forward_cache_pair_dfs<false>(a+child*child_size,b+child*child_size,child_size,leaf_size,layer+1,block*4+child,blocks_at_layer*4,rotation);
 }
 
-template<bool apply_scale,bool convert_output=false,bool direct_output=false>
+template<bool apply_scale,bool convert_output=false,bool direct_output=false,bool shrink_output=false>
 EEZ_NTT998_ALWAYS_INLINE void inverse_cache_node(mint* EEZ_NTT998_RESTRICT base,usize block_size,unsigned layer,usize block,usize blocks_at_layer,word scale,std::array<word,max_log/2+1>& rotation) noexcept{
     const usize stride=block_size>>2;
-    if(block==0)inverse_radix4_block_lazy<true,apply_scale,convert_output,direct_output>(base,stride,montgomery_one,scale);
-    else inverse_radix4_block_lazy<false,apply_scale,convert_output,direct_output>(base,stride,rotation[layer],scale);
+    if(block==0)inverse_radix4_block_lazy<true,apply_scale,convert_output,direct_output,shrink_output>(base,stride,montgomery_one,scale);
+    else inverse_radix4_block_lazy<false,apply_scale,convert_output,direct_output,shrink_output>(base,stride,rotation[layer],scale);
     if(block+1<blocks_at_layer)rotation[layer]=canonicalize(mul(rotation[layer],inverse_rate3(twiddle_index(static_cast<u32>(block)))));
 }
 
-template<bool scale_leaf,bool convert_output=false,bool direct_output=false>
+template<bool scale_leaf,bool convert_output=false,bool direct_output=false,bool shrink_output=false>
 inline void inverse_cache_block(mint* EEZ_NTT998_RESTRICT base,usize block_size,unsigned layer,usize block,usize blocks_at_layer,word scale,std::array<word,max_log/2+1>& rotation) noexcept{
     const usize child_size=block_size>>2;
     const usize gsize=child_size>>2;
@@ -1292,13 +1299,13 @@ inline void inverse_cache_block(mint* EEZ_NTT998_RESTRICT base,usize block_size,
         for(usize g=0;g<4;++g)inverse_cache_node<scale_leaf>(p+g*gsize,gsize,layer+2,cb*4+g,blocks_at_layer*16,scale,rotation);
         inverse_cache_node<false>(p,child_size,layer+1,cb,blocks_at_layer*4,scale,rotation);
     }
-    inverse_cache_node<false,convert_output,direct_output>(base,block_size,layer,block,blocks_at_layer,scale,rotation);
+    inverse_cache_node<false,convert_output,direct_output,shrink_output>(base,block_size,layer,block,blocks_at_layer,scale,rotation);
 }
 
-template<bool scale_leaf,bool convert_output=false,bool direct_output=false>
+template<bool scale_leaf,bool convert_output=false,bool direct_output=false,bool shrink_output=false>
 inline void inverse_cache_dfs(mint* EEZ_NTT998_RESTRICT base,usize block_size,usize leaf_size,unsigned layer,usize block,usize blocks_at_layer,word scale,std::array<word,max_log/2+1>& rotation) noexcept{
     if(block_size==leaf_size*64){
-        inverse_cache_block<scale_leaf,convert_output,direct_output>(base,block_size,layer,block,blocks_at_layer,scale,rotation);
+        inverse_cache_block<scale_leaf,convert_output,direct_output,shrink_output>(base,block_size,layer,block,blocks_at_layer,scale,rotation);
         return;
     }
     const usize child_size=block_size>>2;
@@ -1308,12 +1315,12 @@ inline void inverse_cache_dfs(mint* EEZ_NTT998_RESTRICT base,usize block_size,us
     const usize stride=block_size>>2;
     if constexpr(scale_leaf){
         if(child_size==leaf_size){
-            if(block==0)inverse_radix4_block_lazy<true,true,convert_output,direct_output>(base,stride,montgomery_one,scale);
-            else inverse_radix4_block_lazy<false,true,convert_output,direct_output>(base,stride,rotation[layer],scale);
-        }else if(block==0)inverse_radix4_block_lazy<true,false,convert_output,direct_output>(base,stride,montgomery_one,scale);
-        else inverse_radix4_block_lazy<false,false,convert_output,direct_output>(base,stride,rotation[layer],scale);
-    }else if(block==0)inverse_radix4_block_lazy<true,false,convert_output,direct_output>(base,stride,montgomery_one,scale);
-    else inverse_radix4_block_lazy<false,false,convert_output,direct_output>(base,stride,rotation[layer],scale);
+            if(block==0)inverse_radix4_block_lazy<true,true,convert_output,direct_output,shrink_output>(base,stride,montgomery_one,scale);
+            else inverse_radix4_block_lazy<false,true,convert_output,direct_output,shrink_output>(base,stride,rotation[layer],scale);
+        }else if(block==0)inverse_radix4_block_lazy<true,false,convert_output,direct_output,shrink_output>(base,stride,montgomery_one,scale);
+        else inverse_radix4_block_lazy<false,false,convert_output,direct_output,shrink_output>(base,stride,rotation[layer],scale);
+    }else if(block==0)inverse_radix4_block_lazy<true,false,convert_output,direct_output,shrink_output>(base,stride,montgomery_one,scale);
+    else inverse_radix4_block_lazy<false,false,convert_output,direct_output,shrink_output>(base,stride,rotation[layer],scale);
     if(block+1<blocks_at_layer)rotation[layer]=canonicalize(mul(rotation[layer],inverse_rate3(twiddle_index(static_cast<u32>(block)))));
 }
 
@@ -1402,13 +1409,16 @@ inline void inverse_adaptive(mint* a,usize n,unsigned leaf_log) noexcept{
             }else if constexpr(direct_output){
                 z0=canonicalize8(shrink4_to_2(z0));
                 z1=canonicalize8(shrink4_to_2(z1));
+            }else{
+                z0=shrink4_to_2(z0);
+                z1=shrink4_to_2(z1);
             }
             store8_aligned(a+i,z0);
             store8_aligned(a+half+i,z1);
         }
         return;
     }
-    inverse_cache_dfs<true,convert_output,direct_output>(a,n,leaf_size,0,0,1,scale,rotation);
+    inverse_cache_dfs<true,convert_output,direct_output,true>(a,n,leaf_size,0,0,1,scale,rotation);
 }
 
 EEZ_NTT998_ALWAYS_INLINE __m128i reduce_four_accumulators(vec x) noexcept{
