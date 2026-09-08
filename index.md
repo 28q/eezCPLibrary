@@ -11,7 +11,7 @@ data:
       title: fastio_unsafe
   - name: convolution
     pages:
-    - icon: ':question:'
+    - icon: ':heavy_check_mark:'
       path: convolution/ntt998.hpp
       title: ntt998
   - name: data-structure
@@ -21,7 +21,7 @@ data:
       title: UnionFind
   - name: fps
     pages:
-    - icon: ':x:'
+    - icon: ':heavy_check_mark:'
       path: fps/BostanMori.hpp
       title: fps/BostanMori.hpp
     - icon: ':heavy_check_mark:'
@@ -64,7 +64,7 @@ data:
     - icon: ':heavy_check_mark:'
       path: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
       title: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
-    - icon: ':x:'
+    - icon: ':heavy_check_mark:'
       path: verify/verify-yosupo-fps/yosupo-kth-term-of-linearly-recurrent-sequence-BostanMori.test.cpp
       title: verify/verify-yosupo-fps/yosupo-kth-term-of-linearly-recurrent-sequence-BostanMori.test.cpp
   - name: verify/verify-yosupo-io
