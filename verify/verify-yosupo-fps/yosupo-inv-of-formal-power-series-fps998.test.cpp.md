@@ -283,8 +283,21 @@ data:
     \n    v1=_mm256_castps_si256(_mm256_shuffle_ps(_mm256_castsi256_ps(t0),_mm256_castsi256_ps(t1),_MM_SHUFFLE(3,1,3,1)));\r\
     \n    v2=_mm256_castps_si256(_mm256_shuffle_ps(_mm256_castsi256_ps(t2),_mm256_castsi256_ps(t3),_MM_SHUFFLE(2,0,2,0)));\r\
     \n    v3=_mm256_castps_si256(_mm256_shuffle_ps(_mm256_castsi256_ps(t2),_mm256_castsi256_ps(t3),_MM_SHUFFLE(3,1,3,1)));\r\
-    \n}\r\n#endif\r\n\r\nEEZ_NTT998_ALWAYS_INLINE void forward_butterfly(mint* b,usize\
-    \ stride,usize i,word r1,word r2,word r3) noexcept{\r\n    const word x0=raw(b[i]),x1=mul(raw(b[stride+i]),r1),x2=mul(raw(b[2*stride+i]),r2),x3=mul(raw(b[3*stride+i]),r3);\r\
+    \n}\r\n#endif\r\n\r\n// Standalone forward NTT kernels use the tuned arithmetic\
+    \ helpers below.\r\n// Inverse NTT and convolution keep their original arithmetic.\r\
+    \nEEZ_NTT998_ALWAYS_INLINE vec ntt_add8(vec a,vec b) noexcept{\r\n    const vec\
+    \ x=_mm256_add_epi32(a,b);\r\n    return _mm256_min_epu32(x,_mm256_sub_epi32(x,broadcast(mod2)));\r\
+    \n}\r\nEEZ_NTT998_ALWAYS_INLINE vec ntt_sub8(vec a,vec b) noexcept{\r\n    const\
+    \ vec x=_mm256_sub_epi32(a,b);\r\n    return _mm256_min_epu32(x,_mm256_add_epi32(x,broadcast(mod2)));\r\
+    \n}\r\nEEZ_NTT998_ALWAYS_INLINE vec ntt_mul8(vec a,vec b) noexcept{\r\n    const\
+    \ vec ninv=broadcast(montgomery_ninv),prime=broadcast(mod);\r\n    const vec product_even=_mm256_mul_epu32(a,b);\r\
+    \n    const vec product_odd=_mm256_mul_epu32(_mm256_srli_epi64(a,32),_mm256_srli_epi64(b,32));\r\
+    \n    const vec q_even=_mm256_mul_epu32(product_even,ninv);\r\n    const vec q_odd=_mm256_mul_epu32(product_odd,ninv);\r\
+    \n    const vec reduced_even=_mm256_add_epi64(product_even,_mm256_mul_epu32(q_even,prime));\r\
+    \n    const vec reduced_odd=_mm256_add_epi64(product_odd,_mm256_mul_epu32(q_odd,prime));\r\
+    \n    return _mm256_or_si256(_mm256_srli_epi64(reduced_even,32),reduced_odd);\r\
+    \n}\r\nEEZ_NTT998_ALWAYS_INLINE void forward_butterfly(mint* b,usize stride,usize\
+    \ i,word r1,word r2,word r3) noexcept{\r\n    const word x0=raw(b[i]),x1=mul(raw(b[stride+i]),r1),x2=mul(raw(b[2*stride+i]),r2),x3=mul(raw(b[3*stride+i]),r3);\r\
     \n    const word s02=add(x0,x2),d02=sub(x0,x2),s13=add(x1,x3),t=mul(sub(x1,x3),twiddles.root[2]);\r\
     \n    b[i]=from_raw(add(s02,s13));\r\n    b[stride+i]=from_raw(sub(s02,s13));\r\
     \n    b[2*stride+i]=from_raw(add(d02,t));\r\n    b[3*stride+i]=from_raw(sub(d02,t));\r\
@@ -316,10 +329,10 @@ data:
     \n    }\r\n}\r\n\r\n#if EEZ_NTT998_USE_AVX2\r\nEEZ_NTT998_ALWAYS_INLINE void forward_radix4_large_block(mint*\
     \ EEZ_NTT998_RESTRICT b,usize stride,vec imag,word r1,word r2,word r3) noexcept{\r\
     \n    const vec w1=broadcast(r1),w2=broadcast(r2),w3=broadcast(r3);\r\n    for(usize\
-    \ i=0;i<stride;i+=8){\r\n        const vec x0=load8(b+i),x1=mul8(load8(b+stride+i),w1),x2=mul8(load8(b+2*stride+i),w2),x3=mul8(load8(b+3*stride+i),w3);\r\
-    \n        const vec s02=add8(x0,x2),d02=sub8(x0,x2),s13=add8(x1,x3),t=mul8(sub8(x1,x3),imag);\r\
-    \n        store8(b+i,add8(s02,s13));\r\n        store8(b+stride+i,sub8(s02,s13));\r\
-    \n        store8(b+2*stride+i,add8(d02,t));\r\n        store8(b+3*stride+i,sub8(d02,t));\r\
+    \ i=0;i<stride;i+=8){\r\n        const vec x0=load8(b+i),x1=ntt_mul8(load8(b+stride+i),w1),x2=ntt_mul8(load8(b+2*stride+i),w2),x3=ntt_mul8(load8(b+3*stride+i),w3);\r\
+    \n        const vec s02=ntt_add8(x0,x2),d02=ntt_sub8(x0,x2),s13=ntt_add8(x1,x3),t=ntt_mul8(ntt_sub8(x1,x3),imag);\r\
+    \n        store8(b+i,ntt_add8(s02,s13));\r\n        store8(b+stride+i,ntt_sub8(s02,s13));\r\
+    \n        store8(b+2*stride+i,ntt_add8(d02,t));\r\n        store8(b+3*stride+i,ntt_sub8(d02,t));\r\
     \n    }\r\n}\r\nEEZ_NTT998_ALWAYS_INLINE void inverse_radix4_large_block(mint*\
     \ EEZ_NTT998_RESTRICT b,usize stride,vec iimag,word r1,word r2,word r3) noexcept{\r\
     \n    const vec w1=broadcast(r1),w2=broadcast(r2),w3=broadcast(r3);\r\n    for(usize\
@@ -331,15 +344,15 @@ data:
     \ blocks,usize stride) noexcept{\r\n    const vec imag=broadcast(twiddles.root[2]);\r\
     \n    {\r\n        mint* const b=a;\r\n        for(usize i=0;i<stride;i+=8){\r\
     \n            const vec x0=load8(b+i),x1=load8(b+stride+i),x2=load8(b+2*stride+i),x3=load8(b+3*stride+i);\r\
-    \n            const vec s02=add8(x0,x2),d02=sub8(x0,x2),s13=add8(x1,x3),t=mul8(sub8(x1,x3),imag);\r\
-    \n            store8(b+i,add8(s02,s13));\r\n            store8(b+stride+i,sub8(s02,s13));\r\
-    \n            store8(b+2*stride+i,add8(d02,t));\r\n            store8(b+3*stride+i,sub8(d02,t));\r\
+    \n            const vec s02=ntt_add8(x0,x2),d02=ntt_sub8(x0,x2),s13=ntt_add8(x1,x3),t=ntt_mul8(ntt_sub8(x1,x3),imag);\r\
+    \n            store8(b+i,ntt_add8(s02,s13));\r\n            store8(b+stride+i,ntt_sub8(s02,s13));\r\
+    \n            store8(b+2*stride+i,ntt_add8(d02,t));\r\n            store8(b+3*stride+i,ntt_sub8(d02,t));\r\
     \n        }\r\n    }\r\n    if(blocks==1)return;\r\n    word rot=forward_rate3(0);\r\
     \n    usize s=1;\r\n    for(;s+8<=blocks;s+=8){\r\n        alignas(32) word r1[8],r2[8],r3[8];\r\
     \n        for(unsigned lane=0;lane<8;++lane){\r\n            r1[lane]=rot;\r\n\
     \            if(s+lane+1<blocks)rot=mul(rot,forward_rate3(twiddle_index(static_cast<u32>(s+lane))));\r\
     \n        }\r\n        const vec w1=_mm256_load_si256(reinterpret_cast<const vec*>(r1));\r\
-    \n        const vec w2=mul8(w1,w1),w3=mul8(w2,w1);\r\n        _mm256_store_si256(reinterpret_cast<vec*>(r2),w2);\r\
+    \n        const vec w2=ntt_mul8(w1,w1),w3=ntt_mul8(w2,w1);\r\n        _mm256_store_si256(reinterpret_cast<vec*>(r2),w2);\r\
     \n        _mm256_store_si256(reinterpret_cast<vec*>(r3),w3);\r\n        for(unsigned\
     \ lane=0;lane<8;++lane)forward_radix4_large_block(a+(s+lane)*4*stride,stride,imag,r1[lane],r2[lane],r3[lane]);\r\
     \n    }\r\n    for(;s<blocks;++s){\r\n        const word rot2=mul(rot,rot),rot3=mul(rot2,rot);\r\
@@ -368,12 +381,12 @@ data:
     \n    const vec imag=broadcast(twiddles.root[2]);\r\n    word rot=montgomery_one;\r\
     \n    for(usize s=0;s<blocks;s+=2){\r\n        const word r10=rot;\r\n       \
     \ rot=mul(rot,forward_rate3(twiddle_index(static_cast<u32>(s))));\r\n        const\
-    \ word r11=rot;\r\n        const vec w1=pack_four(r10,r11),w2=mul8(w1,w1),w3=mul8(w2,w1);\r\
+    \ word r11=rot;\r\n        const vec w1=pack_four(r10,r11),w2=ntt_mul8(w1,w1),w3=ntt_mul8(w2,w1);\r\
     \n        mint* const b0=a+s*16;\r\n        mint* const b1=b0+16;\r\n        const\
-    \ vec x0=load2x4(b0,b1),x1=mul8(load2x4(b0+4,b1+4),w1),x2=mul8(load2x4(b0+8,b1+8),w2),x3=mul8(load2x4(b0+12,b1+12),w3);\r\
-    \n        const vec s02=add8(x0,x2),d02=sub8(x0,x2),s13=add8(x1,x3),t=mul8(sub8(x1,x3),imag);\r\
-    \n        store2x4(b0,b1,add8(s02,s13));\r\n        store2x4(b0+4,b1+4,sub8(s02,s13));\r\
-    \n        store2x4(b0+8,b1+8,add8(d02,t));\r\n        store2x4(b0+12,b1+12,sub8(d02,t));\r\
+    \ vec x0=load2x4(b0,b1),x1=ntt_mul8(load2x4(b0+4,b1+4),w1),x2=ntt_mul8(load2x4(b0+8,b1+8),w2),x3=ntt_mul8(load2x4(b0+12,b1+12),w3);\r\
+    \n        const vec s02=ntt_add8(x0,x2),d02=ntt_sub8(x0,x2),s13=ntt_add8(x1,x3),t=ntt_mul8(ntt_sub8(x1,x3),imag);\r\
+    \n        store2x4(b0,b1,ntt_add8(s02,s13));\r\n        store2x4(b0+4,b1+4,ntt_sub8(s02,s13));\r\
+    \n        store2x4(b0+8,b1+8,ntt_add8(d02,t));\r\n        store2x4(b0+12,b1+12,ntt_sub8(d02,t));\r\
     \n        if(s+2<blocks)rot=mul(rot,forward_rate3(twiddle_index(static_cast<u32>(s+1))));\r\
     \n    }\r\n}\r\ninline void inverse_radix4_p4(mint* EEZ_NTT998_RESTRICT a,usize\
     \ blocks) noexcept{\r\n    if(blocks<2){inverse_radix4_scalar(a,blocks,4);return;}\r\
@@ -392,10 +405,11 @@ data:
     \ word rot=montgomery_one;\r\n    usize s=0;\r\n    for(;s+8<=blocks;s+=8){\r\n\
     \        alignas(32) word r1[8];\r\n        for(unsigned lane=0;lane<8;++lane){\r\
     \n            r1[lane]=rot;\r\n            if(s+lane+1<blocks)rot=mul(rot,forward_rate3(twiddle_index(static_cast<u32>(s+lane))));\r\
-    \n        }\r\n        const vec w1=_mm256_load_si256(reinterpret_cast<const vec*>(r1)),w2=mul8(w1,w1),w3=mul8(w2,w1);\r\
+    \n        }\r\n        const vec w1=_mm256_load_si256(reinterpret_cast<const vec*>(r1)),w2=ntt_mul8(w1,w1),w3=ntt_mul8(w2,w1);\r\
     \n        mint* const b=a+4*s;\r\n        vec x0,x1,x2,x3;\r\n        transpose_8x4_to_4x8(load8(b),load8(b+8),load8(b+16),load8(b+24),x0,x1,x2,x3);\r\
-    \n        x1=mul8(x1,w1);x2=mul8(x2,w2);x3=mul8(x3,w3);\r\n        const vec s02=add8(x0,x2),d02=sub8(x0,x2),s13=add8(x1,x3),t=mul8(sub8(x1,x3),imag);\r\
-    \n        vec v0,v1,v2,v3;\r\n        transpose_4x8_to_8x4(add8(s02,s13),sub8(s02,s13),add8(d02,t),sub8(d02,t),v0,v1,v2,v3);\r\
+    \n        x1=ntt_mul8(x1,w1);x2=ntt_mul8(x2,w2);x3=ntt_mul8(x3,w3);\r\n      \
+    \  const vec s02=ntt_add8(x0,x2),d02=ntt_sub8(x0,x2),s13=ntt_add8(x1,x3),t=ntt_mul8(ntt_sub8(x1,x3),imag);\r\
+    \n        vec v0,v1,v2,v3;\r\n        transpose_4x8_to_8x4(ntt_add8(s02,s13),ntt_sub8(s02,s13),ntt_add8(d02,t),ntt_sub8(d02,t),v0,v1,v2,v3);\r\
     \n        store8(b,v0);store8(b+8,v1);store8(b+16,v2);store8(b+24,v3);\r\n   \
     \ }\r\n    for(;s<blocks;++s){\r\n        const word rot2=mul(rot,rot),rot3=mul(rot2,rot);\r\
     \n        forward_butterfly(a+4*s,1,0,rot,rot2,rot3);\r\n        if(s+1<blocks)rot=mul(rot,forward_rate3(twiddle_index(static_cast<u32>(s))));\r\
@@ -989,7 +1003,7 @@ data:
   isVerificationFile: true
   path: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
   requiredBy: []
-  timestamp: '2026-09-07 13:57:00+09:00'
+  timestamp: '2026-09-08 12:42:25+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: verify/verify-yosupo-fps/yosupo-inv-of-formal-power-series-fps998.test.cpp
