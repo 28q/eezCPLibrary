@@ -10,9 +10,9 @@ data:
   bundledCode: "#line 1 \"verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp\"\
     \n#define PROBLEM \"https://judge.yosupo.jp/problem/convolution_mod_large\"\n\n\
     #ifndef FASTIO_UNSAFE_BLOCK_LOG\n#define FASTIO_UNSAFE_BLOCK_LOG 12\n#endif\n\n\
-    #include <bit>\n#include <cstddef>\n#include <vector>\n\n#line 2 \"convolution/ntt998.hpp\"\
-    \n#if !defined(__AVX2__) && !defined(_M_AVX2)\r\n#error \"Compile with -mavx2\
-    \ (see README.md).\"\r\n#endif\r\n#line 2 \"ntt998.hpp\"\r\n\r\n#if defined(__GNUC__)\
+    #include <cstddef>\n#include <cstdint>\n\n#line 2 \"convolution/ntt998.hpp\"\n\
+    #if !defined(__AVX2__) && !defined(_M_AVX2)\r\n#error \"Compile with -mavx2 (see\
+    \ README.md).\"\r\n#endif\r\n#line 2 \"ntt998.hpp\"\r\n\r\n#if defined(__GNUC__)\
     \ && !defined(__clang__) && \\\r\n    (defined(__x86_64__) || defined(__i386__))\r\
     \n#pragma GCC optimize(\"O3,unroll-loops\")\r\n#pragma GCC target(\"avx2,bmi,bmi2,lzcnt,popcnt\"\
     )\r\n#elif defined(__clang__) && \\\r\n    (defined(__x86_64__) || defined(__i386__))\r\
@@ -893,7 +893,7 @@ data:
     \n    std::uninitialized_value_construct_n(b.data()+b_size,z-b_size);\r\n    detail::convert_to_montgomery(b.data(),(b_size+7)&~usize(7));\r\
     \n    detail::convolution_adaptive_mixed_normal_inplace(a.data(),b.data(),z);\r\
     \n    for(usize i=0;i<result_size;++i)write(a.data()[i].a);\r\n}\r\n}\r\n#line\
-    \ 12 \"verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp\"\
+    \ 11 \"verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp\"\
     \n\n#if defined(__GNUC__) && !defined(__clang__) && \\\n    (defined(__x86_64__)\
     \ || defined(__i386__))\n#pragma GCC optimize(\"O3,unroll-loops\")\n#pragma GCC\
     \ target(\"avx2,bmi,bmi2,lzcnt,popcnt\")\n#elif defined(__clang__) && \\\n   \
@@ -1156,29 +1156,19 @@ data:
     \ cursor, end, value);\n    }\n\n    __attribute__((always_inline)) void write_i128(\n\
     \        char*& cursor, char* end, i128 value) noexcept {\n        fastio_unsafe_impl::write_i128(out,\
     \ cursor, end, value);\n    }\n\n    fastio_unsafe_impl::input in;\n    fastio_unsafe_impl::output\
-    \ out;\n};\n#line 25 \"verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp\"\
+    \ out;\n};\n#line 24 \"verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp\"\
     \n\nint main() {\n    fastio_unsafe io;\n    char* input_cursor = io.input_cursor();\n\
     \    char* output_cursor = io.output_cursor();\n    char* const output_end = io.output_end();\n\
     \n    const std::size_t n = io.read_u32(input_cursor);\n    const std::size_t\
-    \ m = io.read_u32(input_cursor);\n    const std::size_t result_size = n + m -\
-    \ 1;\n    const std::size_t transform_size = std::bit_ceil(result_size);\n   \
-    \ using mint = eez::ntt998::mint;\n\n    if (transform_size < 32) {\n        std::vector<mint>\
-    \ a(n), b(m);\n        for (auto& value : a) value = mint::raw(io.read_u32(input_cursor));\n\
-    \        for (auto& value : b) value = mint::raw(io.read_u32(input_cursor));\n\
-    \n        const auto result = eez::ntt998::convolution(a, b);\n        for (const\
-    \ mint value : result) {\n            io.write_u32(output_cursor, output_end,\
-    \ value.val());\n        }\n    } else {\n        eez::ntt998::convolution_buffer\
-    \ a(transform_size), b(transform_size);\n        for (std::size_t i = 0; i < n;\
-    \ ++i) {\n            a[i] = mint::raw(io.read_u32(input_cursor));\n        }\n\
-    \        for (std::size_t i = 0; i < m; ++i) {\n            b[i] = mint::raw(io.read_u32(input_cursor));\n\
-    \        }\n\n        eez::ntt998::convolution_inplace(a, b);\n        for (std::size_t\
-    \ i = 0; i < result_size; ++i) {\n            io.write_u32(output_cursor, output_end,\
-    \ a[i].val());\n        }\n    }\n\n    io.finish(output_cursor);\n}\n\n#if defined(__clang__)\
-    \ && \\\n    (defined(__x86_64__) || defined(__i386__))\n#pragma clang attribute\
-    \ pop\n#endif\n\n"
+    \ m = io.read_u32(input_cursor);\n\n    eez::ntt998::convolution_normal_io(\n\
+    \        n, m,\n        [&]() -> std::uint32_t {\n            return io.read_u32_lt1e9(input_cursor);\n\
+    \        },\n        [&](std::uint32_t value) {\n            io.write_u32_lt1e9(output_cursor,\
+    \ output_end, value);\n        }\n    );\n\n    io.finish(output_cursor);\n  \
+    \  return 0;\n}\n\n#if defined(__clang__) && \\\n    (defined(__x86_64__) || defined(__i386__))\n\
+    #pragma clang attribute pop\n#endif\n"
   code: "#define PROBLEM \"https://judge.yosupo.jp/problem/convolution_mod_large\"\
     \n\n#ifndef FASTIO_UNSAFE_BLOCK_LOG\n#define FASTIO_UNSAFE_BLOCK_LOG 12\n#endif\n\
-    \n#include <bit>\n#include <cstddef>\n#include <vector>\n\n#include \"../../convolution/ntt998.hpp\"\
+    \n#include <cstddef>\n#include <cstdint>\n\n#include \"../../convolution/ntt998.hpp\"\
     \n\n#if defined(__GNUC__) && !defined(__clang__) && \\\n    (defined(__x86_64__)\
     \ || defined(__i386__))\n#pragma GCC optimize(\"O3,unroll-loops\")\n#pragma GCC\
     \ target(\"avx2,bmi,bmi2,lzcnt,popcnt\")\n#elif defined(__clang__) && \\\n   \
@@ -1188,22 +1178,12 @@ data:
     \ {\n    fastio_unsafe io;\n    char* input_cursor = io.input_cursor();\n    char*\
     \ output_cursor = io.output_cursor();\n    char* const output_end = io.output_end();\n\
     \n    const std::size_t n = io.read_u32(input_cursor);\n    const std::size_t\
-    \ m = io.read_u32(input_cursor);\n    const std::size_t result_size = n + m -\
-    \ 1;\n    const std::size_t transform_size = std::bit_ceil(result_size);\n   \
-    \ using mint = eez::ntt998::mint;\n\n    if (transform_size < 32) {\n        std::vector<mint>\
-    \ a(n), b(m);\n        for (auto& value : a) value = mint::raw(io.read_u32(input_cursor));\n\
-    \        for (auto& value : b) value = mint::raw(io.read_u32(input_cursor));\n\
-    \n        const auto result = eez::ntt998::convolution(a, b);\n        for (const\
-    \ mint value : result) {\n            io.write_u32(output_cursor, output_end,\
-    \ value.val());\n        }\n    } else {\n        eez::ntt998::convolution_buffer\
-    \ a(transform_size), b(transform_size);\n        for (std::size_t i = 0; i < n;\
-    \ ++i) {\n            a[i] = mint::raw(io.read_u32(input_cursor));\n        }\n\
-    \        for (std::size_t i = 0; i < m; ++i) {\n            b[i] = mint::raw(io.read_u32(input_cursor));\n\
-    \        }\n\n        eez::ntt998::convolution_inplace(a, b);\n        for (std::size_t\
-    \ i = 0; i < result_size; ++i) {\n            io.write_u32(output_cursor, output_end,\
-    \ a[i].val());\n        }\n    }\n\n    io.finish(output_cursor);\n}\n\n#if defined(__clang__)\
-    \ && \\\n    (defined(__x86_64__) || defined(__i386__))\n#pragma clang attribute\
-    \ pop\n#endif\n\n"
+    \ m = io.read_u32(input_cursor);\n\n    eez::ntt998::convolution_normal_io(\n\
+    \        n, m,\n        [&]() -> std::uint32_t {\n            return io.read_u32_lt1e9(input_cursor);\n\
+    \        },\n        [&](std::uint32_t value) {\n            io.write_u32_lt1e9(output_cursor,\
+    \ output_end, value);\n        }\n    );\n\n    io.finish(output_cursor);\n  \
+    \  return 0;\n}\n\n#if defined(__clang__) && \\\n    (defined(__x86_64__) || defined(__i386__))\n\
+    #pragma clang attribute pop\n#endif\n"
   dependsOn: []
   isVerificationFile: true
   path: verify/verify-yosupo-convolution/yosupo-convolution-mod-large-ntt998.test.cpp
