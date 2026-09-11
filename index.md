@@ -16,6 +16,9 @@ data:
       title: ntt998
   - name: data-structure
     pages:
+    - icon: ':warning:'
+      path: data-structure/DynamicWaveletMatrix.hpp
+      title: data-structure/DynamicWaveletMatrix.hpp
     - icon: ':heavy_check_mark:'
       path: data-structure/UnionFind.hpp
       title: UnionFind
