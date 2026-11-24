@@ -1,3 +1,4 @@
+// eez CP Library: https://github.com/28q/eezCPLibrary
 #pragma once
 
 #include <algorithm>

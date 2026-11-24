@@ -1,3 +1,4 @@
+// eez CP Library: https://github.com/28q/eezCPLibrary
 #ifndef EEZCP_MATH_MODINT998_HPP
 #define EEZCP_MATH_MODINT998_HPP
 

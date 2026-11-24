@@ -1,3 +1,4 @@
+// eez CP Library: https://github.com/28q/eezCPLibrary
 #pragma once
 #if !defined(__AVX2__) && !defined(_M_AVX2)
 #error "Compile with -mavx2 (see README.md)."

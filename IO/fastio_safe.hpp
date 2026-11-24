@@ -1,3 +1,4 @@
+// eez CP Library: https://github.com/28q/eezCPLibrary
 #ifndef EEZCP_IO_FASTIO_SAFE_HPP
 #define EEZCP_IO_FASTIO_SAFE_HPP
 
