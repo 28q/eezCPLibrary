@@ -10,43 +10,39 @@ data:
   _pathExtension: hpp
   _verificationStatusIcon: ':heavy_check_mark:'
   attributes:
-    links: []
-  bundledCode: "#line 2 \"data-structure/UnionFind.hpp\"\n\n#include<vector>\nusing\
-    \ namespace std;\n\nstruct UnionFind{\n\tprivate:\n\tvector<int32_t> p;\n\tpublic:\n\
-    \texplicit UnionFind(uint32_t n) : p(n,-1){}\n\t[[gnu::always_inline]]\n\tinline\
-    \ bool same(int32_t x,int32_t y) noexcept{\n\t\tint32_t* const __restrict__ p=this->p.data();\n\
-    \t\twhile(p[x]>=0){\n\t\t\tconst int32_t px=p[x];\n\t\t\tif(p[px]>=0) p[x]=p[px];\n\
-    \t\t\tx=px;\n\t\t}\n\t\twhile(p[y]>=0){\n\t\t\tconst int32_t py=p[y];\n\t\t\t\
-    if(p[py]>=0) p[y]=p[py];\n\t\t\ty=py;\n\t\t}\n\t\treturn x==y;\n\t}\n\t[[gnu::always_inline]]\n\
-    \tinline bool merge(int32_t x,int32_t y) noexcept{\n\t\tint32_t* const __restrict__\
-    \ p=this->p.data();\n\t\tfor(;;){\n\t\t\tconst int32_t px=p[x];\n\t\t\tif(px<0)\
-    \ break;\n\t\t\tconst int32_t ppx=p[px];\n\t\t\tif(ppx<0){\n\t\t\t\tx=px;\n\t\t\
-    \t\tbreak;\n\t\t\t}\n\t\t\tp[x]=ppx;\n\t\t\tx=ppx;\n\t\t}\n\t\tfor(;;){\n\t\t\t\
-    const int32_t py=p[y];\n\t\t\tif(py<0) break;\n\t\t\tconst int32_t ppy=p[py];\n\
-    \t\t\tif(ppy<0){\n\t\t\t\ty=py;\n\t\t\t\tbreak;\n\t\t\t}\n\t\t\tp[y]=ppy;\n\t\t\
-    \ty=ppy;\n\t\t}\n\t\tif(x==y) return false;\n\t\tif(p[x]>p[y]){\n\t\t\tconst int32_t\
-    \ t=x;\n\t\t\tx=y;\n\t\t\ty=t;\n\t\t}\n\t\tp[x]+=p[y];\n\t\tp[y]=x;\n\t\treturn\
-    \ true;\n\t}\n};\n"
-  code: "#pragma once\n\n#include<vector>\nusing namespace std;\n\nstruct UnionFind{\n\
-    \tprivate:\n\tvector<int32_t> p;\n\tpublic:\n\texplicit UnionFind(uint32_t n)\
-    \ : p(n,-1){}\n\t[[gnu::always_inline]]\n\tinline bool same(int32_t x,int32_t\
-    \ y) noexcept{\n\t\tint32_t* const __restrict__ p=this->p.data();\n\t\twhile(p[x]>=0){\n\
-    \t\t\tconst int32_t px=p[x];\n\t\t\tif(p[px]>=0) p[x]=p[px];\n\t\t\tx=px;\n\t\t\
-    }\n\t\twhile(p[y]>=0){\n\t\t\tconst int32_t py=p[y];\n\t\t\tif(p[py]>=0) p[y]=p[py];\n\
-    \t\t\ty=py;\n\t\t}\n\t\treturn x==y;\n\t}\n\t[[gnu::always_inline]]\n\tinline\
-    \ bool merge(int32_t x,int32_t y) noexcept{\n\t\tint32_t* const __restrict__ p=this->p.data();\n\
-    \t\tfor(;;){\n\t\t\tconst int32_t px=p[x];\n\t\t\tif(px<0) break;\n\t\t\tconst\
-    \ int32_t ppx=p[px];\n\t\t\tif(ppx<0){\n\t\t\t\tx=px;\n\t\t\t\tbreak;\n\t\t\t\
-    }\n\t\t\tp[x]=ppx;\n\t\t\tx=ppx;\n\t\t}\n\t\tfor(;;){\n\t\t\tconst int32_t py=p[y];\n\
-    \t\t\tif(py<0) break;\n\t\t\tconst int32_t ppy=p[py];\n\t\t\tif(ppy<0){\n\t\t\t\
-    \ty=py;\n\t\t\t\tbreak;\n\t\t\t}\n\t\t\tp[y]=ppy;\n\t\t\ty=ppy;\n\t\t}\n\t\tif(x==y)\
-    \ return false;\n\t\tif(p[x]>p[y]){\n\t\t\tconst int32_t t=x;\n\t\t\tx=y;\n\t\t\
-    \ty=t;\n\t\t}\n\t\tp[x]+=p[y];\n\t\tp[y]=x;\n\t\treturn true;\n\t}\n};\n"
+    links:
+    - https://github.com/28q/eezCPLibrary
+  bundledCode: "Traceback (most recent call last):\n  File \"/home/runner/.local/lib/python3.14/site-packages/onlinejudge_verify/documentation/build.py\"\
+    , line 71, in _render_source_code_stat\n    bundled_code = language.bundle(stat.path,\
+    \ basedir=basedir, options={'include_paths': [basedir]}).decode()\n          \
+    \         ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\
+    \  File \"/home/runner/.local/lib/python3.14/site-packages/onlinejudge_verify/languages/cplusplus.py\"\
+    , line 187, in bundle\n    bundler.update(path)\n    ~~~~~~~~~~~~~~^^^^^^\n  File\
+    \ \"/home/runner/.local/lib/python3.14/site-packages/onlinejudge_verify/languages/cplusplus_bundle.py\"\
+    , line 312, in update\n    raise BundleErrorAt(path, i + 1, \"#pragma once found\
+    \ in a non-first line\")\nonlinejudge_verify.languages.cplusplus_bundle.BundleErrorAt:\
+    \ data-structure/UnionFind.hpp: line 2: #pragma once found in a non-first line\n"
+  code: "// eez CP Library: https://github.com/28q/eezCPLibrary\n#pragma once\n\n\
+    #include<vector>\nusing namespace std;\n\nstruct UnionFind{\n\tprivate:\n\tvector<int32_t>\
+    \ p;\n\tpublic:\n\texplicit UnionFind(uint32_t n) : p(n,-1){}\n\t[[gnu::always_inline]]\n\
+    \tinline bool same(int32_t x,int32_t y) noexcept{\n\t\tint32_t* const __restrict__\
+    \ p=this->p.data();\n\t\twhile(p[x]>=0){\n\t\t\tconst int32_t px=p[x];\n\t\t\t\
+    if(p[px]>=0) p[x]=p[px];\n\t\t\tx=px;\n\t\t}\n\t\twhile(p[y]>=0){\n\t\t\tconst\
+    \ int32_t py=p[y];\n\t\t\tif(p[py]>=0) p[y]=p[py];\n\t\t\ty=py;\n\t\t}\n\t\treturn\
+    \ x==y;\n\t}\n\t[[gnu::always_inline]]\n\tinline bool merge(int32_t x,int32_t\
+    \ y) noexcept{\n\t\tint32_t* const __restrict__ p=this->p.data();\n\t\tfor(;;){\n\
+    \t\t\tconst int32_t px=p[x];\n\t\t\tif(px<0) break;\n\t\t\tconst int32_t ppx=p[px];\n\
+    \t\t\tif(ppx<0){\n\t\t\t\tx=px;\n\t\t\t\tbreak;\n\t\t\t}\n\t\t\tp[x]=ppx;\n\t\t\
+    \tx=ppx;\n\t\t}\n\t\tfor(;;){\n\t\t\tconst int32_t py=p[y];\n\t\t\tif(py<0) break;\n\
+    \t\t\tconst int32_t ppy=p[py];\n\t\t\tif(ppy<0){\n\t\t\t\ty=py;\n\t\t\t\tbreak;\n\
+    \t\t\t}\n\t\t\tp[y]=ppy;\n\t\t\ty=ppy;\n\t\t}\n\t\tif(x==y) return false;\n\t\t\
+    if(p[x]>p[y]){\n\t\t\tconst int32_t t=x;\n\t\t\tx=y;\n\t\t\ty=t;\n\t\t}\n\t\t\
+    p[x]+=p[y];\n\t\tp[y]=x;\n\t\treturn true;\n\t}\n};\n"
   dependsOn: []
   isVerificationFile: false
   path: data-structure/UnionFind.hpp
   requiredBy: []
-  timestamp: '2026-08-14 15:23:31+09:00'
+  timestamp: '2026-11-24 15:26:04+09:00'
   verificationStatus: LIBRARY_ALL_AC
   verifiedWith:
   - verify/verify-yosupo-ds/yosupo-unionfind.test.cpp

@@ -6,7 +6,7 @@ data:
     - icon: ':heavy_check_mark:'
       path: IO/fastio_safe.hpp
       title: fastio_safe
-    - icon: ':heavy_check_mark:'
+    - icon: ':question:'
       path: IO/fastio_unsafe.hpp
       title: fastio_unsafe
   - name: convolution
@@ -40,7 +40,7 @@ data:
       title: fps/detail/fps998_inv_ntt.hpp
   - name: math
     pages:
-    - icon: ':heavy_check_mark:'
+    - icon: ':x:'
       path: math/modint998.hpp
       title: modint998
   verificationCategories:
@@ -84,12 +84,12 @@ data:
     - icon: ':heavy_check_mark:'
       path: verify/verify-yosupo-io/yosupo-many-aplusb-fastio-safe.test.cpp
       title: verify/verify-yosupo-io/yosupo-many-aplusb-fastio-safe.test.cpp
-    - icon: ':heavy_check_mark:'
+    - icon: ':x:'
       path: verify/verify-yosupo-io/yosupo-many-aplusb.test.cpp
       title: verify/verify-yosupo-io/yosupo-many-aplusb.test.cpp
   - name: verify/verify-yosupo-math
     pages:
-    - icon: ':heavy_check_mark:'
+    - icon: ':x:'
       path: verify/verify-yosupo-math/yosupo-aplusb-modint998.test.cpp
       title: verify/verify-yosupo-math/yosupo-aplusb-modint998.test.cpp
 layout: toppage

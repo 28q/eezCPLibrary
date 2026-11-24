@@ -14,28 +14,19 @@ data:
     PROBLEM: https://judge.yosupo.jp/problem/unionfind
     links:
     - https://judge.yosupo.jp/problem/unionfind
-  bundledCode: "#line 1 \"verify/verify-yosupo-ds/yosupo-unionfind.test.cpp\"\n#define\
-    \ PROBLEM \"https://judge.yosupo.jp/problem/unionfind\"\n#include<bits/stdc++.h>\n\
-    using namespace std;\n\n#line 2 \"data-structure/UnionFind.hpp\"\n\n#line 4 \"\
-    data-structure/UnionFind.hpp\"\nusing namespace std;\n\nstruct UnionFind{\n\t\
-    private:\n\tvector<int32_t> p;\n\tpublic:\n\texplicit UnionFind(uint32_t n) :\
-    \ p(n,-1){}\n\t[[gnu::always_inline]]\n\tinline bool same(int32_t x,int32_t y)\
-    \ noexcept{\n\t\tint32_t* const __restrict__ p=this->p.data();\n\t\twhile(p[x]>=0){\n\
-    \t\t\tconst int32_t px=p[x];\n\t\t\tif(p[px]>=0) p[x]=p[px];\n\t\t\tx=px;\n\t\t\
-    }\n\t\twhile(p[y]>=0){\n\t\t\tconst int32_t py=p[y];\n\t\t\tif(p[py]>=0) p[y]=p[py];\n\
-    \t\t\ty=py;\n\t\t}\n\t\treturn x==y;\n\t}\n\t[[gnu::always_inline]]\n\tinline\
-    \ bool merge(int32_t x,int32_t y) noexcept{\n\t\tint32_t* const __restrict__ p=this->p.data();\n\
-    \t\tfor(;;){\n\t\t\tconst int32_t px=p[x];\n\t\t\tif(px<0) break;\n\t\t\tconst\
-    \ int32_t ppx=p[px];\n\t\t\tif(ppx<0){\n\t\t\t\tx=px;\n\t\t\t\tbreak;\n\t\t\t\
-    }\n\t\t\tp[x]=ppx;\n\t\t\tx=ppx;\n\t\t}\n\t\tfor(;;){\n\t\t\tconst int32_t py=p[y];\n\
-    \t\t\tif(py<0) break;\n\t\t\tconst int32_t ppy=p[py];\n\t\t\tif(ppy<0){\n\t\t\t\
-    \ty=py;\n\t\t\t\tbreak;\n\t\t\t}\n\t\t\tp[y]=ppy;\n\t\t\ty=ppy;\n\t\t}\n\t\tif(x==y)\
-    \ return false;\n\t\tif(p[x]>p[y]){\n\t\t\tconst int32_t t=x;\n\t\t\tx=y;\n\t\t\
-    \ty=t;\n\t\t}\n\t\tp[x]+=p[y];\n\t\tp[y]=x;\n\t\treturn true;\n\t}\n};\n#line\
-    \ 6 \"verify/verify-yosupo-ds/yosupo-unionfind.test.cpp\"\n\nint main(){\n\tcin.tie(0)->ios::sync_with_stdio(0);\n\
-    \tint N,Q;\n\tcin >> N >> Q;\n\tUnionFind uf(N);\n\tfor(;Q--;){\n\t\tint t,u,v;\n\
-    \t\tcin >> t >> u >> v;\n\t\tif(t==0) uf.merge(u,v);\n\t\telse cout << uf.same(u,v)\
-    \ << '\\n';\n\t}\n}\n"
+  bundledCode: "Traceback (most recent call last):\n  File \"/home/runner/.local/lib/python3.14/site-packages/onlinejudge_verify/documentation/build.py\"\
+    , line 71, in _render_source_code_stat\n    bundled_code = language.bundle(stat.path,\
+    \ basedir=basedir, options={'include_paths': [basedir]}).decode()\n          \
+    \         ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\
+    \  File \"/home/runner/.local/lib/python3.14/site-packages/onlinejudge_verify/languages/cplusplus.py\"\
+    , line 187, in bundle\n    bundler.update(path)\n    ~~~~~~~~~~~~~~^^^^^^\n  File\
+    \ \"/home/runner/.local/lib/python3.14/site-packages/onlinejudge_verify/languages/cplusplus_bundle.py\"\
+    , line 401, in update\n    self.update(self._resolve(pathlib.Path(included), included_from=path))\n\
+    \    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\
+    \  File \"/home/runner/.local/lib/python3.14/site-packages/onlinejudge_verify/languages/cplusplus_bundle.py\"\
+    , line 312, in update\n    raise BundleErrorAt(path, i + 1, \"#pragma once found\
+    \ in a non-first line\")\nonlinejudge_verify.languages.cplusplus_bundle.BundleErrorAt:\
+    \ data-structure/UnionFind.hpp: line 2: #pragma once found in a non-first line\n"
   code: "#define PROBLEM \"https://judge.yosupo.jp/problem/unionfind\"\n#include<bits/stdc++.h>\n\
     using namespace std;\n\n#include\"../../data-structure/UnionFind.hpp\"\n\nint\
     \ main(){\n\tcin.tie(0)->ios::sync_with_stdio(0);\n\tint N,Q;\n\tcin >> N >> Q;\n\
@@ -46,7 +37,7 @@ data:
   isVerificationFile: true
   path: verify/verify-yosupo-ds/yosupo-unionfind.test.cpp
   requiredBy: []
-  timestamp: '2026-08-14 15:23:31+09:00'
+  timestamp: '2026-11-24 15:26:04+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: verify/verify-yosupo-ds/yosupo-unionfind.test.cpp

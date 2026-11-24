@@ -16,47 +16,48 @@ data:
     - https://judge.yosupo.jp/problem/aplusb
   bundledCode: "#line 1 \"verify/verify-yosupo-io/yosupo-aplusb-fastio-safe.test.cpp\"\
     \n#define PROBLEM \"https://judge.yosupo.jp/problem/aplusb\"\n\n#ifdef __linux__\n\
-    #define FASTIO_SAFE_USE_POSIX 1\n#endif\n#line 1 \"IO/fastio_safe.hpp\"\n\n\n\n\
-    #include <algorithm>\n#include <array>\n#include <charconv>\n#include <cerrno>\n\
-    #include <cstddef>\n#include <cstdint>\n#include <cstdio>\n#include <cstdlib>\n\
-    #include <cstring>\n#include <istream>\n#include <limits>\n#include <ostream>\n\
-    #include <string>\n#include <string_view>\n#include <system_error>\n#include <type_traits>\n\
-    #include <utility>\n#include <vector>\n\n#ifdef FASTIO_SAFE_USE_POSIX\n#include\
-    \ <unistd.h>\n#endif\n\n#if (defined(__GNUC__) || defined(__clang__)) && \\\n\
-    \    (defined(__x86_64__) || defined(__i386__) || defined(_M_X64) || defined(_M_IX86))\n\
-    #include <immintrin.h>\n#endif\n\nstatic_assert(__cplusplus >= 201703L, \"fastio_safe.hpp\
-    \ requires C++17 or newer\");\n\n// Stream helpers kept for compatibility with\
-    \ the original snippet.\ntemplate<class T, class U>\nstd::ostream& operator<<(std::ostream&\
-    \ os, const std::pair<T, U>& value);\n\ntemplate<class T>\nstd::ostream& operator<<(std::ostream&\
-    \ os, const std::vector<T>& value);\n\ntemplate<class T, class U>\nstd::istream&\
-    \ operator>>(std::istream& is, std::pair<T, U>& value);\n\ntemplate<class T>\n\
-    std::istream& operator>>(std::istream& is, std::vector<T>& value);\n\ntemplate<class\
+    #define FASTIO_SAFE_USE_POSIX 1\n#endif\n#line 1 \"IO/fastio_safe.hpp\"\n// eez\
+    \ CP Library: https://github.com/28q/eezCPLibrary\n#ifndef EEZCP_IO_FASTIO_SAFE_HPP\n\
+    #define EEZCP_IO_FASTIO_SAFE_HPP\n\n#include <algorithm>\n#include <array>\n#include\
+    \ <charconv>\n#include <cerrno>\n#include <cstddef>\n#include <cstdint>\n#include\
+    \ <cstdio>\n#include <cstdlib>\n#include <cstring>\n#include <istream>\n#include\
+    \ <limits>\n#include <ostream>\n#include <string>\n#include <string_view>\n#include\
+    \ <system_error>\n#include <type_traits>\n#include <utility>\n#include <vector>\n\
+    \n#ifdef FASTIO_SAFE_USE_POSIX\n#include <unistd.h>\n#endif\n\n#if (defined(__GNUC__)\
+    \ || defined(__clang__)) && \\\n    (defined(__x86_64__) || defined(__i386__)\
+    \ || defined(_M_X64) || defined(_M_IX86))\n#include <immintrin.h>\n#endif\n\n\
+    static_assert(__cplusplus >= 201703L, \"fastio_safe.hpp requires C++17 or newer\"\
+    );\n\n// Stream helpers kept for compatibility with the original snippet.\ntemplate<class\
     \ T, class U>\nstd::ostream& operator<<(std::ostream& os, const std::pair<T, U>&\
-    \ value) {\n    return os << value.first << ' ' << value.second;\n}\n\ntemplate<class\
-    \ T>\nstd::ostream& operator<<(std::ostream& os, const std::vector<T>& value)\
-    \ {\n    for (std::size_t i = 0; i < value.size(); ++i) {\n        if (i != 0)\
-    \ os.put(' ');\n        os << value[i];\n    }\n    return os;\n}\n\ntemplate<class\
-    \ T, class U>\nstd::istream& operator>>(std::istream& is, std::pair<T, U>& value)\
-    \ {\n    return is >> value.first >> value.second;\n}\n\ntemplate<class T>\nstd::istream&\
-    \ operator>>(std::istream& is, std::vector<T>& value) {\n    if constexpr (std::is_same_v<T,\
-    \ bool>) {\n        for (std::size_t i = 0; i < value.size(); ++i) {\n       \
-    \     bool element = false;\n            if (!(is >> element)) return is;\n  \
-    \          value[i] = element;\n        }\n    } else {\n        for (auto& element\
-    \ : value) is >> element;\n    }\n    return is;\n}\n\nnamespace fastio_safe {\n\
-    \nenum class scan_error {\n    none,\n    end_of_file,\n    invalid_input,\n \
-    \   out_of_range,\n    io_error\n};\n\nnamespace detail {\n\ninline constexpr\
-    \ std::size_t input_buffer_size = 1u << 20;   // 1 MiB\ninline constexpr std::size_t\
-    \ output_buffer_size = 1u << 18;  // 256 KiB\n\n#if (defined(__GNUC__) || defined(__clang__))\
-    \ && \\\n    (defined(__x86_64__) || defined(__i386__) || defined(_M_X64) || defined(_M_IX86))\n\
-    __attribute__((target(\"avx2\")))\ninline std::size_t find_non_space_avx2(const\
-    \ unsigned char* data, std::size_t size) noexcept {\n    const __m256i sign_bias\
-    \ = _mm256_set1_epi8(static_cast<char>(0x80));\n    const __m256i biased_space\
-    \ = _mm256_set1_epi8(static_cast<char>(0x20 ^ 0x80));\n    std::size_t i = 0;\n\
-    \    for (; size - i >= 32; i += 32) {\n        const __m256i bytes = _mm256_loadu_si256(\n\
-    \            reinterpret_cast<const __m256i*>(data + i));\n        const __m256i\
-    \ biased = _mm256_xor_si256(bytes, sign_bias);\n        const __m256i greater\
-    \ = _mm256_cmpgt_epi8(biased, biased_space);\n        const std::uint32_t mask\
-    \ = static_cast<std::uint32_t>(\n            _mm256_movemask_epi8(greater));\n\
+    \ value);\n\ntemplate<class T>\nstd::ostream& operator<<(std::ostream& os, const\
+    \ std::vector<T>& value);\n\ntemplate<class T, class U>\nstd::istream& operator>>(std::istream&\
+    \ is, std::pair<T, U>& value);\n\ntemplate<class T>\nstd::istream& operator>>(std::istream&\
+    \ is, std::vector<T>& value);\n\ntemplate<class T, class U>\nstd::ostream& operator<<(std::ostream&\
+    \ os, const std::pair<T, U>& value) {\n    return os << value.first << ' ' <<\
+    \ value.second;\n}\n\ntemplate<class T>\nstd::ostream& operator<<(std::ostream&\
+    \ os, const std::vector<T>& value) {\n    for (std::size_t i = 0; i < value.size();\
+    \ ++i) {\n        if (i != 0) os.put(' ');\n        os << value[i];\n    }\n \
+    \   return os;\n}\n\ntemplate<class T, class U>\nstd::istream& operator>>(std::istream&\
+    \ is, std::pair<T, U>& value) {\n    return is >> value.first >> value.second;\n\
+    }\n\ntemplate<class T>\nstd::istream& operator>>(std::istream& is, std::vector<T>&\
+    \ value) {\n    if constexpr (std::is_same_v<T, bool>) {\n        for (std::size_t\
+    \ i = 0; i < value.size(); ++i) {\n            bool element = false;\n       \
+    \     if (!(is >> element)) return is;\n            value[i] = element;\n    \
+    \    }\n    } else {\n        for (auto& element : value) is >> element;\n   \
+    \ }\n    return is;\n}\n\nnamespace fastio_safe {\n\nenum class scan_error {\n\
+    \    none,\n    end_of_file,\n    invalid_input,\n    out_of_range,\n    io_error\n\
+    };\n\nnamespace detail {\n\ninline constexpr std::size_t input_buffer_size = 1u\
+    \ << 20;   // 1 MiB\ninline constexpr std::size_t output_buffer_size = 1u << 18;\
+    \  // 256 KiB\n\n#if (defined(__GNUC__) || defined(__clang__)) && \\\n    (defined(__x86_64__)\
+    \ || defined(__i386__) || defined(_M_X64) || defined(_M_IX86))\n__attribute__((target(\"\
+    avx2\")))\ninline std::size_t find_non_space_avx2(const unsigned char* data, std::size_t\
+    \ size) noexcept {\n    const __m256i sign_bias = _mm256_set1_epi8(static_cast<char>(0x80));\n\
+    \    const __m256i biased_space = _mm256_set1_epi8(static_cast<char>(0x20 ^ 0x80));\n\
+    \    std::size_t i = 0;\n    for (; size - i >= 32; i += 32) {\n        const\
+    \ __m256i bytes = _mm256_loadu_si256(\n            reinterpret_cast<const __m256i*>(data\
+    \ + i));\n        const __m256i biased = _mm256_xor_si256(bytes, sign_bias);\n\
+    \        const __m256i greater = _mm256_cmpgt_epi8(biased, biased_space);\n  \
+    \      const std::uint32_t mask = static_cast<std::uint32_t>(\n            _mm256_movemask_epi8(greater));\n\
     \        if (mask != 0) return i + static_cast<std::size_t>(__builtin_ctz(mask));\n\
     \    }\n    for (; i < size; ++i) {\n        if (data[i] > 0x20u) return i;\n\
     \    }\n    return size;\n}\n\ninline bool runtime_has_avx2() noexcept {\n   \
@@ -356,10 +357,10 @@ data:
     \ ::fastio_safe::scan(__VA_ARGS__)\n#define STR(...) std::string __VA_ARGS__;\
     \ ::fastio_safe::scan(__VA_ARGS__)\n#define CHR(...) char __VA_ARGS__; ::fastio_safe::scan(__VA_ARGS__)\n\
     #define DBL(...) double __VA_ARGS__; ::fastio_safe::scan(__VA_ARGS__)\n#define\
-    \ LD(...) long double __VA_ARGS__; ::fastio_safe::scan(__VA_ARGS__)\n\n\n#line\
-    \ 7 \"verify/verify-yosupo-io/yosupo-aplusb-fastio-safe.test.cpp\"\n\nint main()\
-    \ {\n    std::int32_t a, b;\n    if (!fastio_safe::scan(a, b)) return 1;\n   \
-    \ return fastio_safe::print(a + b) ? 0 : 1;\n}\n"
+    \ LD(...) long double __VA_ARGS__; ::fastio_safe::scan(__VA_ARGS__)\n\n#endif\
+    \ // EEZCP_IO_FASTIO_SAFE_HPP\n#line 7 \"verify/verify-yosupo-io/yosupo-aplusb-fastio-safe.test.cpp\"\
+    \n\nint main() {\n    std::int32_t a, b;\n    if (!fastio_safe::scan(a, b)) return\
+    \ 1;\n    return fastio_safe::print(a + b) ? 0 : 1;\n}\n"
   code: "#define PROBLEM \"https://judge.yosupo.jp/problem/aplusb\"\n\n#ifdef __linux__\n\
     #define FASTIO_SAFE_USE_POSIX 1\n#endif\n#include \"../../IO/fastio_safe.hpp\"\
     \n\nint main() {\n    std::int32_t a, b;\n    if (!fastio_safe::scan(a, b)) return\
@@ -369,7 +370,7 @@ data:
   isVerificationFile: true
   path: verify/verify-yosupo-io/yosupo-aplusb-fastio-safe.test.cpp
   requiredBy: []
-  timestamp: '2026-08-12 21:41:52+09:00'
+  timestamp: '2026-11-24 15:26:04+09:00'
   verificationStatus: TEST_ACCEPTED
   verifiedWith: []
 documentation_of: verify/verify-yosupo-io/yosupo-aplusb-fastio-safe.test.cpp
